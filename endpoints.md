@@ -12,11 +12,11 @@ List of WP-API REST endpoints and implementation status
 
 ## Comments
 
-- [ ] `GET    /comments`
-- [ ] `POST   /comments`
-- [ ] `GET    /comments/[id]`
-- [ ] `PUT    /comments/[id]`
-- [ ] `DELETE /comments/[id]`
+- [x] `GET    /comments`
+- [x] `POST   /comments` (Untested)
+- [x] `GET    /comments/[id]`
+- [x] `PUT    /comments/[id]`  (Untested)
+- [x] `DELETE /comments/[id]`  (Untested)
 
 ## Meta
 
@@ -94,8 +94,8 @@ List of WP-API REST endpoints and implementation status
 
 ## Taxonomies
 
-- [ ] `GET    /taxonomies`
-- [ ] `GET    /taxonomies/[slug]`
+- [x] `GET    /taxonomies`
+- [x] `GET    /taxonomies/[slug]`
 
 ## Terms
 
@@ -106,6 +106,22 @@ List of WP-API REST endpoints and implementation status
 - [ ] `DELETE /terms/[tax_base]/[id]`
 
 `[tax_base] = "tag" | "category"`
+
+### Tag Terms
+
+- [ ] `GET    /terms/tag`
+- [ ] `POST   /terms/tag]`
+- [ ] `GET    /terms/tag]/[id]`
+- [ ] `PUT    /terms/tag]/[id]`
+- [ ] `DELETE /terms/tag/[id]`
+
+### Category Terms
+
+- [ ] `GET    /terms/category`
+- [ ] `POST   /terms/category]`
+- [ ] `GET    /terms/category]/[id]`
+- [ ] `PUT    /terms/category]/[id]`
+- [ ] `DELETE /terms/category/[id]`
 
 ## Users
 

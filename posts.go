@@ -17,6 +17,9 @@ const (
 	CommentStatusOpen   = "open"
 	CommentStatusClosed = "closed"
 
+	CommentStatusApproved= "approved"
+	CommentStatusUnapproved= "unapproved"
+
 	PingStatusOpen   = "open"
 	PingStatusClosed = "closed"
 
