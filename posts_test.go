@@ -5,6 +5,7 @@ import (
 	"github.com/sogko/go-wordpress"
 	"net/http"
 	"testing"
+	"log"
 )
 
 func factoryPost() wordpress.Post {
@@ -26,19 +27,40 @@ func factoryPost() wordpress.Post {
 	}
 }
 
+func cleanUpPost(t *testing.T, postID int) {
+
+	wp := initTestClient()
+	deletedPost, resp, body, err := wp.Posts().Delete(postID, "force=true")
+	if err != nil {
+		t.Errorf("Failed to clean up new post: %v", err.Error())
+	}
+	if body == nil {
+		t.Errorf("body should not be nil")
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
+	}
+	if deletedPost.ID != postID {
+		t.Errorf("Deleted post ID should be the same as newly created post: %v != %v", deletedPost.ID, postID)
+	}
+}
+
 func getAnyOnePost(t *testing.T, wp *wordpress.Client) *wordpress.Post {
 
-	posts, resp, _, _ := wp.Posts().List(nil)
+	posts, resp, body, err := wp.Posts().List(nil)
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if len(posts) < 1 {
-		t.Errorf("Should not return empty posts")
+		log.Print(err)
+		log.Print(body)
+		log.Print(resp)
+		t.Fatalf("Should not return empty posts")
 	}
 
 	postID := posts[0].ID
 
-	post, resp, _, _ := wp.Posts().Get(postID, nil)
+	post, resp, _, _ := wp.Posts().Get(postID, "context=edit")
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
@@ -61,7 +83,7 @@ func TestPostsList_NoParams(t *testing.T) {
 	if posts == nil {
 		t.Errorf("Should not return nil posts")
 	}
-	if len(posts) != 1 {
+	if len(posts) == 0 {
 		t.Errorf("Should not return empty posts")
 	}
 }
@@ -92,8 +114,8 @@ func TestPostsList_WithParamsString(t *testing.T) {
 	if body == nil {
 		t.Errorf("Should not return nil body")
 	}
-	if len(posts) != 1 {
-		t.Errorf("Should return one published posts")
+	if len(posts) == 0 {
+		t.Errorf("Should return at least one published posts")
 	}
 }
 
@@ -206,13 +228,7 @@ func TestPostsCreate(t *testing.T) {
 	}
 
 	// clean up
-	deletedPost, _, _, err := wp.Posts().Delete(newPost.ID, "force=true")
-	if err != nil {
-		t.Errorf("Failed to clean up new post: %v", err.Error())
-	}
-	if deletedPost.ID != newPost.ID {
-		t.Errorf("Deleted post ID should be the same as created post: %v != %v", deletedPost.ID, newPost.ID)
-	}
+	cleanUpPost(t, newPost.ID)
 }
 
 func TestPostsUpdate(t *testing.T) {
@@ -222,18 +238,24 @@ func TestPostsUpdate(t *testing.T) {
 	p := factoryPost()
 	newPost, resp, _, _ := wp.Posts().Create(&p)
 	if resp.StatusCode != http.StatusCreated {
-		t.Errorf("Expected 201 Created, got %v", resp.Status)
+		t.Fatalf("Expected 201 Created, got %v", resp.Status)
+	}
+
+	// get the post in `edit` context
+	post, resp, _, _ := wp.Posts().Get(newPost.ID, "context=edit")
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("Expected 200 OK, got %v", resp.Status)
 	}
 
 	// update the newly created post's title
 	newTitle := fmt.Sprintf("TestPostsUpdate")
-	if newPost.Title.Raw == newTitle {
-		t.Errorf("New title should be different if we want to test properly")
+	if post.Title.Raw == newTitle {
+		t.Fatalf("New title should be different if we want to test properly")
 	}
-	newPost.Title.Raw = newTitle
+	post.Title.Raw = newTitle
 
 	// update post
-	updatePost, resp, body, err := wp.Posts().Update(newPost.ID, newPost)
+	updatePost, resp, body, err := wp.Posts().Update(post.ID, post)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
@@ -250,14 +272,8 @@ func TestPostsUpdate(t *testing.T) {
 		t.Errorf("updatePost.Title should be updated to newTitle, %v != %v", updatePost.Title.Raw, newTitle)
 	}
 
-	// clean up
-	deletedPost, resp, _, _ := wp.Posts().Delete(newPost.ID, "force=true")
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
-	}
-	if deletedPost.ID != updatePost.ID {
-		t.Errorf("Deleted post ID should be the same as updated post: %v != %v", deletedPost.ID, updatePost.ID)
-	}
+	// clea nup
+	cleanUpPost(t, updatePost.ID)
 }
 
 func TestPostsDelete_NoParams_MoveToTrash(t *testing.T) {
@@ -289,10 +305,7 @@ func TestPostsDelete_NoParams_MoveToTrash(t *testing.T) {
 	}
 
 	// clean up
-	deletedPost, resp, _, _ = wp.Posts().Delete(newPost.ID, "force=true")
-	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
-	}
+	cleanUpPost(t, newPost.ID)
 }
 
 func TestPostsDelete_WithParams_DeletePermanently(t *testing.T) {

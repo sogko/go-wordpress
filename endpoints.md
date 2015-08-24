@@ -30,19 +30,19 @@ List of WP-API REST endpoints and implementation status
 
 ### Meta Posts
 
-- [ ] `GET    /posts/[post_id]/meta`
-- [ ] `POST   /posts/[post_id]/meta`
-- [ ] `GET    /posts/[post_id]/meta/[id]`
-- [ ] `PUT    /posts/[post_id]/meta/[id]`
-- [ ] `DELETE /posts/[post_id]/meta/[id]`
+- [x] `GET    /posts/[post_id]/meta`
+- [x] `POST   /posts/[post_id]/meta`
+- [x] `GET    /posts/[post_id]/meta/[id]`
+- [x] `PUT    /posts/[post_id]/meta/[id]`
+- [x] `DELETE /posts/[post_id]/meta/[id]`
 
 ### Meta Pages
 
-- [x] `GET    /pages/[post_id]/meta`
-- [x] `POST   /pages/[post_id]/meta`
-- [x] `GET    /pages/[post_id]/meta/[id]`
+- [ ] `GET    /pages/[post_id]/meta`
+- [ ] `POST   /pages/[post_id]/meta`
+- [ ] `GET    /pages/[post_id]/meta/[id]`
 - [ ] `PUT    /pages/[post_id]/meta/[id]`
-- [x] `DELETE /pages/[post_id]/meta/[id]`
+- [ ] `DELETE /pages/[post_id]/meta/[id]`
 
 ## Post Statuses
 
@@ -83,8 +83,8 @@ List of WP-API REST endpoints and implementation status
 ### Revisions Posts
 
 - [x] `GET    /posts/[parent_id]/revisions`
-- [ ] `GET    /posts/[parent_id]/revisions/[id]`
-- [ ] `DELETE /posts/[parent_id]/revisions/[id]`
+- [x] `GET    /posts/[parent_id]/revisions/[id]`
+- [x] `DELETE /posts/[parent_id]/revisions/[id]`
 
 ### Revisions Pages
 

@@ -76,27 +76,29 @@ type Post struct {
 func (entity *Post) setCollection(col *PostsCollection) {
 	entity.collection = col
 }
-func (entity *Post) Meta() *PostMetaCollection {
+func (entity *Post) Meta() *MetaCollection {
 	if entity.collection == nil {
 		// missing post.collection parent. Probably Post struct was initialized manually.
 		_warning("Missing parent post collection")
 		return nil
 	}
-	return &PostMetaCollection{
+	return &MetaCollection{
 		client:     entity.collection.client,
-		parentPost: entity,
+		parent:     entity,
+		parentType: CollectionPosts,
 		url:        fmt.Sprintf("%v/%v/%v", entity.collection.url, entity.ID, CollectionMeta),
 	}
 }
-func (entity *Post) Revisions() *PostRevisionsCollection {
+func (entity *Post) Revisions() *RevisionsCollection {
 	if entity.collection == nil {
 		// missing post.collection parent. Probably Post struct was initialized manually, not fetched from API
 		_warning("Missing parent post collection")
 		return nil
 	}
-	return &PostRevisionsCollection{
+	return &RevisionsCollection{
 		client:     entity.collection.client,
-		parentPost: entity,
+		parent:     entity,
+		parentType: CollectionPosts,
 		url:        fmt.Sprintf("%v/%v/%v", entity.collection.url, entity.ID, CollectionRevisions),
 	}
 }
@@ -116,7 +118,7 @@ type SamplePostParams struct {
 
 func (col *PostsCollection) List(params interface{}) ([]Post, *http.Response, []byte, error) {
 	var posts []Post
-	resp, body, err := col.client.list(col.url, params, &posts)
+	resp, body, err := col.client.List(col.url, params, &posts)
 
 	// set collection object for each entity which has sub-collection
 	for _, p := range posts {
@@ -127,7 +129,7 @@ func (col *PostsCollection) List(params interface{}) ([]Post, *http.Response, []
 }
 func (col *PostsCollection) Create(new *Post) (*Post, *http.Response, []byte, error) {
 	var created Post
-	resp, body, err := col.client.create(col.url, new, &created)
+	resp, body, err := col.client.Create(col.url, new, &created)
 
 	created.setCollection(col)
 
@@ -136,7 +138,7 @@ func (col *PostsCollection) Create(new *Post) (*Post, *http.Response, []byte, er
 func (col *PostsCollection) Get(id int, params interface{}) (*Post, *http.Response, []byte, error) {
 	var entity Post
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.get(entityURL, params, &entity)
+	resp, body, err := col.client.Get(entityURL, params, &entity)
 
 	// set collection object for each entity which has sub-collection
 	entity.setCollection(col)
@@ -154,7 +156,7 @@ func (col *PostsCollection) Entity(id int) *Post {
 func (col *PostsCollection) Update(id int, post *Post) (*Post, *http.Response, []byte, error) {
 	var updated Post
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.update(entityURL, post, &updated)
+	resp, body, err := col.client.Update(entityURL, post, &updated)
 
 	// set collection object for each entity which has sub-collection
 	updated.setCollection(col)
@@ -165,7 +167,7 @@ func (col *PostsCollection) Delete(id int, params interface{}) (*Post, *http.Res
 	var deleted Post
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 
-	resp, body, err := col.client.delete(entityURL, params, &deleted)
+	resp, body, err := col.client.Delete(entityURL, params, &deleted)
 
 	// set collection object for each entity which has sub-collection
 	deleted.setCollection(col)

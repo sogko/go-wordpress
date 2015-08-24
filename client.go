@@ -105,7 +105,7 @@ func (client *Client) Terms() *TermsCollection {
 	}
 }
 
-func (client *Client) list(url string, params interface{}, result interface{}) (*http.Response, []byte, error) {
+func (client *Client) List(url string, params interface{}, result interface{}) (*http.Response, []byte, error) {
 	resp, body, errSlice := client.req.Get(url).Query(params).EndBytes()
 	if errSlice != nil && len(errSlice) > 0 {
 		return nil, body, errSlice[len(errSlice)-1]
@@ -114,7 +114,7 @@ func (client *Client) list(url string, params interface{}, result interface{}) (
 	_resp := http.Response(*resp)
 	return &_resp, body, err
 }
-func (client *Client) create(url string, content interface{}, result interface{}) (*http.Response, []byte, error) {
+func (client *Client) Create(url string, content interface{}, result interface{}) (*http.Response, []byte, error) {
 	contentVal := unpackInterfacePointer(content)
 
 	req := client.req.Post(url).Send(contentVal)
@@ -126,7 +126,7 @@ func (client *Client) create(url string, content interface{}, result interface{}
 	_resp := http.Response(*resp)
 	return &_resp, body, err
 }
-func (client *Client) get(url string, params interface{}, result interface{}) (*http.Response, []byte, error) {
+func (client *Client) Get(url string, params interface{}, result interface{}) (*http.Response, []byte, error) {
 	resp, body, errSlice := client.req.Get(url).Query(params).EndBytes()
 	if errSlice != nil && len(errSlice) > 0 {
 		return nil, body, errSlice[len(errSlice)-1]
@@ -135,7 +135,7 @@ func (client *Client) get(url string, params interface{}, result interface{}) (*
 	_resp := http.Response(*resp)
 	return &_resp, body, err
 }
-func (client *Client) update(url string, content interface{}, result interface{}) (*http.Response, []byte, error) {
+func (client *Client) Update(url string, content interface{}, result interface{}) (*http.Response, []byte, error) {
 
 	contentVal := unpackInterfacePointer(content)
 
@@ -149,7 +149,7 @@ func (client *Client) update(url string, content interface{}, result interface{}
 	_resp := http.Response(*resp)
 	return &_resp, body, err
 }
-func (client *Client) delete(url string, params interface{}, result interface{}) (*http.Response, []byte, error) {
+func (client *Client) Delete(url string, params interface{}, result interface{}) (*http.Response, []byte, error) {
 	req := client.req.Get(url).Query(params).Query("_method=DELETE")
 	req.Set("HTTP_X_HTTP_METHOD_OVERRIDE", "DELETE")
 	resp, body, errSlice := req.End()

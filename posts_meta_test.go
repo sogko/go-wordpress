@@ -63,7 +63,7 @@ func TestPostsMetaCreate(t *testing.T) {
 	post := getAnyOnePost(t, wp)
 
 	// create meta for retrieved post
-	m := wordpress.PostMeta{
+	m := wordpress.Meta{
 		Key:   "testKey",
 		Value: "testValue",
 	}
@@ -98,7 +98,7 @@ func TestPostsMetaGet(t *testing.T) {
 	post := getAnyOnePost(t, wp)
 
 	// create meta for retrieved post
-	m := wordpress.PostMeta{
+	m := wordpress.Meta{
 		Key:   "testKey",
 		Value: "testValue",
 	}
@@ -142,7 +142,7 @@ func TestPostsMetaGet_Lazy(t *testing.T) {
 	postID := post.ID
 
 	// create meta for retrieved post
-	m := wordpress.PostMeta{
+	m := wordpress.Meta{
 		Key:   "testKey",
 		Value: "testValue",
 	}
@@ -181,7 +181,7 @@ func TestPostsMetaUpdate(t *testing.T) {
 	post := getAnyOnePost(t, wp)
 
 	// create meta for retrieved post
-	m := wordpress.PostMeta{
+	m := wordpress.Meta{
 		Key:   "testKey",
 		Value: "testValue",
 	}
