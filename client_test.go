@@ -17,7 +17,7 @@ func TestClientNew(t *testing.T) {
 		Password:   PASSWORD,
 	})
 	if client == nil {
-		t.Errorf("Client should not be nil")
+		t.Fatalf("Client should not be nil")
 	}
 }
 

@@ -32,9 +32,9 @@ type CommentsCollection struct {
 }
 
 func (col *CommentsCollection) List(params interface{}) ([]Comment, *http.Response, []byte, error) {
-	var posts []Comment
-	resp, body, err := col.client.List(col.url, params, &posts)
-	return posts, resp, body, err
+	var comments []Comment
+	resp, body, err := col.client.List(col.url, params, &comments)
+	return comments, resp, body, err
 }
 func (col *CommentsCollection) Create(new *Comment) (*Comment, *http.Response, []byte, error) {
 	var created Comment
@@ -47,7 +47,6 @@ func (col *CommentsCollection) Get(id int, params interface{}) (*Comment, *http.
 	resp, body, err := col.client.Get(entityURL, params, &entity)
 	return &entity, resp, body, err
 }
-
 func (col *CommentsCollection) Update(id int, post *Comment) (*Comment, *http.Response, []byte, error) {
 	var updated Comment
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)

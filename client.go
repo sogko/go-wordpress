@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"io/ioutil"
+	"bytes"
 )
 
 const (
@@ -18,6 +20,8 @@ const (
 	CollectionComments   = "comments"
 	CollectionTaxonomies = "taxonomies"
 	CollectionTerms      = "terms"
+	CollectionStatuses      = "statuses"
+	CollectionTypes      = "types"
 )
 
 type Options struct {
@@ -104,8 +108,21 @@ func (client *Client) Terms() *TermsCollection {
 		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionTerms),
 	}
 }
+func (client *Client) Statuses() *StatusesCollection {
+	return &StatusesCollection{
+		client: client,
+		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionStatuses),
+	}
+}
+func (client *Client) Types() *TypesCollection {
+	return &TypesCollection{
+		client: client,
+		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionTypes),
+	}
+}
 
 func (client *Client) List(url string, params interface{}, result interface{}) (*http.Response, []byte, error) {
+	client.req.TargetType = "json"
 	resp, body, errSlice := client.req.Get(url).Query(params).EndBytes()
 	if errSlice != nil && len(errSlice) > 0 {
 		return nil, body, errSlice[len(errSlice)-1]
@@ -116,7 +133,7 @@ func (client *Client) List(url string, params interface{}, result interface{}) (
 }
 func (client *Client) Create(url string, content interface{}, result interface{}) (*http.Response, []byte, error) {
 	contentVal := unpackInterfacePointer(content)
-
+	client.req.TargetType = "json"
 	req := client.req.Post(url).Send(contentVal)
 	resp, body, errSlice := req.EndBytes()
 	if errSlice != nil && len(errSlice) > 0 {
@@ -127,6 +144,7 @@ func (client *Client) Create(url string, content interface{}, result interface{}
 	return &_resp, body, err
 }
 func (client *Client) Get(url string, params interface{}, result interface{}) (*http.Response, []byte, error) {
+	client.req.TargetType = "json"
 	resp, body, errSlice := client.req.Get(url).Query(params).EndBytes()
 	if errSlice != nil && len(errSlice) > 0 {
 		return nil, body, errSlice[len(errSlice)-1]
@@ -139,6 +157,7 @@ func (client *Client) Update(url string, content interface{}, result interface{}
 
 	contentVal := unpackInterfacePointer(content)
 
+	client.req.TargetType = "json"
 	req := client.req.Post(url).Send(contentVal)
 	req.Set("HTTP_X_HTTP_METHOD_OVERRIDE", "PUT")
 	resp, body, errSlice := req.EndBytes()
@@ -150,18 +169,57 @@ func (client *Client) Update(url string, content interface{}, result interface{}
 	return &_resp, body, err
 }
 func (client *Client) Delete(url string, params interface{}, result interface{}) (*http.Response, []byte, error) {
+	client.req.TargetType = "json"
 	req := client.req.Get(url).Query(params).Query("_method=DELETE")
 	req.Set("HTTP_X_HTTP_METHOD_OVERRIDE", "DELETE")
 	resp, body, errSlice := req.End()
 	by := []byte(body)
 	if errSlice != nil && len(errSlice) > 0 {
-		log.Print("errSlice", errSlice)
 		return resp, by, errSlice[len(errSlice)-1]
 	}
 	err := unmarshallResponse(resp, by, result)
 	_resp := http.Response(*resp)
 	return &_resp, by, err
 }
+func (client *Client) PostData(url string, content []byte, contentType string, filename string, result interface{}) (*http.Response, []byte, error) {
+
+	// gorequest does not support POST-ing raw data
+	// so, we have to manually create a HTTP client
+	s := client.req.Post(url)
+
+	buf := bytes.NewBuffer(content)
+
+	req, err := http.NewRequest(s.Method, s.Url, buf)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Content-Disposition", fmt.Sprintf("filename=%v", filename))
+
+	// Add basic auth
+	req.SetBasicAuth(s.BasicAuth.Username, s.BasicAuth.Password)
+
+	// Set Transport
+	s.Client.Transport = s.Transport
+
+	// Send request
+	resp, err := s.Client.Do(req)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	err = unmarshallResponse(resp, body, result)
+	_resp := http.Response(*resp)
+	return &_resp, body, err
+}
+
 
 func unpackInterfacePointer(content interface{}) interface{} {
 	val := reflect.ValueOf(content)

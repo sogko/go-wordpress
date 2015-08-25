@@ -5,10 +5,6 @@ import (
 	"net/http"
 )
 
-type Labels struct {
-	Raw      string `json:"raw"`
-	Rendered string `json:"rendered"`
-}
 type Taxonomy struct {
 	Description  string                 `json:"description"`
 	Hierarchical bool                   `json:"hierarchical"`

@@ -51,9 +51,9 @@ func warningNotImplemented(url string) {
 }
 
 func _warning(v ...interface{}) {
-	_log(fmt.Sprintln("Warning: ", v))
+	log.Println(fmt.Sprintln("[go-wordpress]", v))
 }
 
 func _log(v ...interface{}) {
-	log.Println("[go-wordpress]", fmt.Sprintln(v))
+	log.Println(fmt.Sprintln("[go-wordpress]", v))
 }
