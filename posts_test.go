@@ -3,9 +3,9 @@ package wordpress_test
 import (
 	"fmt"
 	"github.com/sogko/go-wordpress"
+	"log"
 	"net/http"
 	"testing"
-	"log"
 )
 
 func factoryPost() wordpress.Post {

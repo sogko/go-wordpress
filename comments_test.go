@@ -2,19 +2,19 @@ package wordpress_test
 
 import (
 	"github.com/sogko/go-wordpress"
+	"log"
 	"net/http"
 	"testing"
-	"log"
 )
 
 func factoryComment(postID int) wordpress.Comment {
 	return wordpress.Comment{
-		Post: postID,
-		Author: 1,
-		Status: wordpress.CommentStatusApproved,
+		Post:       postID,
+		Author:     1,
+		Status:     wordpress.CommentStatusApproved,
 		AuthorName: "go-wordpress",
 		Content: wordpress.Content{
-			Raw: "Test Comment",
+			Raw:      "Test Comment",
 			Rendered: "<p>Test Comment</p>",
 		},
 	}

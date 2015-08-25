@@ -99,29 +99,29 @@ List of WP-API REST endpoints and implementation status
 
 ## Terms
 
-- [ ] `GET    /terms/[tax_base]`
-- [ ] `POST   /terms/[tax_base]`
-- [ ] `GET    /terms/[tax_base]/[id]`
-- [ ] `PUT    /terms/[tax_base]/[id]`
-- [ ] `DELETE /terms/[tax_base]/[id]`
+- [x] `GET    /terms/[tax_base]`
+- [x] `POST   /terms/[tax_base]`
+- [x] `GET    /terms/[tax_base]/[id]`
+- [x] `PUT    /terms/[tax_base]/[id]`
+- [x] `DELETE /terms/[tax_base]/[id]`
 
 `[tax_base] = "tag" | "category"`
 
 ### Tag Terms
 
-- [ ] `GET    /terms/tag`
-- [ ] `POST   /terms/tag]`
-- [ ] `GET    /terms/tag]/[id]`
-- [ ] `PUT    /terms/tag]/[id]`
-- [ ] `DELETE /terms/tag/[id]`
+- [x] `GET    /terms/tag`
+- [x] `POST   /terms/tag]`
+- [x] `GET    /terms/tag]/[id]`
+- [x] `PUT    /terms/tag]/[id]`
+- [x] `DELETE /terms/tag/[id]`
 
 ### Category Terms
 
-- [ ] `GET    /terms/category`
-- [ ] `POST   /terms/category]`
-- [ ] `GET    /terms/category]/[id]`
-- [ ] `PUT    /terms/category]/[id]`
-- [ ] `DELETE /terms/category/[id]`
+- [x] `GET    /terms/category`
+- [x] `POST   /terms/category]`
+- [x] `GET    /terms/category]/[id]`
+- [x] `PUT    /terms/category]/[id]`
+- [x] `DELETE /terms/category/[id]`
 
 ## Users
 

@@ -6,24 +6,24 @@ import (
 )
 
 type Status struct {
-	Name            string     `json:"name"`
-	Private         bool     `json:"private"`
-	Public         bool     `json:"public"`
-	Queryable         bool     `json:"queryable"`
-	ShowInList         bool     `json:"show_in_list"`
-	Slug         string     `json:"slug"`
+	Name       string `json:"name"`
+	Private    bool   `json:"private"`
+	Public     bool   `json:"public"`
+	Queryable  bool   `json:"queryable"`
+	ShowInList bool   `json:"show_in_list"`
+	Slug       string `json:"slug"`
 }
 
 type Statuses struct {
 	Publish Status `json:"publish"`
-	Future Status `json:"future"`
-	Draft Status `json:"draft"`
+	Future  Status `json:"future"`
+	Draft   Status `json:"draft"`
 	Pending Status `json:"pending"`
 	Private Status `json:"private"`
 }
 type StatusesCollection struct {
-	client    *Client
-	url       string
+	client *Client
+	url    string
 }
 
 func (col *StatusesCollection) List(params interface{}) (*Statuses, *http.Response, []byte, error) {

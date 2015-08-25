@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-
 func TestStatusesList(t *testing.T) {
 	wp := initTestClient()
 

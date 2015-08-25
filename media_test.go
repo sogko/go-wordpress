@@ -1,10 +1,11 @@
 package wordpress_test
+
 import (
-	"testing"
-	"net/http"
 	"github.com/sogko/go-wordpress"
-	"os"
 	"io/ioutil"
+	"net/http"
+	"os"
+	"testing"
 )
 
 func factoryMediaFileUpload(t *testing.T) *wordpress.MediaUploadOptions {
@@ -25,9 +26,9 @@ func factoryMediaFileUpload(t *testing.T) *wordpress.MediaUploadOptions {
 
 	// create / upload media
 	media := wordpress.MediaUploadOptions{
-		Filename: "test-media.jpg",
+		Filename:    "test-media.jpg",
 		ContentType: "image/jpeg",
-		Data: fileContents,
+		Data:        fileContents,
 	}
 	return &media
 }

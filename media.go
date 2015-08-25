@@ -28,38 +28,39 @@ type MediaDetails struct {
 	ImageMeta map[string]interface{} `json:"image_meta"`
 }
 type MediaUploadOptions struct {
-	Filename string
+	Filename    string
 	ContentType string
-	Data []byte
+	Data        []byte
 }
 type Media struct {
-	ID            int          `json:"id"`
-	Date          string       `json:"date"`
-	DateGMT       string       `json:"date_gmt"`
-	GUID          GUID         `json:"guid"`
-	Link          string       `json:"link"`
-	Modified      string       `json:"modified"`
-	ModifiedGMT   string       `json:"modifiedGMT"`
-	Password      string       `json:"password"`
-	Slug          string       `json:"slug"`
-	Status        string       `json:"status"`
-	Type          string       `json:"type"`
-	Title         Title        `json:"title"`
-	Author        int          `json:"author"`
-	MediaStatus string       `json:"comment_status"`
-	PingStatus    string       `json:"ping_status"`
-	AltText       string       `json:"alt_text"`
-	Caption       string       `json:"caption"`
-	Description   string       `json:"description"`
-	MediaType     string       `json:"media_type"`
-	MediaDetails  MediaDetails `json:"media_details"`
-	Post          int          `json:"post"`
-	SourceURL     string       `json:"source_url"`
+	ID           int          `json:"id"`
+	Date         string       `json:"date"`
+	DateGMT      string       `json:"date_gmt"`
+	GUID         GUID         `json:"guid"`
+	Link         string       `json:"link"`
+	Modified     string       `json:"modified"`
+	ModifiedGMT  string       `json:"modifiedGMT"`
+	Password     string       `json:"password"`
+	Slug         string       `json:"slug"`
+	Status       string       `json:"status"`
+	Type         string       `json:"type"`
+	Title        Title        `json:"title"`
+	Author       int          `json:"author"`
+	MediaStatus  string       `json:"comment_status"`
+	PingStatus   string       `json:"ping_status"`
+	AltText      string       `json:"alt_text"`
+	Caption      string       `json:"caption"`
+	Description  string       `json:"description"`
+	MediaType    string       `json:"media_type"`
+	MediaDetails MediaDetails `json:"media_details"`
+	Post         int          `json:"post"`
+	SourceURL    string       `json:"source_url"`
 }
 type MediaCollection struct {
 	client *Client
 	url    string
 }
+
 func (col *MediaCollection) List(params interface{}) ([]Media, *http.Response, []byte, error) {
 	var media []Media
 	resp, body, err := col.client.List(col.url, params, &media)

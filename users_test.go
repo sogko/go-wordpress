@@ -2,14 +2,15 @@ package wordpress_test
 
 import (
 	"github.com/sogko/go-wordpress"
-	"testing"
 	"net/http"
+	"testing"
 )
+
 func factoryUser() *wordpress.User {
 	return &wordpress.User{
 		Username: "go-wordpress-test-user1",
-		Name: "go-wordpress-test-user1",
-		Slug: "go-wordpress-test-user1",
+		Name:     "go-wordpress-test-user1",
+		Slug:     "go-wordpress-test-user1",
 		Password: "password",
 	}
 }
@@ -53,9 +54,15 @@ func getAnyOneUser(t *testing.T, wp *wordpress.Client) *wordpress.User {
 func TestUsersList(t *testing.T) {
 	client := initTestClient()
 
-	users, _, _, err := client.Users().List(nil)
+	users, resp, body, err := client.Users().List(nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
+	}
+	if body == nil {
+		t.Errorf("body should not be nil")
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if users == nil {
 		t.Errorf("Should not return nil users")
@@ -108,8 +115,8 @@ func TestUsersCreate(t *testing.T) {
 
 	u := &wordpress.User{
 		Username: "go-wordpress-test-user1",
-		Name: "go-wordpress-test-user1",
-		Slug: "go-wordpress-test-user1",
+		Name:     "go-wordpress-test-user1",
+		Slug:     "go-wordpress-test-user1",
 		Password: "password",
 	}
 

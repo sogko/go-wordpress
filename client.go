@@ -1,13 +1,13 @@
 package wordpress
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/parnurzeal/gorequest"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"reflect"
-	"io/ioutil"
-	"bytes"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 	CollectionComments   = "comments"
 	CollectionTaxonomies = "taxonomies"
 	CollectionTerms      = "terms"
-	CollectionStatuses      = "statuses"
+	CollectionStatuses   = "statuses"
 	CollectionTypes      = "types"
 )
 
@@ -219,7 +219,6 @@ func (client *Client) PostData(url string, content []byte, contentType string, f
 	_resp := http.Response(*resp)
 	return &_resp, body, err
 }
-
 
 func unpackInterfacePointer(content interface{}) interface{} {
 	val := reflect.ValueOf(content)
