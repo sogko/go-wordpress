@@ -4,11 +4,11 @@ List of WP-API REST endpoints and implementation status
 
 ## Attachments / Media
 
-- [ ] `POST /media`
-- [ ] `GET /media`
-- [ ] `GET /media/[id]`
-- [ ] `PUT /media/[id]` ?
-- [ ] `DELETE /media/[id]`  (requires `define( 'MEDIA_TRASH', true );` in `wp_config.php`, see: https://github.com/WP-API/WP-API/issues/1493)
+- [x] `GET /media`
+- [x] `POST /media`
+- [x] `GET /media/[id]`
+- [ ] `PUT /media/[id]` (Unknown if supported)
+- [x] `DELETE /media/[id]`  (requires `define( 'MEDIA_TRASH', true );` in `wp_config.php`, see: https://github.com/WP-API/WP-API/issues/1493)
 
 ## Comments
 
@@ -46,13 +46,13 @@ List of WP-API REST endpoints and implementation status
 
 ## Post Statuses
 
-- [ ] `GET    /statuses`
-- [ ] `GET    /statuses/[slug]`
+- [x] `GET    /statuses`
+- [x] `GET    /statuses/[slug]`
 
 ## Post Types
 
-- [ ] `GET    /types`
-- [ ] `GET    /types/[slug]`
+- [x] `GET    /types`
+- [x] `GET    /types/[slug]`
 
 ## Posts
 
@@ -125,11 +125,11 @@ List of WP-API REST endpoints and implementation status
 
 ## Users
 
-- [ ] `GET    /users`
-- [ ] `POST   /users`
-- [ ] `GET    /users/[id]`
-- [ ] `PUT    /users/[id]`
-- [ ] `DELETE /users/[id]`
-- [ ] `GET    /users/me`
+- [x] `GET    /users`
+- [x] `POST   /users`
+- [x] `GET    /users/[id]`
+- [x] `PUT    /users/[id]`
+- [x] `DELETE /users/[id]`
+- [x] `GET    /users/me`
 
 
