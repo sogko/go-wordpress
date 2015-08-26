@@ -74,5 +74,6 @@ go test
 ```
 
 ## TODO
+- [ ] `godoc` documentation, so its easier for library users to map the REST APIs to library calls 
 - [ ] Test `comments` API endpoint. (Currently, already implemented but not tested due to WP-API issues with creating comments reliably)
 - [ ] Support OAuth authentication
