@@ -13,18 +13,18 @@ List of WP-API REST endpoints and implementation status
 ## Comments
 
 - [x] `GET    /comments`
-- [x] `POST   /comments` (Untested)
+- [ ] `POST   /comments` (Implemented but untested)
 - [x] `GET    /comments/[id]`
-- [x] `PUT    /comments/[id]`  (Untested)
-- [x] `DELETE /comments/[id]`  (Untested)
+- [ ] `PUT    /comments/[id]`  (Implemented but untested)
+- [ ] `DELETE /comments/[id]`  (Implemented but untested)
 
 ## Meta
 
-- [ ] `GET    /[parent_base]/[parent_id]/meta`
-- [ ] `POST   /[parent_base]/[parent_id]/meta`
-- [ ] `GET    /[parent_base]/[parent_id]/meta/[id]`
-- [ ] `PUT    /[parent_base]/[parent_id]/meta/[id]`
-- [ ] `DELETE /[parent_base]/[parent_id]/meta/[id]`
+- [x] `GET    /[parent_base]/[parent_id]/meta`
+- [x] `POST   /[parent_base]/[parent_id]/meta`
+- [x] `GET    /[parent_base]/[parent_id]/meta/[id]`
+- [x] `PUT    /[parent_base]/[parent_id]/meta/[id]`
+- [x] `DELETE /[parent_base]/[parent_id]/meta/[id]`
 
 `[parent_base] = "posts" | "pages"`
 
@@ -38,11 +38,11 @@ List of WP-API REST endpoints and implementation status
 
 ### Meta Pages
 
-- [ ] `GET    /pages/[post_id]/meta`
-- [ ] `POST   /pages/[post_id]/meta`
-- [ ] `GET    /pages/[post_id]/meta/[id]`
-- [ ] `PUT    /pages/[post_id]/meta/[id]`
-- [ ] `DELETE /pages/[post_id]/meta/[id]`
+- [x] `GET    /pages/[post_id]/meta`
+- [x] `POST   /pages/[post_id]/meta`
+- [x] `GET    /pages/[post_id]/meta/[id]`
+- [x] `PUT    /pages/[post_id]/meta/[id]`
+- [x] `DELETE /pages/[post_id]/meta/[id]`
 
 ## Post Statuses
 
@@ -62,6 +62,14 @@ List of WP-API REST endpoints and implementation status
 - [x] `PUT    /posts/[id]`
 - [x] `DELETE /posts/[id]`
 
+## Pages
+
+- [x] `GET    /pages`
+- [x] `POST   /pages`
+- [x] `GET    /pages/[id]`
+- [x] `PUT    /pages/[id]`
+- [x] `DELETE /pages/[id]`
+
 ## Post Terms
 
 - [ ] `GET    /[post_base]/[post_id]/terms/[tax_base]`
@@ -74,9 +82,9 @@ List of WP-API REST endpoints and implementation status
 
 ## Revisions
 
-- [ ] `GET    /[parent_base]/[parent_id]/revisions`
-- [ ] `GET    /[parent_base]/[parent_id]/revisions/[id]`
-- [ ] `DELETE /[parent_base]/[parent_id]/revisions/[id]`
+- [x] `GET    /[parent_base]/[parent_id]/revisions`
+- [x] `GET    /[parent_base]/[parent_id]/revisions/[id]`
+- [x] `DELETE /[parent_base]/[parent_id]/revisions/[id]`
 
 `[parent_base] = "posts" | "pages"`
 
@@ -88,9 +96,9 @@ List of WP-API REST endpoints and implementation status
 
 ### Revisions Pages
 
-- [ ] `GET    /pages/[parent_id]/revisions`
-- [ ] `GET    /pages/[parent_id]/revisions/[id]`
-- [ ] `DELETE /pages/[parent_id]/revisions/[id]`
+- [x] `GET    /pages/[parent_id]/revisions`
+- [x] `GET    /pages/[parent_id]/revisions/[id]`
+- [x] `DELETE /pages/[parent_id]/revisions/[id]`
 
 ## Taxonomies
 

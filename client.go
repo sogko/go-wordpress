@@ -228,5 +228,8 @@ func unpackInterfacePointer(content interface{}) interface{} {
 		}
 		val = val.Elem()
 	}
-	return val.Interface()
+	if val.IsValid() {
+		return val.Interface()
+	}
+	return nil
 }
