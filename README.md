@@ -10,6 +10,8 @@ go get github.com/sogko/go-wordpress
 ```
 
 ## Usage
+
+### Quick example
 ```go
 package main
 
@@ -28,10 +30,18 @@ func main() {
   })
   	
   // for eg, to get current user (GET /users/me)
-  currentUser, resp, _, _ := client.Users().Me()
+  currentUser, resp, body, _ := client.Users().Me()
   if resp.StatusCode != http.StatusOK {
     // handle error
   }
+  
+  // `body` will contain raw JSON body in []bytes
+  
+  // Or you can use your own structs (for custom endpoints, for example)
+  // Below is the equivalent of `client.Posts().Get(100, nil)`
+  var obj MyCustomPostStruct
+  resp, body, err := client.Get("/posts/100", nil, &obj)
+  // ...
   
   log.Println("Current user", currentUser)
 }
@@ -40,6 +50,7 @@ func main() {
 For more examples, see package tests.
 
 For list of supported/implemented endpoints, see [Endpoints.md](./endpoints.md)
+
 
 ## Test
 
