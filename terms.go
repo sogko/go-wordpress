@@ -26,7 +26,6 @@ func (col *TermsCollection) List(taxonomy string, params interface{}) ([]Term, *
 	resp, body, err := col.client.List(url, params, &terms)
 	return terms, resp, body, err
 }
-
 func (col *TermsCollection) Tag() *TermsTaxonomyCollection {
 	return &TermsTaxonomyCollection{
 		client:       col.client,
@@ -34,7 +33,6 @@ func (col *TermsCollection) Tag() *TermsTaxonomyCollection {
 		taxonomyBase: "tag",
 	}
 }
-
 func (col *TermsCollection) Category() *TermsTaxonomyCollection {
 	return &TermsTaxonomyCollection{
 		client:       col.client,

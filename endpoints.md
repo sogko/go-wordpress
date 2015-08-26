@@ -72,13 +72,27 @@ List of WP-API REST endpoints and implementation status
 
 ## Post Terms
 
-- [ ] `GET    /[post_base]/[post_id]/terms/[tax_base]`
-- [ ] `GET    /[post_base]/[post_id]/terms/[tax_base]/[term_id]`
-- [ ] `POST   /[post_base]/[post_id]/terms/[tax_base]/[term_id]`
-- [ ] `DELETE /[post_base]/[post_id]/terms/[tax_base]/[term_id]`
+- [x] `GET    /[post_base]/[post_id]/terms/[tax_base]`
+- [x] `GET    /[post_base]/[post_id]/terms/[tax_base]/[term_id]`
+- [x] `POST   /[post_base]/[post_id]/terms/[tax_base]/[term_id]`
+- [x] `DELETE /[post_base]/[post_id]/terms/[tax_base]/[term_id]`
 
 `[post_base] = "posts"`
 `[tax_base] = "tag" | "category"`
+
+### Post Terms Tag
+
+- [x] `GET    /posts/[post_id]/terms/tag`
+- [x] `GET    /posts/[post_id]/terms/tag/[term_id]`
+- [x] `POST   /posts/[post_id]/terms/tag/[term_id]`
+- [x] `DELETE /posts/[post_id]/terms/tag/[term_id]`
+
+### Post Terms Category
+
+- [x] `GET    /posts/[post_id]/terms/category`
+- [x] `GET    /posts/[post_id]/terms/category/[term_id]`
+- [x] `POST   /posts/[post_id]/terms/category/[term_id]`
+- [x] `DELETE /posts/[post_id]/terms/category/[term_id]`
 
 ## Revisions
 

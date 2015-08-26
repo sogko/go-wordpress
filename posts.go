@@ -13,6 +13,7 @@ const (
 	PostStatusTrash   = "trash"
 
 	PostTypePost = "post"
+	PostTypePage = "page"
 
 	CommentStatusOpen   = "open"
 	CommentStatusClosed = "closed"
@@ -105,7 +106,19 @@ func (entity *Post) Revisions() *RevisionsCollection {
 		url:        fmt.Sprintf("%v/%v/%v", entity.collection.url, entity.ID, CollectionRevisions),
 	}
 }
-
+func (entity *Post) Terms() *PostsTermsCollection {
+	if entity.collection == nil {
+		// missing post.collection parent. Probably Post struct was initialized manually, not fetched from API
+		_warning("Missing parent post collection")
+		return nil
+	}
+	return &PostsTermsCollection{
+		client:     entity.collection.client,
+		parent:     entity,
+		parentType: CollectionPosts,
+		url:        fmt.Sprintf("%v/%v/%v", entity.collection.url, entity.ID, CollectionTerms),
+	}
+}
 func (entity *Post) Populate(params interface{}) (*Post, *http.Response, []byte, error) {
 	return entity.collection.Get(entity.ID, params)
 }
@@ -114,9 +127,6 @@ type PostsCollection struct {
 	client    *Client
 	url       string
 	entityURL string
-}
-type SamplePostParams struct {
-	Filter string `url:"filter"`
 }
 
 func (col *PostsCollection) List(params interface{}) ([]Post, *http.Response, []byte, error) {

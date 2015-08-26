@@ -139,7 +139,6 @@ func TestPostsGet_PostExists(t *testing.T) {
 		t.Errorf("Returned post should have the same ID as specified in Get(), %v != %v", post.ID, postID)
 	}
 }
-
 func TestPostsGet_PostDoesNotExists(t *testing.T) {
 	wp := initTestClient()
 
@@ -156,7 +155,6 @@ func TestPostsGet_PostDoesNotExists(t *testing.T) {
 		t.Errorf("body should not be nil")
 	}
 }
-
 func TestPostsGet_Lazy(t *testing.T) {
 	wp := initTestClient()
 
@@ -307,7 +305,6 @@ func TestPostsDelete_NoParams_MoveToTrash(t *testing.T) {
 	// clean up
 	cleanUpPost(t, newPost.ID)
 }
-
 func TestPostsDelete_WithParams_DeletePermanently(t *testing.T) {
 	wp := initTestClient()
 
