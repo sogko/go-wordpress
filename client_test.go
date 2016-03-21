@@ -27,6 +27,11 @@ Test helper functions
 
 // initTestClient creates test wordpress client
 func initTestClient() *wordpress.Client {
+
+	if API_BASE_URL == "" {
+		panic("Please set your environment before running the tests")
+	}
+
 	return wordpress.NewClient(&wordpress.Options{
 		BaseAPIURL: API_BASE_URL,
 		Username:   USER,
