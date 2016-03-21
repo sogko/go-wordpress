@@ -7,13 +7,13 @@ import (
 )
 
 type Meta struct {
-	ID    int    `json:"id"`
-	Key   string `json:"key"`
-	Value string `json:"value"`
+	ID    int    `json:"id,omitempty"`
+	Key   string `json:"key,omitempty"`
+	Value string `json:"value,omitempty"`
 }
 
 type MetaDeletedResponse struct {
-	Message string `json:"message"`
+	Message string `json:"message,omitempty"`
 }
 
 type MetaCollection struct {

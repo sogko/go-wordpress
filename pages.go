@@ -8,27 +8,27 @@ import (
 type Page struct {
 	collection *PagesCollection `json:"-"`
 
-	ID            int     `json:"id"`
-	Date          string  `json:"date"`
-	DateGMT       string  `json:"date_gmt"`
-	GUID          GUID    `json:"guid"`
-	Link          string  `json:"link"`
-	Modified      string  `json:"modified"`
-	ModifiedGMT   string  `json:"modifiedGMT"`
-	Password      string  `json:"password"`
-	Slug          string  `json:"slug"`
-	Status        string  `json:"status"`
-	Type          string  `json:"type"`
-	Parent        int     `json:"parent"`
-	Title         Title   `json:"title"`
-	Content       Content `json:"content"`
-	Author        int     `json:"author"`
-	Excerpt       Excerpt `json:"excerpt"`
-	FeaturedImage int     `json:"featured_image"`
-	CommentStatus string  `json:"comment_status"`
-	PingStatus    string  `json:"ping_status"`
-	MenuOrder     int     `json:"menu_order"`
-	Template      string  `json:"template"`
+	ID            int     `json:"id,omitempty"`
+	Date          string  `json:"date,omitempty"`
+	DateGMT       string  `json:"date_gmt,omitempty"`
+	GUID          GUID    `json:"guid,omitempty"`
+	Link          string  `json:"link,omitempty"`
+	Modified      string  `json:"modified,omitempty"`
+	ModifiedGMT   string  `json:"modifiedGMT,omitempty"`
+	Password      string  `json:"password,omitempty"`
+	Slug          string  `json:"slug,omitempty"`
+	Status        string  `json:"status,omitempty"`
+	Type          string  `json:"type,omitempty"`
+	Parent        int     `json:"parent,omitempty"`
+	Title         Title   `json:"title,omitempty"`
+	Content       Content `json:"content,omitempty"`
+	Author        int     `json:"author,omitempty"`
+	Excerpt       Excerpt `json:"excerpt,omitempty"`
+	FeaturedImage int     `json:"featured_image,omitempty"`
+	CommentStatus string  `json:"comment_status,omitempty"`
+	PingStatus    string  `json:"ping_status,omitempty"`
+	MenuOrder     int     `json:"menu_order,omitempty"`
+	Template      string  `json:"template,omitempty"`
 }
 
 func (entity *Page) setCollection(col *PagesCollection) {

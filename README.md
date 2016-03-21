@@ -53,13 +53,22 @@ For list of supported/implemented endpoints, see [Endpoints.md](./endpoints.md)
 
 
 ## Test
+__Note:__
+Before running the tests, ensure that you have set up your test environment
+
 
 ### Prerequisites
 - Wordpress 4.x
 - WP-API plugin
 - WP-API's BasicAuth plugin (for authentication)
 
+### Setting up test environment
+- Install prequisits (see above)
+- Import [./test-data/go-wordpress.wordpress.2015-08-23.xml](./test-data/go-wordpress.wordpress.2015-08-23.xml) to your local test Wordpress installation
+- Upload at least one media to your Wordpress installation (Admin > Media > Upload)
+
 ## Running test
+
 
 ```bash
 

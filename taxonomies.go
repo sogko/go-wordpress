@@ -6,13 +6,13 @@ import (
 )
 
 type Taxonomy struct {
-	Description  string                 `json:"description"`
-	Hierarchical bool                   `json:"hierarchical"`
-	Labels       map[string]interface{} `json:"labels"`
-	Name         string                 `json:"name"`
-	Slug         string                 `json:"slug"`
-	ShowCloud    bool                   `json:"show_cloud"`
-	Types        []string               `json:"types"`
+	Description  string                 `json:"description,omitempty"`
+	Hierarchical bool                   `json:"hierarchical,omitempty"`
+	Labels       map[string]interface{} `json:"labels,omitempty"`
+	Name         string                 `json:"name,omitempty"`
+	Slug         string                 `json:"slug,omitempty"`
+	ShowCloud    bool                   `json:"show_cloud,omitempty"`
+	Types        []string               `json:"types,omitempty"`
 }
 type TaxonomiesCollection struct {
 	client *Client

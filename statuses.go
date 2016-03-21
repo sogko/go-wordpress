@@ -6,20 +6,20 @@ import (
 )
 
 type Status struct {
-	Name       string `json:"name"`
-	Private    bool   `json:"private"`
-	Public     bool   `json:"public"`
-	Queryable  bool   `json:"queryable"`
-	ShowInList bool   `json:"show_in_list"`
-	Slug       string `json:"slug"`
+	Name       string `json:"name,omitempty"`
+	Private    bool   `json:"private,omitempty"`
+	Public     bool   `json:"public,omitempty"`
+	Queryable  bool   `json:"queryable,omitempty"`
+	ShowInList bool   `json:"show_in_list,omitempty"`
+	Slug       string `json:"slug,omitempty"`
 }
 
 type Statuses struct {
-	Publish Status `json:"publish"`
-	Future  Status `json:"future"`
-	Draft   Status `json:"draft"`
-	Pending Status `json:"pending"`
-	Private Status `json:"private"`
+	Publish Status `json:"publish,omitempty"`
+	Future  Status `json:"future,omitempty"`
+	Draft   Status `json:"draft,omitempty"`
+	Pending Status `json:"pending,omitempty"`
+	Private Status `json:"private,omitempty"`
 }
 type StatusesCollection struct {
 	client *Client

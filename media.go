@@ -6,26 +6,26 @@ import (
 )
 
 type MediaDetailsSizesItem struct {
-	File      string `json:"file"`
-	Width     int    `json:"width"`
-	Height    int    `json:"height"`
-	MimeType  string `json:"mime_type"`
-	SourceURL string `json:"source_url"`
+	File      string `json:"file,omitempty"`
+	Width     int    `json:"width,omitempty"`
+	Height    int    `json:"height,omitempty"`
+	MimeType  string `json:"mime_type,omitempty"`
+	SourceURL string `json:"source_url,omitempty"`
 }
 type MediaDetailsSizes struct {
-	Thumbnail MediaDetailsSizesItem `json:"thumbnail"`
-	Medium    MediaDetailsSizesItem `json:"medium"`
-	Large     MediaDetailsSizesItem `json:"large"`
-	SiteLogo  MediaDetailsSizesItem `json:"site-logo"`
+	Thumbnail MediaDetailsSizesItem `json:"thumbnail,omitempty"`
+	Medium    MediaDetailsSizesItem `json:"medium,omitempty"`
+	Large     MediaDetailsSizesItem `json:"large,omitempty"`
+	SiteLogo  MediaDetailsSizesItem `json:"site-logo,omitempty"`
 }
 type MediaDetails struct {
-	Raw       string                 `json:"raw"`
-	Rendered  string                 `json:"rendered"`
-	Width     int                    `json:"width"`
-	Height    int                    `json:"height"`
-	File      string                 `json:"file"`
-	Sizes     MediaDetailsSizes      `json:"sizes"`
-	ImageMeta map[string]interface{} `json:"image_meta"`
+	Raw       string                 `json:"raw,omitempty"`
+	Rendered  string                 `json:"rendered,omitempty"`
+	Width     int                    `json:"width,omitempty"`
+	Height    int                    `json:"height,omitempty"`
+	File      string                 `json:"file,omitempty"`
+	Sizes     MediaDetailsSizes      `json:"sizes,omitempty"`
+	ImageMeta map[string]interface{} `json:"image_meta,omitempty"`
 }
 type MediaUploadOptions struct {
 	Filename    string
@@ -33,28 +33,28 @@ type MediaUploadOptions struct {
 	Data        []byte
 }
 type Media struct {
-	ID           int          `json:"id"`
-	Date         string       `json:"date"`
-	DateGMT      string       `json:"date_gmt"`
-	GUID         GUID         `json:"guid"`
-	Link         string       `json:"link"`
-	Modified     string       `json:"modified"`
-	ModifiedGMT  string       `json:"modifiedGMT"`
-	Password     string       `json:"password"`
-	Slug         string       `json:"slug"`
-	Status       string       `json:"status"`
-	Type         string       `json:"type"`
-	Title        Title        `json:"title"`
-	Author       int          `json:"author"`
-	MediaStatus  string       `json:"comment_status"`
-	PingStatus   string       `json:"ping_status"`
-	AltText      string       `json:"alt_text"`
-	Caption      string       `json:"caption"`
-	Description  string       `json:"description"`
-	MediaType    string       `json:"media_type"`
-	MediaDetails MediaDetails `json:"media_details"`
-	Post         int          `json:"post"`
-	SourceURL    string       `json:"source_url"`
+	ID           int          `json:"id,omitempty"`
+	Date         string       `json:"date,omitempty"`
+	DateGMT      string       `json:"date_gmt,omitempty"`
+	GUID         GUID         `json:"guid,omitempty"`
+	Link         string       `json:"link,omitempty"`
+	Modified     string       `json:"modified,omitempty"`
+	ModifiedGMT  string       `json:"modifiedGMT,omitempty"`
+	Password     string       `json:"password,omitempty"`
+	Slug         string       `json:"slug,omitempty"`
+	Status       string       `json:"status,omitempty"`
+	Type         string       `json:"type,omitempty"`
+	Title        Title        `json:"title,omitempty"`
+	Author       int          `json:"author,omitempty"`
+	MediaStatus  string       `json:"comment_status,omitempty"`
+	PingStatus   string       `json:"ping_status,omitempty"`
+	AltText      string       `json:"alt_text,omitempty"`
+	Caption      string       `json:"caption,omitempty"`
+	Description  string       `json:"description,omitempty"`
+	MediaType    string       `json:"media_type,omitempty"`
+	MediaDetails MediaDetails `json:"media_details,omitempty"`
+	Post         int          `json:"post,omitempty"`
+	SourceURL    string       `json:"source_url,omitempty"`
 }
 type MediaCollection struct {
 	client *Client

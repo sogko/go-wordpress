@@ -6,24 +6,24 @@ import (
 )
 
 type Comment struct {
-	ID              int        `json:"id"`
-	AvatarURL       string     `json:"avatar_url"`
-	AvatarURLs      AvatarURLS `json:"avatar_urls"`
-	Author          int        `json:"author"`
-	AuthorEmail     string     `json:"author_email"`
-	AuthorIP        string     `json:"author_ip"`
-	AuthorName      string     `json:"author_name"`
-	AuthorURL       string     `json:"author_url"`
-	AuthorUserAgent string     `json:"author_user_agent"`
-	Content         Content    `json:"content"`
-	Date            string     `json:"date"`
-	DateGMT         string     `json:"date_gmt"`
-	Karma           int        `json:"karma"`
-	Link            string     `json:"link"`
-	Parent          int        `json:"parent"`
-	Post            int        `json:"post"`
-	Status          string     `json:"status"`
-	Type            string     `json:"type"`
+	ID              int        `json:"id,omitempty"`
+	AvatarURL       string     `json:"avatar_url,omitempty"`
+	AvatarURLs      AvatarURLS `json:"avatar_urls,omitempty"`
+	Author          int        `json:"author,omitempty"`
+	AuthorEmail     string     `json:"author_email,omitempty"`
+	AuthorIP        string     `json:"author_ip,omitempty"`
+	AuthorName      string     `json:"author_name,omitempty"`
+	AuthorURL       string     `json:"author_url,omitempty"`
+	AuthorUserAgent string     `json:"author_user_agent,omitempty"`
+	Content         Content    `json:"content,omitempty"`
+	Date            string     `json:"date,omitempty"`
+	DateGMT         string     `json:"date_gmt,omitempty"`
+	Karma           int        `json:"karma,omitempty"`
+	Link            string     `json:"link,omitempty"`
+	Parent          int        `json:"parent,omitempty"`
+	Post            int        `json:"post,omitempty"`
+	Status          string     `json:"status,omitempty"`
+	Type            string     `json:"type,omitempty"`
 }
 
 type CommentsCollection struct {

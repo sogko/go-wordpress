@@ -6,29 +6,29 @@ import (
 )
 
 type AvatarURLS struct {
-	Size24 string `json:"24"`
-	Size48 string `json:"48"`
-	Size96 string `json:"96"`
+	Size24 string `json:"24,omitempty"`
+	Size48 string `json:"48,omitempty"`
+	Size96 string `json:"96,omitempty"`
 }
 type User struct {
-	ID                int                    `json:"id"`
-	AvatarURL         string                 `json:"avatar_url"`
-	AvatarURLs        AvatarURLS             `json:"avatar_urls"`
-	Capabilities      map[string]interface{} `json:"capabilities"`
-	Description       string                 `json:"description"`
-	Email             string                 `json:"email"`
-	ExtraCapabilities map[string]interface{} `json:"extra_capabilities"`
-	FirstName         string                 `json:"first_name"`
-	LastName          string                 `json:"last_name"`
-	Link              string                 `json:"link"`
-	Name              string                 `json:"name"`
-	Nickname          string                 `json:"nickname"`
-	RegisteredDate    string                 `json:"registered_date"`
-	Roles             []string               `json:"roles"`
-	Slug              string                 `json:"slug"`
-	URL               string                 `json:"url"`
-	Username          string                 `json:"username"`
-	Password          string                 `json:"password"`
+	ID                int                    `json:"id,omitempty"`
+	AvatarURL         string                 `json:"avatar_url,omitempty"`
+	AvatarURLs        AvatarURLS             `json:"avatar_urls,omitempty"`
+	Capabilities      map[string]interface{} `json:"capabilities,omitempty"`
+	Description       string                 `json:"description,omitempty"`
+	Email             string                 `json:"email,omitempty"`
+	ExtraCapabilities map[string]interface{} `json:"extra_capabilities,omitempty"`
+	FirstName         string                 `json:"first_name,omitempty"`
+	LastName          string                 `json:"last_name,omitempty"`
+	Link              string                 `json:"link,omitempty"`
+	Name              string                 `json:"name,omitempty"`
+	Nickname          string                 `json:"nickname,omitempty"`
+	RegisteredDate    string                 `json:"registered_date,omitempty"`
+	Roles             []string               `json:"roles,omitempty"`
+	Slug              string                 `json:"slug,omitempty"`
+	URL               string                 `json:"url,omitempty"`
+	Username          string                 `json:"username,omitempty"`
+	Password          string                 `json:"password,omitempty"`
 }
 
 type UsersCollection struct {

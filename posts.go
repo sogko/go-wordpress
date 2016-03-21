@@ -36,45 +36,45 @@ const (
 )
 
 type GUID struct {
-	Raw      string `json:"raw"`
-	Rendered string `json:"rendered"`
+	Raw      string `json:"raw,omitempty"`
+	Rendered string `json:"rendered,omitempty"`
 }
 type Title struct {
-	Raw      string `json:"raw"`
-	Rendered string `json:"rendered"`
+	Raw      string `json:"raw,omitempty"`
+	Rendered string `json:"rendered,omitempty"`
 }
 type Content struct {
-	Raw      string `json:"raw"`
-	Rendered string `json:"rendered"`
+	Raw      string `json:"raw,omitempty"`
+	Rendered string `json:"rendered,omitempty"`
 }
 type Excerpt struct {
-	Raw      string `json:"raw"`
-	Rendered string `json:"rendered"`
+	Raw      string `json:"raw,omitempty"`
+	Rendered string `json:"rendered,omitempty"`
 }
 
 type Post struct {
-	collection *PostsCollection `json:"-"`
+	collection *PostsCollection `json:"-,omitempty"`
 
-	ID            int     `json:"id"`
-	Date          string  `json:"date"`
-	DateGMT       string  `json:"date_gmt"`
-	GUID          GUID    `json:"guid"`
-	Link          string  `json:"link"`
-	Modified      string  `json:"modified"`
-	ModifiedGMT   string  `json:"modifiedGMT"`
-	Password      string  `json:"password"`
-	Slug          string  `json:"slug"`
-	Status        string  `json:"status"`
-	Type          string  `json:"type"`
-	Title         Title   `json:"title"`
-	Content       Content `json:"content"`
-	Author        int     `json:"author"`
-	Excerpt       Excerpt `json:"excerpt"`
-	FeaturedImage int     `json:"featured_image"`
-	CommentStatus string  `json:"comment_status"`
-	PingStatus    string  `json:"ping_status"`
-	Format        string  `json:"format"`
-	Sticky        bool    `json:"sticky"`
+	ID            int     `json:"id,omitempty"`
+	Date          string  `json:"date,omitempty"`
+	DateGMT       string  `json:"date_gmt,omitempty"`
+	GUID          GUID    `json:"guid,omitempty"`
+	Link          string  `json:"link,omitempty"`
+	Modified      string  `json:"modified,omitempty"`
+	ModifiedGMT   string  `json:"modifiedGMT,omitempty"`
+	Password      string  `json:"password,omitempty"`
+	Slug          string  `json:"slug,omitempty"`
+	Status        string  `json:"status,omitempty"`
+	Type          string  `json:"type,omitempty"`
+	Title         Title   `json:"title,omitempty"`
+	Content       Content `json:"content,omitempty"`
+	Author        int     `json:"author,omitempty"`
+	Excerpt       Excerpt `json:"excerpt,omitempty"`
+	FeaturedImage int     `json:"featured_image,omitempty"`
+	CommentStatus string  `json:"comment_status,omitempty"`
+	PingStatus    string  `json:"ping_status,omitempty"`
+	Format        string  `json:"format,omitempty"`
+	Sticky        bool    `json:"sticky,omitempty"`
 }
 
 func (entity *Post) setCollection(col *PostsCollection) {
