@@ -67,6 +67,8 @@ Before running the tests, ensure that you have set up your test environment
 - Install prequisits (see above)
 - Import [./test-data/go-wordpress.wordpress.2015-08-23.xml](./test-data/go-wordpress.wordpress.2015-08-23.xml) to your local test Wordpress installation
 - Upload at least one media to your Wordpress installation (Admin > Media > Upload)
+- Edit one (1) most recent Post to create a revision
+- Edit one (1) most recent Page to create a revision
 
 ## Running test
 
