@@ -52,6 +52,7 @@ func getAnyOneTermsTag(t *testing.T, wp *wordpress.Client) *wordpress.Term {
 }
 
 func TestTermsTagList(t *testing.T) {
+	t.Skipf("Not supported anymore")
 	wp := initTestClient()
 
 	terms, resp, body, err := wp.Terms().Tag().List(nil)
@@ -70,6 +71,7 @@ func TestTermsTagList(t *testing.T) {
 }
 
 func TestTermsTagGet(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 	tt := getAnyOneTermsTag(t, wp)
@@ -91,6 +93,7 @@ func TestTermsTagGet(t *testing.T) {
 }
 
 func TestTermsTagCreate(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 
@@ -115,6 +118,7 @@ func TestTermsTagCreate(t *testing.T) {
 }
 
 func TestTermsTagDelete(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 
@@ -146,6 +150,7 @@ func TestTermsTagDelete(t *testing.T) {
 }
 
 func TestTermsTagUpdate(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 

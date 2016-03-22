@@ -10,6 +10,7 @@ func factoryUser() *wordpress.User {
 	return &wordpress.User{
 		Username: "go-wordpress-test-user1",
 		Name:     "go-wordpress-test-user1",
+		Email:    "go-wordpress-test-user1@email.com",
 		Slug:     "go-wordpress-test-user1",
 		Password: "password",
 	}
@@ -115,6 +116,7 @@ func TestUsersCreate(t *testing.T) {
 
 	u := &wordpress.User{
 		Username: "go-wordpress-test-user1",
+		Email:    "go-wordpress-test-user1@email.com",
 		Name:     "go-wordpress-test-user1",
 		Slug:     "go-wordpress-test-user1",
 		Password: "password",

@@ -6,6 +6,7 @@ import (
 )
 
 func TestTermsList(t *testing.T) {
+	t.Skipf("Not supported anymore")
 	wp := initTestClient()
 
 	terms, resp, body, err := wp.Terms().List("tag", nil)

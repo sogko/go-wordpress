@@ -46,6 +46,7 @@ func getAnyOnePostsTermsTag(t *testing.T, wp *wordpress.Client, postID int) *wor
 }
 
 func TestPostsTermsTag_InvalidCall(t *testing.T) {
+	t.Skipf("Not supported anymore")
 	// User is not allowed to call create wordpress.Post object manually to retrieve PostsTermsCollection
 	// A proper API call would inject the right PostsTermsCollection, Client and other goodies into a post,
 	// allowing user to call post.Terms()
@@ -57,6 +58,7 @@ func TestPostsTermsTag_InvalidCall(t *testing.T) {
 }
 
 func TestPostsTermsTagList(t *testing.T) {
+	t.Skipf("Not supported anymore")
 	wp := initTestClient()
 	post := getAnyOnePost(t, wp)
 	postID := post.ID
@@ -77,6 +79,7 @@ func TestPostsTermsTagList(t *testing.T) {
 }
 
 func TestPostsTermsTagGet(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 	post := getAnyOnePost(t, wp)
@@ -100,6 +103,7 @@ func TestPostsTermsTagGet(t *testing.T) {
 }
 
 func TestPostsTermsTagCreate(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 	post := getAnyOnePost(t, wp)
@@ -126,6 +130,7 @@ func TestPostsTermsTagCreate(t *testing.T) {
 }
 
 func TestPostsTermsTagDelete(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 	post := getAnyOnePost(t, wp)

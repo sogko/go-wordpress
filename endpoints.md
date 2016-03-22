@@ -132,17 +132,17 @@ List of WP-API REST endpoints and implementation status
 ### Tag Terms
 
 - [x] `GET    /terms/tag`
-- [x] `POST   /terms/tag]`
-- [x] `GET    /terms/tag]/[id]`
-- [x] `PUT    /terms/tag]/[id]`
+- [x] `POST   /terms/tag`
+- [x] `GET    /terms/tag/[id]`
+- [x] `PUT    /terms/tag/[id]`
 - [x] `DELETE /terms/tag/[id]`
 
 ### Category Terms
 
 - [x] `GET    /terms/category`
-- [x] `POST   /terms/category]`
-- [x] `GET    /terms/category]/[id]`
-- [x] `PUT    /terms/category]/[id]`
+- [x] `POST   /terms/category`
+- [x] `GET    /terms/category/[id]`
+- [x] `PUT    /terms/category/[id]`
 - [x] `DELETE /terms/category/[id]`
 
 ## Users

@@ -19,8 +19,8 @@ type TaxonomiesCollection struct {
 	url    string
 }
 
-func (col *TaxonomiesCollection) List(params interface{}) ([]Taxonomy, *http.Response, []byte, error) {
-	var taxonomies []Taxonomy
+func (col *TaxonomiesCollection) List(params interface{}) (map[string]Taxonomy, *http.Response, []byte, error) {
+	var taxonomies map[string]Taxonomy
 	resp, body, err := col.client.List(col.url, params, &taxonomies)
 	return taxonomies, resp, body, err
 }

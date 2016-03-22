@@ -2,14 +2,15 @@ package wordpress_test
 
 import (
 	"github.com/sogko/go-wordpress"
+	"log"
 	"net/http"
 	"testing"
 )
 
 func factoryTermsCategory() *wordpress.Term {
 	return &wordpress.Term{
-		Name: "TestTermsCategoryCreate",
-		Slug: "TestTermsCategoryCreate",
+		Name: "TestTermsCategoryCreate4",
+		Slug: "TestTermsCategoryCreate4",
 	}
 }
 
@@ -52,6 +53,7 @@ func getAnyOneTermsCategory(t *testing.T, wp *wordpress.Client) *wordpress.Term 
 }
 
 func TestTermsCategoryList(t *testing.T) {
+	t.Skipf("Not supported anymore")
 	wp := initTestClient()
 
 	terms, resp, body, err := wp.Terms().Category().List(nil)
@@ -70,6 +72,7 @@ func TestTermsCategoryList(t *testing.T) {
 }
 
 func TestTermsCategoryGet(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 	tt := getAnyOneTermsCategory(t, wp)
@@ -90,7 +93,8 @@ func TestTermsCategoryGet(t *testing.T) {
 
 }
 
-func TestTermsCategoryCreate(t *testing.T) {
+func TestTermsCategoryCreate_New(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 
@@ -114,7 +118,65 @@ func TestTermsCategoryCreate(t *testing.T) {
 	cleanUpTermsCategory(t, term.ID)
 }
 
+func TestTermsCategoryCreate_Existing(t *testing.T) {
+	t.Skipf("Not supported anymore")
+
+	wp := initTestClient()
+
+	tt := factoryTermsCategory()
+
+	// add category the first time
+	term, resp, body, err := wp.Terms().Category().Create(tt)
+	if err != nil {
+		t.Errorf("Should not return error: %v", err.Error())
+	}
+	if body == nil {
+		t.Errorf("body should not be nil")
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected 200 OK, got %v", resp.Status)
+	}
+	if term == nil {
+		t.Errorf("Should not return nil term")
+	}
+
+	// add the same category the second time
+	duplicateTerm, resp, body, err := wp.Terms().Category().Create(tt)
+	if err == nil {
+		t.Errorf("Should return error: %v", err.Error())
+	}
+	if body == nil {
+		t.Errorf("body should not be nil")
+	}
+	if resp.StatusCode != http.StatusInternalServerError {
+		t.Errorf("Expected 500 Internal Server Erro, got %v", resp.Status)
+	}
+	if duplicateTerm == nil {
+		t.Errorf("Should not return nil duplicateTerm")
+	}
+
+	// unmarshall error response
+	// We expect server to return "term_exists" error code
+	serverErrors, err := wordpress.UnmarshallServerError(body)
+	if err != nil {
+		cleanUpTermsCategory(t, term.ID)
+		log.Println(string(body))
+		t.Fatalf("Unexpected error response from server, unable to unmarshall message %v", err.Error())
+	}
+	if len(serverErrors) != 1 {
+		t.Errorf("Expected one error", len(serverErrors))
+	}
+	if serverErrors[0].Code != "term_exists" {
+		t.Errorf("Unexpected err.code, %v != term_exists", serverErrors[0].Code)
+	}
+
+	// clean up
+	cleanUpTermsCategory(t, term.ID)
+
+}
+
 func TestTermsCategoryDelete(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 
@@ -146,6 +208,7 @@ func TestTermsCategoryDelete(t *testing.T) {
 }
 
 func TestTermsCategoryUpdate(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 

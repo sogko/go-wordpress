@@ -57,6 +57,7 @@ func TestPostsTermsCategory_InvalidCall(t *testing.T) {
 }
 
 func TestPostsTermsCategoryList(t *testing.T) {
+	t.Skipf("Not supported anymore")
 	wp := initTestClient()
 	post := getAnyOnePost(t, wp)
 	postID := post.ID
@@ -77,6 +78,7 @@ func TestPostsTermsCategoryList(t *testing.T) {
 }
 
 func TestPostsTermsCategoryGet(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 	post := getAnyOnePost(t, wp)
@@ -99,7 +101,8 @@ func TestPostsTermsCategoryGet(t *testing.T) {
 
 }
 
-func TestPostsTermsCategoryCreate(t *testing.T) {
+func TestPostsTermsCategoryCreate_Existing(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 	post := getAnyOnePost(t, wp)
@@ -126,6 +129,7 @@ func TestPostsTermsCategoryCreate(t *testing.T) {
 }
 
 func TestPostsTermsCategoryDelete(t *testing.T) {
+	t.Skipf("Not supported anymore")
 
 	wp := initTestClient()
 	post := getAnyOnePost(t, wp)

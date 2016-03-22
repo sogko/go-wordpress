@@ -24,17 +24,13 @@ func unmarshallResponse(resp gorequest.Response, body []byte, result interface{}
 			log.Println("body: ", string(body))
 		}
 	}
-
-	//	log.Println(string(prettyJSON.Bytes()))
-	//	log.Println(resp.StatusCode)
 	if DEBUG {
-		log.Println(string(prettyJSON.Bytes()))
+		log.Println("body: ", string(prettyJSON.Bytes()))
 	}
 
 	if resp.StatusCode != http.StatusOK &&
 		resp.StatusCode != http.StatusCreated &&
 		resp.StatusCode != http.StatusAccepted {
-		log.Println("unmarshallResponse: ", resp.StatusCode)
 		return errors.New(resp.Status)
 	}
 
@@ -46,14 +42,21 @@ func unmarshallResponse(resp gorequest.Response, body []byte, result interface{}
 	return nil
 }
 
-func warningNotImplemented(url string) {
-	_warning("API not implemented yet: ", url)
-}
-
 func _warning(v ...interface{}) {
 	log.Println(fmt.Sprintln("[go-wordpress]", v))
 }
 
 func _log(v ...interface{}) {
 	log.Println(fmt.Sprintln("[go-wordpress]", v))
+}
+
+// UnmarshallServerError A helper function to unmarshall error response from server
+func UnmarshallServerError(body []byte) ([]GeneralError, error) {
+	var resp []GeneralError
+	err := json.Unmarshal(body, &resp)
+	if err != nil {
+		log.Println("JSON parse error: ", err)
+		return nil, err
+	}
+	return resp, nil
 }

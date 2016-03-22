@@ -24,6 +24,12 @@ const (
 	CollectionTypes      = "types"
 )
 
+type GeneralError struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+	Data    int    `json:"data"` // Unsure if this is consistent
+}
+
 type Options struct {
 	BaseAPIURL string
 

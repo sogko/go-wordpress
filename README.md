@@ -61,6 +61,7 @@ Before running the tests, ensure that you have set up your test environment
 - Wordpress 4.x
 - WP-API plugin
 - WP-API's BasicAuth plugin (for authentication)
+- [WP REST API Meta Endpoints plugin](https://github.com/WP-API/wp-api-meta-endpoints) (for Meta endpoints)
 
 ### Setting up test environment
 - Install prequisits (see above)

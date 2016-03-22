@@ -6,6 +6,7 @@ import (
 )
 
 func TestPostsTermsList(t *testing.T) {
+	t.Skipf("Not supported anymore")
 	wp := initTestClient()
 	post := getAnyOnePost(t, wp)
 	postID := post.ID
