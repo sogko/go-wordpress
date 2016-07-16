@@ -70,7 +70,7 @@ type Post struct {
 	Content       Content `json:"content,omitempty"`
 	Author        int     `json:"author,omitempty"`
 	Excerpt       Excerpt `json:"excerpt,omitempty"`
-	FeaturedImage int     `json:"featured_image,omitempty"`
+	FeaturedImage int     `json:"featured_media,omitempty"`
 	CommentStatus string  `json:"comment_status,omitempty"`
 	PingStatus    string  `json:"ping_status,omitempty"`
 	Format        string  `json:"format,omitempty"`
