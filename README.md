@@ -30,7 +30,7 @@ func main() {
   })
   	
   // for eg, to get current user (GET /users/me)
-  currentUser, resp, body, _ := client.Users().Me()
+  currentUser, resp, body, _ := client.Users().Me(nil)
   if resp.StatusCode != http.StatusOK {
     // handle error
   }
@@ -59,9 +59,9 @@ Before running the tests, ensure that you have set up your test environment
 
 ### Prerequisites
 - Wordpress 4.x
-- WP-API plugin
-- WP-API's BasicAuth plugin (for authentication)
-- [WP REST API Meta Endpoints plugin](https://github.com/WP-API/wp-api-meta-endpoints) (for Meta endpoints)
+- [WP-API plugin](https://wordpress.org/plugins/rest-api/)
+- [WP-API's BasicAuth plugin](https://github.com/WP-API/Basic-Auth) (for authentication) -  I was unable to find it this plugin published anywhere outside of github. But it was easy to just choose Clone or Download -> Download ZIP. After that the downloaded ZIP can be treated as a standard plugin and just installed in WordPress via upload.
+- [WP REST API Meta Endpoints plugin](https://github.com/WP-API/wp-api-meta-endpoints) (for Meta endpoints) - This can be installed through standard WordPress plugin directory [here](https://wordpress.org/plugins/rest-api-meta-endpoints/)
 
 ### Setting up test environment
 - Install prequisits (see above)
