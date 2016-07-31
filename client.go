@@ -201,7 +201,7 @@ func (client *Client) PostData(url string, content []byte, contentType string, f
 	}
 
 	req.Header.Set("Content-Type", contentType)
-	req.Header.Set("Content-Disposition", fmt.Sprintf("filename=%v", filename))
+	req.Header.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%v\"", filename))
 
 	// Add basic auth
 	req.SetBasicAuth(s.BasicAuth.Username, s.BasicAuth.Password)
