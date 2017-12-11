@@ -49,8 +49,8 @@ type Media struct {
 	MediaStatus  string       `json:"comment_status,omitempty"`
 	PingStatus   string       `json:"ping_status,omitempty"`
 	AltText      string       `json:"alt_text,omitempty"`
-	Caption      string       `json:"caption,omitempty"`
-	Description  string       `json:"description,omitempty"`
+	Caption      Caption      `json:"caption,omitempty"`
+	Description  Description  `json:"description,omitempty"`
 	MediaType    string       `json:"media_type,omitempty"`
 	MediaDetails MediaDetails `json:"media_details,omitempty"`
 	Post         int          `json:"post,omitempty"`

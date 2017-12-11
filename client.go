@@ -6,6 +6,7 @@ import (
 	"github.com/parnurzeal/gorequest"
 	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"reflect"
 )
@@ -193,14 +194,18 @@ func (client *Client) PostData(url string, content []byte, contentType string, f
 	// so, we have to manually create a HTTP client
 	s := client.req.Post(url)
 
-	buf := bytes.NewBuffer(content)
+	var buf bytes.Buffer
+	w := multipart.NewWriter(&buf)
+	fileField, _ := w.CreateFormFile("file", filename)
+	fileField.Write(content)
+	w.Close()
 
-	req, err := http.NewRequest(s.Method, s.Url, buf)
+	req, err := http.NewRequest(s.Method, s.Url, &buf)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Content-Type", w.FormDataContentType())
 	req.Header.Set("Content-Disposition", fmt.Sprintf("filename=%v", filename))
 
 	// Add basic auth

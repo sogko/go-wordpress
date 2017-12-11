@@ -52,6 +52,16 @@ type Excerpt struct {
 	Rendered string `json:"rendered,omitempty"`
 }
 
+type Description struct {
+	Raw      string `json:"raw,omitempty"`
+	Rendered string `json:"rendered,omitempty"`
+}
+
+type Caption struct {
+	Raw      string `json:"raw,omitempty"`
+	Rendered string `json:"rendered,omitempty"`
+}
+
 type Post struct {
 	collection *PostsCollection `json:"-,omitempty"`
 
@@ -59,6 +69,8 @@ type Post struct {
 	Date          string  `json:"date,omitempty"`
 	DateGMT       string  `json:"date_gmt,omitempty"`
 	GUID          GUID    `json:"guid,omitempty"`
+	FeaturedMedia int     `json:"featured_media"`
+	Categories    []int   `json:"categories"`
 	Link          string  `json:"link,omitempty"`
 	Modified      string  `json:"modified,omitempty"`
 	ModifiedGMT   string  `json:"modifiedGMT,omitempty"`
@@ -70,7 +82,6 @@ type Post struct {
 	Content       Content `json:"content,omitempty"`
 	Author        int     `json:"author,omitempty"`
 	Excerpt       Excerpt `json:"excerpt,omitempty"`
-	FeaturedImage int     `json:"featured_image,omitempty"`
 	CommentStatus string  `json:"comment_status,omitempty"`
 	PingStatus    string  `json:"ping_status,omitempty"`
 	Format        string  `json:"format,omitempty"`
