@@ -17,6 +17,7 @@ type MediaDetailsSizes struct {
 	Medium    MediaDetailsSizesItem `json:"medium,omitempty"`
 	Large     MediaDetailsSizesItem `json:"large,omitempty"`
 	SiteLogo  MediaDetailsSizesItem `json:"site-logo,omitempty"`
+	Full      MediaDetailsSizesItem `json:"full,omitempty"`
 }
 type MediaDetails struct {
 	Raw       string                 `json:"raw,omitempty"`
