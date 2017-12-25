@@ -8,11 +8,11 @@ import (
 type Revision struct {
 	ID          int    `json:"id,omitempty"`
 	Author      string `json:"author,omitempty"` // TODO: File a WP-API bug, why am I getting string instead of int?
-	Date        string `json:"date,omitempty"`
-	DateGMT     string `json:"dateGMT,omitempty"`
+	Date        Time   `json:"date,omitempty"`
+	DateGMT     Time   `json:"dateGMT,omitempty"`
 	GUID        string `json:"guid,omitempty"`
-	Modified    string `json:"modified,omitempty"`
-	ModifiedGMT string `json:"modifiedGMT,omitempty"`
+	Modified    Time   `json:"modified,omitempty"`
+	ModifiedGMT Time   `json:"modifiedGMT,omitempty"`
 	Parent      int    `json:"parent,omitempty"`
 	Slug        string `json:"slug,omitempty"`
 	Title       string `json:"title,omitempty"`

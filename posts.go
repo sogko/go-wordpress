@@ -66,14 +66,14 @@ type Post struct {
 	collection *PostsCollection `json:"-,omitempty"`
 
 	ID            int     `json:"id,omitempty"`
-	Date          string  `json:"date,omitempty"`
-	DateGMT       string  `json:"date_gmt,omitempty"`
+	Date          Time    `json:"date,omitempty"`
+	DateGMT       Time    `json:"date_gmt,omitempty"`
 	GUID          GUID    `json:"guid,omitempty"`
 	FeaturedMedia int     `json:"featured_media"`
 	Categories    []int   `json:"categories"`
 	Link          string  `json:"link,omitempty"`
-	Modified      string  `json:"modified,omitempty"`
-	ModifiedGMT   string  `json:"modifiedGMT,omitempty"`
+	Modified      Time    `json:"modified,omitempty"`
+	ModifiedGMT   Time    `json:"modifiedGMT,omitempty"`
 	Password      string  `json:"password,omitempty"`
 	Slug          string  `json:"slug,omitempty"`
 	Status        string  `json:"status,omitempty"`

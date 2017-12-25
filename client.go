@@ -3,12 +3,13 @@ package wordpress
 import (
 	"bytes"
 	"fmt"
-	"github.com/parnurzeal/gorequest"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"reflect"
+
+	"github.com/parnurzeal/gorequest"
 )
 
 const (

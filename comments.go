@@ -16,8 +16,8 @@ type Comment struct {
 	AuthorURL       string     `json:"author_url,omitempty"`
 	AuthorUserAgent string     `json:"author_user_agent,omitempty"`
 	Content         Content    `json:"content,omitempty"`
-	Date            string     `json:"date,omitempty"`
-	DateGMT         string     `json:"date_gmt,omitempty"`
+	Date            Time       `json:"date,omitempty"`
+	DateGMT         Time       `json:"date_gmt,omitempty"`
 	Karma           int        `json:"karma,omitempty"`
 	Link            string     `json:"link,omitempty"`
 	Parent          int        `json:"parent,omitempty"`
