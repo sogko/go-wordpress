@@ -39,6 +39,8 @@ type Options struct {
 	// Basic Auth
 	Username string
 	Password string
+
+	JWTToken string
 	// TODO: support OAuth authentication
 }
 
@@ -59,7 +61,14 @@ func newHTTPClient() *gorequest.SuperAgent {
 }
 
 func NewClient(options *Options) *Client {
-	req := newHTTPClient().SetBasicAuth(options.Username, options.Password)
+	req := newHTTPClient()
+
+	if options.Username != "" && options.Password != "" {
+		req = req.SetBasicAuth(options.Username, options.Password)
+	} else if options.JWTToken != "" {
+		req = req.AppendHeader("Authorization", options.JWTToken)
+	}
+
 	req = req.RedirectPolicy(func(r gorequest.Request, via []gorequest.Request) error {
 		// perform BasicAuth on each redirect request.
 		// (requests are cookie-less; so we need to keep re-auth-ing again)
@@ -138,7 +147,13 @@ func (client *Client) Settings() *SettingsCollection {
 
 func (client *Client) List(url string, params interface{}, result interface{}) (*http.Response, []byte, error) {
 	client.req.TargetType = "json"
-	resp, body, errSlice := client.req.Get(url).Query(params).EndBytes()
+
+	req := client.req.Get(url)
+	if client.options.JWTToken != "" {
+		req.Set("Authorization", client.options.JWTToken)
+	}
+	resp, body, errSlice := req.Query(params).EndBytes()
+
 	if errSlice != nil && len(errSlice) > 0 {
 		return nil, body, errSlice[len(errSlice)-1]
 	}
@@ -146,10 +161,14 @@ func (client *Client) List(url string, params interface{}, result interface{}) (
 	_resp := http.Response(*resp)
 	return &_resp, body, err
 }
+
 func (client *Client) Create(url string, content interface{}, result interface{}) (*http.Response, []byte, error) {
 	contentVal := unpackInterfacePointer(content)
 	client.req.TargetType = "json"
 	req := client.req.Post(url).Send(contentVal)
+	if client.options.JWTToken != "" {
+		req.Set("Authorization", client.options.JWTToken)
+	}
 	resp, body, errSlice := req.EndBytes()
 	if errSlice != nil && len(errSlice) > 0 {
 		return nil, body, errSlice[len(errSlice)-1]
@@ -159,13 +178,21 @@ func (client *Client) Create(url string, content interface{}, result interface{}
 	return &_resp, body, err
 }
 func (client *Client) Get(url string, params interface{}, result interface{}) (*http.Response, []byte, error) {
+	client.req = client.req.AppendHeader("Authorization", client.options.JWTToken)
+
 	client.req.TargetType = "json"
-	resp, body, errSlice := client.req.Get(url).Query(params).EndBytes()
+	req := client.req.Get(url)
+	if client.options.JWTToken != "" {
+		req.Set("Authorization", client.options.JWTToken)
+	}
+	resp, body, errSlice := req.Query(params).EndBytes()
+
 	if errSlice != nil && len(errSlice) > 0 {
 		return nil, body, errSlice[len(errSlice)-1]
 	}
 	err := unmarshallResponse(resp, body, result)
 	_resp := http.Response(*resp)
+
 	return &_resp, body, err
 }
 func (client *Client) Update(url string, content interface{}, result interface{}) (*http.Response, []byte, error) {
@@ -175,6 +202,11 @@ func (client *Client) Update(url string, content interface{}, result interface{}
 	client.req.TargetType = "json"
 	req := client.req.Post(url).Send(contentVal)
 	req.Set("HTTP_X_HTTP_METHOD_OVERRIDE", "PUT")
+
+	if client.options.JWTToken != "" {
+		req.Set("Authorization", client.options.JWTToken)
+	}
+
 	resp, body, errSlice := req.EndBytes()
 	if errSlice != nil && len(errSlice) > 0 {
 		return nil, body, errSlice[len(errSlice)-1]
@@ -187,6 +219,11 @@ func (client *Client) Delete(url string, params interface{}, result interface{})
 	client.req.TargetType = "json"
 	req := client.req.Get(url).Query(params).Query("_method=DELETE")
 	req.Set("HTTP_X_HTTP_METHOD_OVERRIDE", "DELETE")
+
+	if client.options.JWTToken != "" {
+		req.Set("Authorization", client.options.JWTToken)
+	}
+
 	resp, body, errSlice := req.End()
 	by := []byte(body)
 	if errSlice != nil && len(errSlice) > 0 {
@@ -216,6 +253,9 @@ func (client *Client) PostData(url string, content []byte, contentType string, f
 	req.Header.Set("Content-Type", w.FormDataContentType())
 	req.Header.Set("Content-Disposition", fmt.Sprintf("filename=%v", filename))
 
+	if client.options.JWTToken != "" {
+		req.Header.Set("Authorization", client.options.JWTToken)
+	}
 	// Add basic auth
 	req.SetBasicAuth(s.BasicAuth.Username, s.BasicAuth.Password)
 
