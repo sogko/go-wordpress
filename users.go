@@ -29,6 +29,7 @@ type User struct {
 	URL               string                 `json:"url,omitempty"`
 	Username          string                 `json:"username,omitempty"`
 	Password          string                 `json:"password,omitempty"`
+	Locale            string                 `json:"locale,omitempty"`
 }
 
 type UsersCollection struct {
