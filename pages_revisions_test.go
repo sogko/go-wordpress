@@ -2,10 +2,11 @@ package wordpress_test
 
 import (
 	"fmt"
-	"github.com/sogko/go-wordpress"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/robbiet480/go-wordpress"
 )
 
 func getLatestRevisionForPage(t *testing.T, page *wordpress.Page) *wordpress.Revision {

@@ -1,10 +1,11 @@
 package wordpress_test
 
 import (
-	"github.com/sogko/go-wordpress"
 	"log"
 	"net/http"
 	"testing"
+
+	"github.com/robbiet480/go-wordpress"
 )
 
 func factoryComment(postID int) wordpress.Comment {

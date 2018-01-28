@@ -5,7 +5,7 @@ Golang client library for WP-API (Wordpress REST API)
 ## Installation
 
 ```bash
-go get github.com/sogko/go-wordpress
+go get github.com/robbiet480/go-wordpress
 
 ```
 
@@ -16,7 +16,7 @@ go get github.com/sogko/go-wordpress
 package main
 
 import (
-	"github.com/sogko/go-wordpress"
+	"github.com/robbiet480/go-wordpress"
 	"net/http"
 )
 
@@ -28,21 +28,21 @@ func main() {
     Username:   USER,
     Password:   PASSWORD,
   })
-  	
+
   // for eg, to get current user (GET /users/me)
   currentUser, resp, body, _ := client.Users().Me()
   if resp.StatusCode != http.StatusOK {
     // handle error
   }
-  
+
   // `body` will contain raw JSON body in []bytes
-  
+
   // Or you can use your own structs (for custom endpoints, for example)
   // Below is the equivalent of `client.Posts().Get(100, nil)`
   var obj MyCustomPostStruct
   resp, body, err := client.Get("/posts/100", nil, &obj)
   // ...
-  
+
   log.Println("Current user", currentUser)
 }
 
@@ -80,12 +80,12 @@ export WP_API_URL=http://192.168.99.100:32777/wp-json/wp/v2
 export WP_USER=<user>
 export WP_PASSWD=<password>
 
-cd <path_to_package>/github.com/sogko/go-wordpress
+cd <path_to_package>/github.com/robbiet480/go-wordpress
 go test
 
 ```
 
 ## TODO
-- [ ] `godoc` documentation, so its easier for library users to map the REST APIs to library calls 
+- [ ] `godoc` documentation, so its easier for library users to map the REST APIs to library calls
 - [ ] Test `comments` API endpoint. (Currently, already implemented but not tested due to WP-API issues with creating comments reliably)
 - [ ] Support OAuth authentication

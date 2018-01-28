@@ -1,9 +1,10 @@
 package wordpress_test
 
 import (
-	"github.com/sogko/go-wordpress"
 	"os"
 	"testing"
+
+	"github.com/robbiet480/go-wordpress"
 )
 
 var USER string = os.Getenv("WP_USER")

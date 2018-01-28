@@ -1,16 +1,17 @@
 package wordpress_test
 
 import (
-	"github.com/sogko/go-wordpress"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"testing"
+
+	"github.com/robbiet480/go-wordpress"
 )
 
 func factoryMediaFileUpload(t *testing.T) *wordpress.MediaUploadOptions {
 
-	// assuming current-working directory `{GO_WORKSPACE_PATH}/src/github.com/sogko/go-wordpress`
+	// assuming current-working directory `{GO_WORKSPACE_PATH}/src/github.com/robbiet480/go-wordpress`
 	path := "./test-data/test-media.jpg"
 
 	// prepare file to upload
