@@ -79,7 +79,6 @@ type Post struct {
 	Link          string  `json:"link,omitempty"`
 	Modified      Time    `json:"modified,omitempty"`
 	ModifiedGMT   Time    `json:"modified_gmt,omitempty"`
-	ModifiedGMT   Time    `json:"modifiedGMT,omitempty"`
 	Password      string  `json:"password,omitempty"`
 	PingStatus    string  `json:"ping_status,omitempty"`
 	Slug          string  `json:"slug,omitempty"`
