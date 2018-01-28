@@ -35,7 +35,7 @@ func TestPostsRevisions_InvalidCall(t *testing.T) {
 	invalidPost := wordpress.Post{}
 	invalidRevisions := invalidPost.Revisions()
 	if invalidRevisions != nil {
-		t.Error("Expected revisions to be nil, %v", invalidRevisions)
+		t.Errorf("Expected revisions to be nil, %v", invalidRevisions)
 	}
 }
 

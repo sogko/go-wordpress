@@ -33,7 +33,7 @@ func TestPostsMeta_InvalidCall(t *testing.T) {
 	invalidPost := wordpress.Post{}
 	invalidMeta := invalidPost.Meta()
 	if invalidMeta != nil {
-		t.Error("Expected meta to be nil, %v", invalidMeta)
+		t.Errorf("Expected meta to be nil, %v", invalidMeta)
 	}
 }
 

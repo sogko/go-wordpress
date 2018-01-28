@@ -53,7 +53,7 @@ func TestPostsTermsCategory_InvalidCall(t *testing.T) {
 	invalidPost := wordpress.Post{}
 	invalidTerms := invalidPost.Terms()
 	if invalidTerms != nil {
-		t.Error("Expected meta to be nil, %v", invalidTerms)
+		t.Errorf("Expected meta to be nil, %v", invalidTerms)
 	}
 }
 

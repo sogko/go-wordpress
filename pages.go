@@ -6,7 +6,7 @@ import (
 )
 
 type Page struct {
-	collection *PagesCollection `json:"-"`
+	collection *PagesCollection
 
 	ID            int     `json:"id,omitempty"`
 	Date          Time    `json:"date,omitempty"`
