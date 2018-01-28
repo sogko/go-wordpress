@@ -25,6 +25,8 @@ const (
 	CollectionStatuses   = "statuses"
 	CollectionTypes      = "types"
 	CollectionSettings   = "settings"
+	CollectionCategories = "categories"
+	CollectionTags       = "tags"
 )
 
 type GeneralError struct {
@@ -142,6 +144,18 @@ func (client *Client) Settings() *SettingsCollection {
 	return &SettingsCollection{
 		client: client,
 		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionSettings),
+	}
+}
+func (client *Client) Categories() *CategoriesCollection {
+	return &CategoriesCollection{
+		client: client,
+		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionCategories),
+	}
+}
+func (client *Client) Tags() *TagsCollection {
+	return &TagsCollection{
+		client: client,
+		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionTags),
 	}
 }
 
