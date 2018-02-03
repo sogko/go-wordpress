@@ -92,66 +92,77 @@ func (client *Client) Users() *UsersCollection {
 		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionUsers),
 	}
 }
+
 func (client *Client) Posts() *PostsCollection {
 	return &PostsCollection{
 		client: client,
 		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionPosts),
 	}
 }
+
 func (client *Client) Pages() *PagesCollection {
 	return &PagesCollection{
 		client: client,
 		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionPages),
 	}
 }
+
 func (client *Client) Media() *MediaCollection {
 	return &MediaCollection{
 		client: client,
 		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionMedia),
 	}
 }
+
 func (client *Client) Comments() *CommentsCollection {
 	return &CommentsCollection{
 		client: client,
 		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionComments),
 	}
 }
+
 func (client *Client) Taxonomies() *TaxonomiesCollection {
 	return &TaxonomiesCollection{
 		client: client,
 		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionTaxonomies),
 	}
 }
+
 func (client *Client) Terms() *TermsCollection {
 	return &TermsCollection{
 		client: client,
 		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionTerms),
 	}
 }
+
 func (client *Client) Statuses() *StatusesCollection {
 	return &StatusesCollection{
 		client: client,
 		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionStatuses),
 	}
 }
+
 func (client *Client) Types() *TypesCollection {
 	return &TypesCollection{
 		client: client,
 		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionTypes),
 	}
 }
+
 func (client *Client) Settings() *SettingsCollection {
 	return &SettingsCollection{
 		client: client,
 		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionSettings),
 	}
 }
+
 func (client *Client) Categories() *CategoriesCollection {
 	return &CategoriesCollection{
 		client: client,
 		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionCategories),
 	}
 }
+
 func (client *Client) Tags() *TagsCollection {
 	return &TagsCollection{
 		client: client,
@@ -171,7 +182,7 @@ func (client *Client) List(url string, params interface{}, result interface{}) (
 	if errSlice != nil && len(errSlice) > 0 {
 		return nil, body, errSlice[len(errSlice)-1]
 	}
-	err := unmarshallResponse(resp, body, result)
+	err := unmarshalResponse(resp, body, result)
 	_resp := http.Response(*resp)
 	return &_resp, body, err
 }
@@ -187,10 +198,11 @@ func (client *Client) Create(url string, content interface{}, result interface{}
 	if errSlice != nil && len(errSlice) > 0 {
 		return nil, body, errSlice[len(errSlice)-1]
 	}
-	err := unmarshallResponse(resp, body, result)
+	err := unmarshalResponse(resp, body, result)
 	_resp := http.Response(*resp)
 	return &_resp, body, err
 }
+
 func (client *Client) Get(url string, params interface{}, result interface{}) (*http.Response, []byte, error) {
 	client.req = client.req.AppendHeader("Authorization", client.options.JWTToken)
 
@@ -204,11 +216,12 @@ func (client *Client) Get(url string, params interface{}, result interface{}) (*
 	if errSlice != nil && len(errSlice) > 0 {
 		return nil, body, errSlice[len(errSlice)-1]
 	}
-	err := unmarshallResponse(resp, body, result)
+	err := unmarshalResponse(resp, body, result)
 	_resp := http.Response(*resp)
 
 	return &_resp, body, err
 }
+
 func (client *Client) Update(url string, content interface{}, result interface{}) (*http.Response, []byte, error) {
 
 	contentVal := unpackInterfacePointer(content)
@@ -225,10 +238,11 @@ func (client *Client) Update(url string, content interface{}, result interface{}
 	if errSlice != nil && len(errSlice) > 0 {
 		return nil, body, errSlice[len(errSlice)-1]
 	}
-	err := unmarshallResponse(resp, body, result)
+	err := unmarshalResponse(resp, body, result)
 	_resp := http.Response(*resp)
 	return &_resp, body, err
 }
+
 func (client *Client) Delete(url string, params interface{}, result interface{}) (*http.Response, []byte, error) {
 	client.req.TargetType = "json"
 	req := client.req.Get(url).Query(params).Query("_method=DELETE")
@@ -243,10 +257,11 @@ func (client *Client) Delete(url string, params interface{}, result interface{})
 	if errSlice != nil && len(errSlice) > 0 {
 		return resp, by, errSlice[len(errSlice)-1]
 	}
-	err := unmarshallResponse(resp, by, result)
+	err := unmarshalResponse(resp, by, result)
 	_resp := http.Response(*resp)
 	return &_resp, by, err
 }
+
 func (client *Client) PostData(url string, content []byte, contentType string, filename string, result interface{}) (*http.Response, []byte, error) {
 
 	// gorequest does not support POST-ing raw data
@@ -288,7 +303,7 @@ func (client *Client) PostData(url string, content []byte, contentType string, f
 		return nil, nil, err
 	}
 
-	err = unmarshallResponse(resp, body, result)
+	err = unmarshalResponse(resp, body, result)
 	_resp := http.Response(*resp)
 	return &_resp, body, err
 }

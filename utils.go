@@ -5,15 +5,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/parnurzeal/gorequest"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/parnurzeal/gorequest"
 )
 
 var DEBUG bool = (os.Getenv("DEBUG") == "1")
 
-func unmarshallResponse(resp gorequest.Response, body []byte, result interface{}) error {
+func unmarshalResponse(resp gorequest.Response, body []byte, result interface{}) error {
 
 	var prettyJSON bytes.Buffer
 	err2 := json.Indent(&prettyJSON, body, "", "  ")
@@ -50,8 +51,8 @@ func _log(v ...interface{}) {
 	log.Println(fmt.Sprintln("[go-wordpress]", v))
 }
 
-// UnmarshallServerError A helper function to unmarshall error response from server
-func UnmarshallServerError(body []byte) ([]GeneralError, error) {
+// UnmarshalServerError A helper function to unmarshal error response from server
+func UnmarshalServerError(body []byte) ([]GeneralError, error) {
 	var resp []GeneralError
 	err := json.Unmarshal(body, &resp)
 	if err != nil {

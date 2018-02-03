@@ -64,7 +64,7 @@ Before running the tests, ensure that you have set up your test environment
 - [WP REST API Meta Endpoints plugin](https://github.com/WP-API/wp-api-meta-endpoints) (for Meta endpoints)
 
 ### Setting up test environment
-- Install prequisits (see above)
+- Install prequisites (see above)
 - Import [./test-data/go-wordpress.wordpress.2015-08-23.xml](./test-data/go-wordpress.wordpress.2015-08-23.xml) to your local test Wordpress installation
 - Upload at least one media to your Wordpress installation (Admin > Media > Upload)
 - Edit one (1) most recent Post to create a revision

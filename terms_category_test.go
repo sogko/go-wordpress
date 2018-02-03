@@ -158,7 +158,7 @@ func TestTermsCategoryCreate_Existing(t *testing.T) {
 
 	// unmarshall error response
 	// We expect server to return "term_exists" error code
-	serverErrors, err := wordpress.UnmarshallServerError(body)
+	serverErrors, err := wordpress.UnmarshalServerError(body)
 	if err != nil {
 		cleanUpTermsCategory(t, term.ID)
 		log.Println(string(body))
