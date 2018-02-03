@@ -24,7 +24,7 @@ func main() {
 
   // create wp-api client
   client := wordpress.NewClient(&wordpress.Options{
-    BaseAPIURL: API_BASE_URL, // example: `http://192.168.99.100:32777/wp-json/wp/v2`
+    BaseAPIURL: API_BASE_URL, // example: `http://192.168.99.100:32777/wp-json`
     Username:   USER,
     Password:   PASSWORD,
   })
@@ -76,7 +76,7 @@ Before running the tests, ensure that you have set up your test environment
 ```bash
 
 # Set test enviroment
-export WP_API_URL=http://192.168.99.100:32777/wp-json/wp/v2
+export WP_API_URL=http://192.168.99.100:32777/wp-json
 export WP_USER=<user>
 export WP_PASSWD=<password>
 

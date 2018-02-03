@@ -8,6 +8,8 @@ import (
 	"mime/multipart"
 	"net/http"
 	"reflect"
+	"strings"
+	"time"
 
 	"github.com/parnurzeal/gorequest"
 )
@@ -79,6 +81,10 @@ func NewClient(options *Options) *Client {
 		log.Println("REDIRECT", r, options.Username, options.Password)
 		return nil
 	})
+	if strings.HasSuffix(options.BaseAPIURL, "/wp/v2") {
+		splitURL := strings.Split(options.BaseAPIURL, "/wp/v2")
+		options.BaseAPIURL = splitURL[0]
+	}
 	return &Client{
 		req:     req,
 		options: options,
@@ -86,87 +92,117 @@ func NewClient(options *Options) *Client {
 	}
 }
 
+type RootInfo struct {
+	Authentication     map[string]interface{} `json:"authentication"`
+	Description        string                 `json:"description"`
+	GMTOffset          int                    `json:"gmt_offset"`
+	HomeURL            string                 `json:"home"`
+	Name               string                 `json:"name"`
+	Namespaces         []string               `json:"namespaces"`
+	PermalinkStructure string                 `json:"permalink_structure"`
+	TimezoneString     string                 `json:"timezone_string"`
+	URL                string                 `json:"url"`
+
+	Location *time.Location `json:"-"`
+}
+
+func (client *Client) BasicInfo() (*RootInfo, *http.Response, []byte, error) {
+	var entity RootInfo
+	resp, body, err := client.Get(client.baseURL, nil, &entity)
+	if err != nil {
+		return &entity, resp, body, err
+	}
+
+	location, locationErr := time.LoadLocation(entity.TimezoneString)
+	if locationErr != nil {
+		return &entity, resp, body, locationErr
+	}
+	entity.Location = location
+
+	return &entity, resp, body, err
+}
+
 func (client *Client) Users() *UsersCollection {
 	return &UsersCollection{
 		client: client,
-		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionUsers),
+		url:    fmt.Sprintf("%v/wp/v2/%v", client.baseURL, CollectionUsers),
 	}
 }
 
 func (client *Client) Posts() *PostsCollection {
 	return &PostsCollection{
 		client: client,
-		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionPosts),
+		url:    fmt.Sprintf("%v/wp/v2/%v", client.baseURL, CollectionPosts),
 	}
 }
 
 func (client *Client) Pages() *PagesCollection {
 	return &PagesCollection{
 		client: client,
-		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionPages),
+		url:    fmt.Sprintf("%v/wp/v2/%v", client.baseURL, CollectionPages),
 	}
 }
 
 func (client *Client) Media() *MediaCollection {
 	return &MediaCollection{
 		client: client,
-		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionMedia),
+		url:    fmt.Sprintf("%v/wp/v2/%v", client.baseURL, CollectionMedia),
 	}
 }
 
 func (client *Client) Comments() *CommentsCollection {
 	return &CommentsCollection{
 		client: client,
-		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionComments),
+		url:    fmt.Sprintf("%v/wp/v2/%v", client.baseURL, CollectionComments),
 	}
 }
 
 func (client *Client) Taxonomies() *TaxonomiesCollection {
 	return &TaxonomiesCollection{
 		client: client,
-		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionTaxonomies),
+		url:    fmt.Sprintf("%v/wp/v2/%v", client.baseURL, CollectionTaxonomies),
 	}
 }
 
 func (client *Client) Terms() *TermsCollection {
 	return &TermsCollection{
 		client: client,
-		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionTerms),
+		url:    fmt.Sprintf("%v/wp/v2/%v", client.baseURL, CollectionTerms),
 	}
 }
 
 func (client *Client) Statuses() *StatusesCollection {
 	return &StatusesCollection{
 		client: client,
-		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionStatuses),
+		url:    fmt.Sprintf("%v/wp/v2/%v", client.baseURL, CollectionStatuses),
 	}
 }
 
 func (client *Client) Types() *TypesCollection {
 	return &TypesCollection{
 		client: client,
-		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionTypes),
+		url:    fmt.Sprintf("%v/wp/v2/%v", client.baseURL, CollectionTypes),
 	}
 }
 
 func (client *Client) Settings() *SettingsCollection {
 	return &SettingsCollection{
 		client: client,
-		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionSettings),
+		url:    fmt.Sprintf("%v/wp/v2/%v", client.baseURL, CollectionSettings),
 	}
 }
 
 func (client *Client) Categories() *CategoriesCollection {
 	return &CategoriesCollection{
 		client: client,
-		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionCategories),
+		url:    fmt.Sprintf("%v/wp/v2/%v", client.baseURL, CollectionCategories),
 	}
 }
 
 func (client *Client) Tags() *TagsCollection {
 	return &TagsCollection{
 		client: client,
-		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionTags),
+		url:    fmt.Sprintf("%v/wp/v2/%v", client.baseURL, CollectionTags),
 	}
 }
 
