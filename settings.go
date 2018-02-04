@@ -1,9 +1,5 @@
 package wordpress
 
-import (
-	"net/http"
-)
-
 type Settings struct {
 	Title                string `json:"title"`
 	Description          string `json:"description"`
@@ -27,8 +23,8 @@ type SettingsCollection struct {
 	url    string
 }
 
-func (col *SettingsCollection) List() (*Settings, *http.Response, []byte, error) {
+func (col *SettingsCollection) List() (*Settings, *Response, []byte, error) {
 	var settings Settings
 	resp, body, err := col.client.List(col.url, nil, &settings)
-	return &settings, resp, body, err
+	return &settings, newResponse(resp), body, err
 }

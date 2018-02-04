@@ -2,7 +2,6 @@ package wordpress
 
 import (
 	"fmt"
-	"net/http"
 )
 
 type TypeLabels struct {
@@ -40,15 +39,15 @@ type TypesCollection struct {
 	url    string
 }
 
-func (col *TypesCollection) List(params interface{}) (*Types, *http.Response, []byte, error) {
+func (col *TypesCollection) List(params interface{}) (*Types, *Response, []byte, error) {
 	var types Types
 	resp, body, err := col.client.List(col.url, params, &types)
-	return &types, resp, body, err
+	return &types, newResponse(resp), body, err
 }
 
-func (col *TypesCollection) Get(slug string, params interface{}) (*Type, *http.Response, []byte, error) {
+func (col *TypesCollection) Get(slug string, params interface{}) (*Type, *Response, []byte, error) {
 	var entity Type
 	entityURL := fmt.Sprintf("%v/%v", col.url, slug)
 	resp, body, err := col.client.Get(entityURL, params, &entity)
-	return &entity, resp, body, err
+	return &entity, newResponse(resp), body, err
 }

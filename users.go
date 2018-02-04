@@ -2,7 +2,6 @@ package wordpress
 
 import (
 	"fmt"
-	"net/http"
 )
 
 type AvatarURLS struct {
@@ -37,37 +36,37 @@ type UsersCollection struct {
 	url    string
 }
 
-func (col *UsersCollection) Me(params interface{}) (*User, *http.Response, []byte, error) {
+func (col *UsersCollection) Me(params interface{}) (*User, *Response, []byte, error) {
 	url := fmt.Sprintf("%v/me", col.url)
 	var user User
 	resp, body, err := col.client.Get(url, params, &user)
-	return &user, resp, body, err
+	return &user, newResponse(resp), body, err
 }
-func (col *UsersCollection) List(params interface{}) ([]User, *http.Response, []byte, error) {
+func (col *UsersCollection) List(params interface{}) ([]User, *Response, []byte, error) {
 	var users []User
 	resp, body, err := col.client.List(col.url, params, &users)
-	return users, resp, body, err
+	return users, newResponse(resp), body, err
 }
-func (col *UsersCollection) Create(new *User) (*User, *http.Response, []byte, error) {
+func (col *UsersCollection) Create(new *User) (*User, *Response, []byte, error) {
 	var created User
 	resp, body, err := col.client.Create(col.url, new, &created)
-	return &created, resp, body, err
+	return &created, newResponse(resp), body, err
 }
-func (col *UsersCollection) Get(id int, params interface{}) (*User, *http.Response, []byte, error) {
+func (col *UsersCollection) Get(id int, params interface{}) (*User, *Response, []byte, error) {
 	var entity User
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Get(entityURL, params, &entity)
-	return &entity, resp, body, err
+	return &entity, newResponse(resp), body, err
 }
-func (col *UsersCollection) Update(id int, post *User) (*User, *http.Response, []byte, error) {
+func (col *UsersCollection) Update(id int, post *User) (*User, *Response, []byte, error) {
 	var updated User
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Update(entityURL, post, &updated)
-	return &updated, resp, body, err
+	return &updated, newResponse(resp), body, err
 }
-func (col *UsersCollection) Delete(id int, params interface{}) (*User, *http.Response, []byte, error) {
+func (col *UsersCollection) Delete(id int, params interface{}) (*User, *Response, []byte, error) {
 	var deleted User
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Delete(entityURL, params, &deleted)
-	return &deleted, resp, body, err
+	return &deleted, newResponse(resp), body, err
 }

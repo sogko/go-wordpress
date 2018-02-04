@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -53,6 +54,47 @@ type Client struct {
 	req     *gorequest.SuperAgent
 	options *Options
 	baseURL string
+}
+
+// Response is a WordPress REST API response. This wraps the standard http.Response
+// returned from WordPress and provides convenient access to things like
+// pagination data.
+type Response struct {
+	*http.Response
+
+	// These fields provide the page values for paginating through a set of
+	// results. Any or all of these may be set to the zero value for
+	// responses that are not part of a paginated set, or for which there
+	// are no additional pages.
+
+	TotalRecords int
+	TotalPages   int
+}
+
+// newResponse creates a new Response for the provided http.Response.
+// r must not be nil.
+func newResponse(r *http.Response) *Response {
+	response := &Response{Response: r}
+	response.populatePageValues()
+	return response
+}
+
+// populatePageValues parses the HTTP Link response headers and populates the
+// various pagination link values in the Response.
+func (r *Response) populatePageValues() {
+	totalRecords, err := strconv.Atoi(r.Header.Get("X-WP-Total"))
+	if err != nil {
+		return
+	}
+
+	r.TotalRecords = totalRecords
+
+	totalPages, err := strconv.Atoi(r.Header.Get("X-WP-TotalPages"))
+	if err != nil {
+		return
+	}
+
+	r.TotalPages = totalPages
 }
 
 // Used to create a new SuperAgent object.
@@ -112,20 +154,20 @@ type RootInfo struct {
 	Location *time.Location `json:"-"`
 }
 
-func (client *Client) BasicInfo() (*RootInfo, *http.Response, []byte, error) {
+func (client *Client) BasicInfo() (*RootInfo, *Response, []byte, error) {
 	var entity RootInfo
 	resp, body, err := client.Get(client.baseURL, nil, &entity)
 	if err != nil {
-		return &entity, resp, body, err
+		return &entity, newResponse(resp), body, err
 	}
 
 	location, locationErr := time.LoadLocation(entity.TimezoneString)
 	if locationErr != nil {
-		return &entity, resp, body, locationErr
+		return &entity, newResponse(resp), body, locationErr
 	}
 	entity.Location = location
 
-	return &entity, resp, body, err
+	return &entity, newResponse(resp), body, err
 }
 
 func (client *Client) Users() *UsersCollection {

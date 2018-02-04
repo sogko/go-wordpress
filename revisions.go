@@ -2,7 +2,6 @@ package wordpress
 
 import (
 	"fmt"
-	"net/http"
 )
 
 type Revision struct {
@@ -27,23 +26,23 @@ type RevisionsCollection struct {
 	parentType string
 }
 
-func (col *RevisionsCollection) List(params interface{}) ([]Revision, *http.Response, []byte, error) {
+func (col *RevisionsCollection) List(params interface{}) ([]Revision, *Response, []byte, error) {
 	var revisions []Revision
 	resp, body, err := col.client.List(col.url, params, &revisions)
-	return revisions, resp, body, err
+	return revisions, newResponse(resp), body, err
 }
 
-func (col *RevisionsCollection) Get(id int, params interface{}) (*Revision, *http.Response, []byte, error) {
+func (col *RevisionsCollection) Get(id int, params interface{}) (*Revision, *Response, []byte, error) {
 	var revision Revision
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Get(entityURL, params, &revision)
-	return &revision, resp, body, err
+	return &revision, newResponse(resp), body, err
 }
 
 // TODO: file an issue for inconsistent response
-func (col *RevisionsCollection) Delete(id int, params interface{}) (bool, *http.Response, []byte, error) {
+func (col *RevisionsCollection) Delete(id int, params interface{}) (bool, *Response, []byte, error) {
 	var response bool
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Delete(entityURL, "force=true", &response)
-	return response, resp, body, err
+	return response, newResponse(resp), body, err
 }

@@ -2,7 +2,6 @@ package wordpress
 
 import (
 	"fmt"
-	"net/http"
 )
 
 type Page struct {
@@ -61,7 +60,7 @@ func (entity *Page) Revisions() *RevisionsCollection {
 	}
 }
 
-func (entity *Page) Populate(params interface{}) (*Page, *http.Response, []byte, error) {
+func (entity *Page) Populate(params interface{}) (*Page, *Response, []byte, error) {
 	return entity.collection.Get(entity.ID, params)
 }
 
@@ -71,7 +70,7 @@ type PagesCollection struct {
 	entityURL string
 }
 
-func (col *PagesCollection) List(params interface{}) ([]Page, *http.Response, []byte, error) {
+func (col *PagesCollection) List(params interface{}) ([]Page, *Response, []byte, error) {
 	var pages []Page
 	resp, body, err := col.client.List(col.url, params, &pages)
 
@@ -80,17 +79,17 @@ func (col *PagesCollection) List(params interface{}) ([]Page, *http.Response, []
 		p.setCollection(col)
 	}
 
-	return pages, resp, body, err
+	return pages, newResponse(resp), body, err
 }
-func (col *PagesCollection) Create(new *Page) (*Page, *http.Response, []byte, error) {
+func (col *PagesCollection) Create(new *Page) (*Page, *Response, []byte, error) {
 	var created Page
 	resp, body, err := col.client.Create(col.url, new, &created)
 
 	created.setCollection(col)
 
-	return &created, resp, body, err
+	return &created, newResponse(resp), body, err
 }
-func (col *PagesCollection) Get(id int, params interface{}) (*Page, *http.Response, []byte, error) {
+func (col *PagesCollection) Get(id int, params interface{}) (*Page, *Response, []byte, error) {
 	var entity Page
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Get(entityURL, params, &entity)
@@ -98,7 +97,7 @@ func (col *PagesCollection) Get(id int, params interface{}) (*Page, *http.Respon
 	// set collection object for each entity which has sub-collection
 	entity.setCollection(col)
 
-	return &entity, resp, body, err
+	return &entity, newResponse(resp), body, err
 }
 func (col *PagesCollection) Entity(id int) *Page {
 	entity := Page{
@@ -108,7 +107,7 @@ func (col *PagesCollection) Entity(id int) *Page {
 	return &entity
 }
 
-func (col *PagesCollection) Update(id int, page *Page) (*Page, *http.Response, []byte, error) {
+func (col *PagesCollection) Update(id int, page *Page) (*Page, *Response, []byte, error) {
 	var updated Page
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Update(entityURL, page, &updated)
@@ -116,9 +115,9 @@ func (col *PagesCollection) Update(id int, page *Page) (*Page, *http.Response, [
 	// set collection object for each entity which has sub-collection
 	updated.setCollection(col)
 
-	return &updated, resp, body, err
+	return &updated, newResponse(resp), body, err
 }
-func (col *PagesCollection) Delete(id int, params interface{}) (*Page, *http.Response, []byte, error) {
+func (col *PagesCollection) Delete(id int, params interface{}) (*Page, *Response, []byte, error) {
 	var deleted Page
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 
@@ -127,5 +126,5 @@ func (col *PagesCollection) Delete(id int, params interface{}) (*Page, *http.Res
 	// set collection object for each entity which has sub-collection
 	deleted.setCollection(col)
 
-	return &deleted, resp, body, err
+	return &deleted, newResponse(resp), body, err
 }

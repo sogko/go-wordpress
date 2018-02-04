@@ -2,7 +2,6 @@ package wordpress
 
 import (
 	"fmt"
-	"net/http"
 )
 
 type MediaDetailsSizesItem struct {
@@ -62,25 +61,25 @@ type MediaCollection struct {
 	url    string
 }
 
-func (col *MediaCollection) List(params interface{}) ([]Media, *http.Response, []byte, error) {
+func (col *MediaCollection) List(params interface{}) ([]Media, *Response, []byte, error) {
 	var media []Media
 	resp, body, err := col.client.List(col.url, params, &media)
-	return media, resp, body, err
+	return media, newResponse(resp), body, err
 }
-func (col *MediaCollection) Create(options *MediaUploadOptions) (*Media, *http.Response, []byte, error) {
+func (col *MediaCollection) Create(options *MediaUploadOptions) (*Media, *Response, []byte, error) {
 	var created Media
 	resp, body, err := col.client.PostData(col.url, options.Data, options.ContentType, options.Filename, &created)
-	return &created, resp, body, err
+	return &created, newResponse(resp), body, err
 }
-func (col *MediaCollection) Get(id int, params interface{}) (*Media, *http.Response, []byte, error) {
+func (col *MediaCollection) Get(id int, params interface{}) (*Media, *Response, []byte, error) {
 	var entity Media
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Get(entityURL, params, &entity)
-	return &entity, resp, body, err
+	return &entity, newResponse(resp), body, err
 }
-func (col *MediaCollection) Delete(id int, params interface{}) (*Media, *http.Response, []byte, error) {
+func (col *MediaCollection) Delete(id int, params interface{}) (*Media, *Response, []byte, error) {
 	var deleted Media
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Delete(entityURL, params, &deleted)
-	return &deleted, resp, body, err
+	return &deleted, newResponse(resp), body, err
 }

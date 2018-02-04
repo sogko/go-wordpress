@@ -2,7 +2,6 @@ package wordpress
 
 import (
 	"fmt"
-	"net/http"
 )
 
 type Status struct {
@@ -26,15 +25,15 @@ type StatusesCollection struct {
 	url    string
 }
 
-func (col *StatusesCollection) List(params interface{}) (*Statuses, *http.Response, []byte, error) {
+func (col *StatusesCollection) List(params interface{}) (*Statuses, *Response, []byte, error) {
 	var statuses Statuses
 	resp, body, err := col.client.List(col.url, params, &statuses)
-	return &statuses, resp, body, err
+	return &statuses, newResponse(resp), body, err
 }
 
-func (col *StatusesCollection) Get(slug string, params interface{}) (*Status, *http.Response, []byte, error) {
+func (col *StatusesCollection) Get(slug string, params interface{}) (*Status, *Response, []byte, error) {
 	var entity Status
 	entityURL := fmt.Sprintf("%v/%v", col.url, slug)
 	resp, body, err := col.client.Get(entityURL, params, &entity)
-	return &entity, resp, body, err
+	return &entity, newResponse(resp), body, err
 }

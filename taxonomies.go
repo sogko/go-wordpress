@@ -2,7 +2,6 @@ package wordpress
 
 import (
 	"fmt"
-	"net/http"
 )
 
 type Taxonomy struct {
@@ -19,15 +18,15 @@ type TaxonomiesCollection struct {
 	url    string
 }
 
-func (col *TaxonomiesCollection) List(params interface{}) (map[string]Taxonomy, *http.Response, []byte, error) {
+func (col *TaxonomiesCollection) List(params interface{}) (map[string]Taxonomy, *Response, []byte, error) {
 	var taxonomies map[string]Taxonomy
 	resp, body, err := col.client.List(col.url, params, &taxonomies)
-	return taxonomies, resp, body, err
+	return taxonomies, newResponse(resp), body, err
 }
 
-func (col *TaxonomiesCollection) Get(slug string, params interface{}) (*Taxonomy, *http.Response, []byte, error) {
+func (col *TaxonomiesCollection) Get(slug string, params interface{}) (*Taxonomy, *Response, []byte, error) {
 	var taxonomy Taxonomy
 	entityURL := fmt.Sprintf("%v/%v", col.url, slug)
 	resp, body, err := col.client.Get(entityURL, params, &taxonomy)
-	return &taxonomy, resp, body, err
+	return &taxonomy, newResponse(resp), body, err
 }

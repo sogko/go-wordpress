@@ -2,7 +2,6 @@ package wordpress
 
 import (
 	"fmt"
-	"net/http"
 )
 
 const (
@@ -133,7 +132,7 @@ func (entity *Post) Terms() *PostsTermsCollection {
 		url:        fmt.Sprintf("%v/%v/%v", entity.collection.url, entity.ID, CollectionTerms),
 	}
 }
-func (entity *Post) Populate(params interface{}) (*Post, *http.Response, []byte, error) {
+func (entity *Post) Populate(params interface{}) (*Post, *Response, []byte, error) {
 	return entity.collection.Get(entity.ID, params)
 }
 
@@ -143,7 +142,7 @@ type PostsCollection struct {
 	entityURL string
 }
 
-func (col *PostsCollection) List(params interface{}) ([]Post, *http.Response, []byte, error) {
+func (col *PostsCollection) List(params interface{}) ([]Post, *Response, []byte, error) {
 	var posts []Post
 	resp, body, err := col.client.List(col.url, params, &posts)
 
@@ -152,17 +151,17 @@ func (col *PostsCollection) List(params interface{}) ([]Post, *http.Response, []
 		p.setCollection(col)
 	}
 
-	return posts, resp, body, err
+	return posts, newResponse(resp), body, err
 }
-func (col *PostsCollection) Create(new *Post) (*Post, *http.Response, []byte, error) {
+func (col *PostsCollection) Create(new *Post) (*Post, *Response, []byte, error) {
 	var created Post
 	resp, body, err := col.client.Create(col.url, new, &created)
 
 	created.setCollection(col)
 
-	return &created, resp, body, err
+	return &created, newResponse(resp), body, err
 }
-func (col *PostsCollection) Get(id int, params interface{}) (*Post, *http.Response, []byte, error) {
+func (col *PostsCollection) Get(id int, params interface{}) (*Post, *Response, []byte, error) {
 	var entity Post
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Get(entityURL, params, &entity)
@@ -170,7 +169,7 @@ func (col *PostsCollection) Get(id int, params interface{}) (*Post, *http.Respon
 	// set collection object for each entity which has sub-collection
 	entity.setCollection(col)
 
-	return &entity, resp, body, err
+	return &entity, newResponse(resp), body, err
 }
 func (col *PostsCollection) Entity(id int) *Post {
 	entity := Post{
@@ -180,7 +179,7 @@ func (col *PostsCollection) Entity(id int) *Post {
 	return &entity
 }
 
-func (col *PostsCollection) Update(id int, post *Post) (*Post, *http.Response, []byte, error) {
+func (col *PostsCollection) Update(id int, post *Post) (*Post, *Response, []byte, error) {
 	var updated Post
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Update(entityURL, post, &updated)
@@ -188,9 +187,9 @@ func (col *PostsCollection) Update(id int, post *Post) (*Post, *http.Response, [
 	// set collection object for each entity which has sub-collection
 	updated.setCollection(col)
 
-	return &updated, resp, body, err
+	return &updated, newResponse(resp), body, err
 }
-func (col *PostsCollection) Delete(id int, params interface{}) (*Post, *http.Response, []byte, error) {
+func (col *PostsCollection) Delete(id int, params interface{}) (*Post, *Response, []byte, error) {
 	var deleted Post
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 
@@ -199,5 +198,5 @@ func (col *PostsCollection) Delete(id int, params interface{}) (*Post, *http.Res
 	// set collection object for each entity which has sub-collection
 	deleted.setCollection(col)
 
-	return &deleted, resp, body, err
+	return &deleted, newResponse(resp), body, err
 }

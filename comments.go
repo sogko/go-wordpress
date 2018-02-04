@@ -2,7 +2,6 @@ package wordpress
 
 import (
 	"fmt"
-	"net/http"
 )
 
 type Comment struct {
@@ -31,31 +30,31 @@ type CommentsCollection struct {
 	url    string
 }
 
-func (col *CommentsCollection) List(params interface{}) ([]Comment, *http.Response, []byte, error) {
+func (col *CommentsCollection) List(params interface{}) ([]Comment, *Response, []byte, error) {
 	var comments []Comment
 	resp, body, err := col.client.List(col.url, params, &comments)
-	return comments, resp, body, err
+	return comments, newResponse(resp), body, err
 }
-func (col *CommentsCollection) Create(new *Comment) (*Comment, *http.Response, []byte, error) {
+func (col *CommentsCollection) Create(new *Comment) (*Comment, *Response, []byte, error) {
 	var created Comment
 	resp, body, err := col.client.Create(col.url, new, &created)
-	return &created, resp, body, err
+	return &created, newResponse(resp), body, err
 }
-func (col *CommentsCollection) Get(id int, params interface{}) (*Comment, *http.Response, []byte, error) {
+func (col *CommentsCollection) Get(id int, params interface{}) (*Comment, *Response, []byte, error) {
 	var entity Comment
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Get(entityURL, params, &entity)
-	return &entity, resp, body, err
+	return &entity, newResponse(resp), body, err
 }
-func (col *CommentsCollection) Update(id int, post *Comment) (*Comment, *http.Response, []byte, error) {
+func (col *CommentsCollection) Update(id int, post *Comment) (*Comment, *Response, []byte, error) {
 	var updated Comment
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Update(entityURL, post, &updated)
-	return &updated, resp, body, err
+	return &updated, newResponse(resp), body, err
 }
-func (col *CommentsCollection) Delete(id int, params interface{}) (*Comment, *http.Response, []byte, error) {
+func (col *CommentsCollection) Delete(id int, params interface{}) (*Comment, *Response, []byte, error) {
 	var deleted Comment
 	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 	resp, body, err := col.client.Delete(entityURL, params, &deleted)
-	return &deleted, resp, body, err
+	return &deleted, newResponse(resp), body, err
 }
