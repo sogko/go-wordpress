@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+var Location = time.UTC
+
 type Time struct {
 	time.Time
 }
@@ -18,16 +20,16 @@ func (t *Time) UnmarshalJSON(b []byte) error {
 	if b[0] == '"' && b[len(b)-1] == '"' {
 		b = b[1 : len(b)-1]
 	}
-	tTime, err := time.Parse(TimeLayout, string(b))
+	zoneTime, err := time.Parse(TimeWithZoneLayout, string(b))
 	if err != nil {
-		altTime, altErr := time.Parse(TimeWithZoneLayout, string(b))
+		noZoneTime, altErr := time.ParseInLocation(TimeLayout, string(b), Location)
 		if altErr != nil {
 			return err
 		} else {
-			t.Time = altTime
+			zoneTime = noZoneTime
 		}
 	}
-	t.Time = tTime
+	t.Time = zoneTime
 	return nil
 }
 

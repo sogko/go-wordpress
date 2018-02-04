@@ -39,6 +39,7 @@ type GeneralError struct {
 
 type Options struct {
 	BaseAPIURL string
+	Location   *time.Location
 
 	// Basic Auth
 	Username string
@@ -85,6 +86,11 @@ func NewClient(options *Options) *Client {
 		splitURL := strings.Split(options.BaseAPIURL, "/wp/v2")
 		options.BaseAPIURL = splitURL[0]
 	}
+
+	if options.Location != nil {
+		Location = options.Location
+	}
+
 	return &Client{
 		req:     req,
 		options: options,
