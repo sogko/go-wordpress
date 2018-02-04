@@ -12,10 +12,15 @@ type DiscoveredAPI struct {
 	DiscoveredURL string
 	ViaHeader     bool
 	ViaHTML       bool
+	Client        *Client
+	BasicInfo     *RootInfo
 }
 
 // DiscoverAPI will discover the API root URL for the given base URL.
-func DiscoverAPI(baseURL string) (*DiscoveredAPI, error) {
+func DiscoverAPI(baseURL string, getRootInfo bool) (*DiscoveredAPI, error) {
+	discovered := &DiscoveredAPI{
+		BaseURL: baseURL,
+	}
 	res, httpErr := http.Get(baseURL)
 	if httpErr != nil {
 		return nil, httpErr
@@ -25,21 +30,30 @@ func DiscoverAPI(baseURL string) (*DiscoveredAPI, error) {
 		if linkErr != nil {
 			return nil, linkErr
 		}
-		return &DiscoveredAPI{
-			BaseURL:       baseURL,
-			DiscoveredURL: discoveredURL,
-			ViaHeader:     true,
-		}, nil
+		discovered.DiscoveredURL = discoveredURL
+		discovered.ViaHeader = true
+	} else {
+		discoveredURL, linkErr := extractLinkFromHTML(res)
+		if linkErr != nil {
+			return nil, linkErr
+		}
+		discovered.DiscoveredURL = discoveredURL
+		discovered.ViaHTML = true
 	}
-	discoveredURL, linkErr := extractLinkFromHTML(res)
-	if linkErr != nil {
-		return nil, linkErr
+	clientOpts := &Options{
+		BaseAPIURL: discovered.DiscoveredURL,
 	}
-	return &DiscoveredAPI{
-		BaseURL:       baseURL,
-		DiscoveredURL: discoveredURL,
-		ViaHTML:       true,
-	}, nil
+	if getRootInfo {
+		client := NewClient(clientOpts)
+		info, _, _, basicInfoErr := client.BasicInfo()
+		if basicInfoErr != nil {
+			return nil, basicInfoErr
+		}
+		clientOpts.Location = info.Location
+		discovered.BasicInfo = info
+	}
+	discovered.Client = NewClient(clientOpts)
+	return discovered, nil
 }
 
 func linkHeader(resp *http.Response) (string, error) {
