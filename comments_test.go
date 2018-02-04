@@ -1,6 +1,7 @@
 package wordpress_test
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"testing"
@@ -14,7 +15,7 @@ func factoryComment(postID int) wordpress.Comment {
 		Author:     1,
 		Status:     wordpress.CommentStatusApproved,
 		AuthorName: "go-wordpress",
-		Content: wordpress.Content{
+		Content: wordpress.RenderedString{
 			Raw:      "Test Comment",
 			Rendered: "<p>Test Comment</p>",
 		},
@@ -23,15 +24,12 @@ func factoryComment(postID int) wordpress.Comment {
 
 func cleanUpComment(t *testing.T, commentID int) {
 
-	wp := initTestClient()
-	deletedComment, resp, body, err := wp.Comments().Delete(commentID, "force=true")
+	wp, ctx := initTestClient()
+	deletedComment, resp, err := wp.Comments.Delete(ctx, commentID, "force=true")
 	if err != nil {
 		t.Errorf("Failed to clean up new comment: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if deletedComment.ID != commentID {
@@ -39,41 +37,38 @@ func cleanUpComment(t *testing.T, commentID int) {
 	}
 }
 
-func getAnyOneComment(t *testing.T, wp *wordpress.Client) *wordpress.Comment {
+func getAnyOneComment(t *testing.T, ctx context.Context, wp *wordpress.Client) *wordpress.Comment {
 
-	comments, resp, body, err := wp.Comments().List(nil)
-	if resp.StatusCode != http.StatusOK {
+	comments, resp, err := wp.Comments.List(ctx, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if len(comments) < 1 {
 		log.Print(err)
-		log.Print(body)
 		log.Print(resp)
 		t.Fatalf("Should not return empty comments")
 	}
 
 	commentID := comments[0].ID
 
-	comment, resp, _, _ := wp.Comments().Get(commentID, "context=edit")
-	if resp.StatusCode != http.StatusOK {
+	comment, resp, _ := wp.Comments.Get(ctx, commentID, "context=edit")
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	return comment
 }
 
 func TestCommentsList(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	comments, resp, body, err := wp.Comments().List(nil)
+	comments, resp, err := wp.Comments.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if comments == nil {
 		t.Errorf("Should not return nil comments")
 	}
@@ -83,60 +78,54 @@ func TestCommentsList(t *testing.T) {
 }
 
 func TestCommentsGet_CommentExists(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	c := getAnyOneComment(t, wp)
+	c := getAnyOneComment(t, ctx, wp)
 
-	comment, resp, body, err := wp.Comments().Get(c.ID, nil)
+	comment, resp, err := wp.Comments.Get(ctx, c.ID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if comment == nil {
 		t.Errorf("Should not return nil comments")
 	}
 }
 
 func TestCommentsGet_CommentDoesNotExists(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	comment, resp, body, err := wp.Comments().Get(-1, nil)
+	comment, resp, err := wp.Comments.Get(ctx, -1, nil)
 	if err == nil {
 		t.Errorf("Should return error")
 	}
-	if resp.StatusCode != http.StatusNotFound {
+	if resp != nil && resp.StatusCode != http.StatusNotFound {
 		t.Errorf("Expected 404 Not Found, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if comment == nil {
 		t.Errorf("Should not return nil comments")
 	}
 }
 
 func TestCommentsCreate(t *testing.T) {
-	t.Skipf("[TestCommentsCreate] Skipped: there is an issue with creating comments, server returning empty string")
-	wp := initTestClient()
+	// t.Skipf("[TestCommentsCreate] Skipped: there is an issue with creating comments, server returning empty string")
+	wp, ctx := initTestClient()
 
-	p := getAnyOnePost(t, wp)
+	p := getAnyOnePost(t, ctx, wp)
 	c := factoryComment(p.ID)
 
-	newComment, resp, body, err := wp.Comments().Create(&c)
+	newComment, resp, err := wp.Comments.Create(ctx, &c)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusCreated {
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Errorf("Expected 201 Created, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if newComment == nil {
 		t.Errorf("Should not return nil newComment")
 	}

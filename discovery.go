@@ -1,12 +1,14 @@
 package wordpress
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/tomnomnom/linkheader"
 )
 
+// DiscoveredAPI is a struct containing details about a discovered WordPress REST API.
 type DiscoveredAPI struct {
 	BaseURL       string
 	DiscoveredURL string
@@ -44,15 +46,15 @@ func DiscoverAPI(baseURL string, getRootInfo bool) (*DiscoveredAPI, error) {
 		BaseAPIURL: discovered.DiscoveredURL,
 	}
 	if getRootInfo {
-		client := NewClient(clientOpts)
-		info, _, _, basicInfoErr := client.BasicInfo()
+		client := NewClient(clientOpts, nil)
+		info, _, basicInfoErr := client.BasicInfo(context.Background())
 		if basicInfoErr != nil {
 			return nil, basicInfoErr
 		}
 		clientOpts.Location = info.Location
 		discovered.BasicInfo = info
 	}
-	discovered.Client = NewClient(clientOpts)
+	discovered.Client = NewClient(clientOpts, nil)
 	return discovered, nil
 }
 

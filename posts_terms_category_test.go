@@ -1,6 +1,7 @@
 package wordpress_test
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -9,16 +10,13 @@ import (
 
 func cleanUpPostsTermsCategory(t *testing.T, postID int, id int) {
 
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 	// terms does not support trashing
-	deletedTerm, resp, body, err := wp.Posts().Entity(postID).Terms().Category().Delete(id, "force=true")
+	deletedTerm, resp, err := wp.Posts.Entity(postID).Terms().Category().Delete(ctx, id, "force=true")
 	if err != nil {
 		t.Errorf("Failed to clean up new term: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if deletedTerm.ID != id {
@@ -26,10 +24,10 @@ func cleanUpPostsTermsCategory(t *testing.T, postID int, id int) {
 	}
 }
 
-func getAnyOnePostsTermsCategory(t *testing.T, wp *wordpress.Client, postID int) *wordpress.PostsTerm {
+func getAnyOnePostsTermsCategory(t *testing.T, ctx context.Context, wp *wordpress.Client, postID int) *wordpress.PostsTerm {
 
-	terms, resp, _, _ := wp.Posts().Entity(postID).Terms().Category().List(nil)
-	if resp.StatusCode != http.StatusOK {
+	terms, resp, _ := wp.Posts.Entity(postID).Terms().Category().List(ctx, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if len(terms) < 1 {
@@ -38,8 +36,8 @@ func getAnyOnePostsTermsCategory(t *testing.T, wp *wordpress.Client, postID int)
 
 	id := terms[0].ID
 
-	term, resp, _, _ := wp.Posts().Entity(postID).Terms().Category().Get(id, nil)
-	if resp.StatusCode != http.StatusOK {
+	term, resp, _ := wp.Posts.Entity(postID).Terms().Category().Get(ctx, id, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Fatalf("Expected 200 OK, got %v", resp.Status)
 	}
 
@@ -47,8 +45,8 @@ func getAnyOnePostsTermsCategory(t *testing.T, wp *wordpress.Client, postID int)
 }
 
 func TestPostsTermsCategory_InvalidCall(t *testing.T) {
-	// User is not allowed to call create wordpress.Post object manually to retrieve PostsTermsCollection
-	// A proper API call would inject the right PostsTermsCollection, Client and other goodies into a post,
+	// User is not allowed to call create wordpress.Post object manually to retrieve PostsTermsService
+	// A proper API call would inject the right PostsTermsService, Client and other goodies into a post,
 	// allowing user to call post.Terms()
 	invalidPost := wordpress.Post{}
 	invalidTerms := invalidPost.Terms()
@@ -59,18 +57,15 @@ func TestPostsTermsCategory_InvalidCall(t *testing.T) {
 
 func TestPostsTermsCategoryList(t *testing.T) {
 	t.Skipf("Not supported anymore")
-	wp := initTestClient()
-	post := getAnyOnePost(t, wp)
+	wp, ctx := initTestClient()
+	post := getAnyOnePost(t, ctx, wp)
 	postID := post.ID
 
-	terms, resp, body, err := wp.Posts().Entity(postID).Terms().Category().List(nil)
+	terms, resp, err := wp.Posts.Entity(postID).Terms().Category().List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if terms == nil {
@@ -81,19 +76,16 @@ func TestPostsTermsCategoryList(t *testing.T) {
 func TestPostsTermsCategoryGet(t *testing.T) {
 	t.Skipf("Not supported anymore")
 
-	wp := initTestClient()
-	post := getAnyOnePost(t, wp)
+	wp, ctx := initTestClient()
+	post := getAnyOnePost(t, ctx, wp)
 	postID := post.ID
-	tt := getAnyOnePostsTermsCategory(t, wp, postID)
+	tt := getAnyOnePostsTermsCategory(t, ctx, wp, postID)
 
-	term, resp, body, err := wp.Posts().Entity(postID).Terms().Category().Get(tt.ID, nil)
+	term, resp, err := wp.Posts.Entity(postID).Terms().Category().Get(ctx, tt.ID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if term == nil {
@@ -105,20 +97,17 @@ func TestPostsTermsCategoryGet(t *testing.T) {
 func TestPostsTermsCategoryCreate_Existing(t *testing.T) {
 	t.Skipf("Not supported anymore")
 
-	wp := initTestClient()
-	post := getAnyOnePost(t, wp)
-	tt := getAnyOneTermsCategory(t, wp)
+	wp, ctx := initTestClient()
+	post := getAnyOnePost(t, ctx, wp)
+	tt := getAnyOneTermsCategory(t, ctx, wp)
 	postID := post.ID
 	termID := tt.ID
 
-	term, resp, body, err := wp.Posts().Entity(postID).Terms().Category().Create(termID)
+	term, resp, err := wp.Posts.Entity(postID).Terms().Category().Create(ctx, termID)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusCreated {
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Errorf("Expected 201 Created, got %v", resp.Status)
 	}
 	if term == nil {
@@ -132,15 +121,15 @@ func TestPostsTermsCategoryCreate_Existing(t *testing.T) {
 func TestPostsTermsCategoryDelete(t *testing.T) {
 	t.Skipf("Not supported anymore")
 
-	wp := initTestClient()
-	post := getAnyOnePost(t, wp)
-	tt := getAnyOneTermsCategory(t, wp)
+	wp, ctx := initTestClient()
+	post := getAnyOnePost(t, ctx, wp)
+	tt := getAnyOneTermsCategory(t, ctx, wp)
 	postID := post.ID
 	termID := tt.ID
 
 	// create category
-	newTerm, resp, _, _ := wp.Posts().Entity(postID).Terms().Category().Create(termID)
-	if resp.StatusCode != http.StatusCreated {
+	newTerm, resp, _ := wp.Posts.Entity(postID).Terms().Category().Create(ctx, termID)
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Errorf("Expected 201 Created, got %v", resp.Status)
 	}
 	if newTerm == nil {
@@ -149,14 +138,11 @@ func TestPostsTermsCategoryDelete(t *testing.T) {
 
 	// delete category
 	// Note: Terms does not support trashing; `force=true` is required
-	deletedTerm, resp, body, err := wp.Posts().Entity(postID).Terms().Category().Delete(newTerm.ID, "force=true")
+	deletedTerm, resp, err := wp.Posts.Entity(postID).Terms().Category().Delete(ctx, newTerm.ID, "force=true")
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if deletedTerm == nil {

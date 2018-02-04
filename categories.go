@@ -1,9 +1,11 @@
 package wordpress
 
 import (
+	"context"
 	"fmt"
 )
 
+// Category represents a WordPress post/page category.
 type Category struct {
 	ID          int    `json:"id"`
 	Count       int    `json:"count"`
@@ -15,36 +17,68 @@ type Category struct {
 	Parent      int    `json:"parent"`
 }
 
-type CategoriesCollection struct {
-	client *Client
-	url    string
+// CategoriesService provides access to the category related functions in the WordPress REST API.
+type CategoriesService service
+
+// CategoriesListOptions are options that can be passed to List().
+type CategoriesListOptions struct {
+	Exclude []int  `url:"exclude,omitempty"`
+	Include []int  `url:"include,omitempty"`
+	Parent  int    `url:"parent,omitempty"`
+	Post    int    `url:"post,omitempty"`
+	Search  string `url:"search,omitempty"`
+	Slug    string `url:"slug,omitempty"`
+
+	ListOptions
 }
 
-func (col *CategoriesCollection) List(params interface{}) ([]Category, *Response, []byte, error) {
-	var categories []Category
-	resp, body, err := col.client.List(col.url, params, &categories)
-	return categories, newResponse(resp), body, err
+// List returns a list of categories.
+func (c *CategoriesService) List(ctx context.Context, opts *CategoriesListOptions) ([]*Category, *Response, error) {
+	u, err := addOptions("categories", opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := c.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	categories := []*Category{}
+	resp, err := c.client.Do(ctx, req, &categories)
+	if err != nil {
+		return nil, resp, err
+	}
+	return categories, resp, nil
 }
-func (col *CategoriesCollection) Create(new *Category) (*Category, *Response, []byte, error) {
+
+// Create creates a new category.
+func (c *CategoriesService) Create(ctx context.Context, new *Category) (*Category, *Response, error) {
 	var created Category
-	resp, body, err := col.client.Create(col.url, new, &created)
-	return &created, newResponse(resp), body, err
+	resp, err := c.client.Create(ctx, "categories", new, &created)
+	return &created, resp, err
 }
-func (col *CategoriesCollection) Get(id int, params interface{}) (*Category, *Response, []byte, error) {
+
+// Get returns a single category for the given id.
+func (c *CategoriesService) Get(ctx context.Context, id int, params interface{}) (*Category, *Response, error) {
 	var entity Category
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.Get(entityURL, params, &entity)
-	return &entity, newResponse(resp), body, err
+	entityURL := fmt.Sprintf("%v/%v", "categories", id)
+	resp, err := c.client.Get(ctx, entityURL, params, &entity)
+	return &entity, resp, err
 }
-func (col *CategoriesCollection) Update(id int, post *Category) (*Category, *Response, []byte, error) {
+
+// Update updates a single category with the given id.
+func (c *CategoriesService) Update(ctx context.Context, id int, post *Category) (*Category, *Response, error) {
 	var updated Category
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.Update(entityURL, post, &updated)
-	return &updated, newResponse(resp), body, err
+	entityURL := fmt.Sprintf("%v/%v", "categories", id)
+	resp, err := c.client.Update(ctx, entityURL, post, &updated)
+	return &updated, resp, err
 }
-func (col *CategoriesCollection) Delete(id int, params interface{}) (*Category, *Response, []byte, error) {
+
+// Delete removes the category with the given id.
+func (c *CategoriesService) Delete(ctx context.Context, id int, params interface{}) (*Category, *Response, error) {
 	var deleted Category
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.Delete(entityURL, params, &deleted)
-	return &deleted, newResponse(resp), body, err
+	entityURL := fmt.Sprintf("%v/%v", "categories", id)
+	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
+	return &deleted, resp, err
 }

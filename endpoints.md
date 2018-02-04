@@ -18,32 +18,6 @@ List of WP-API REST endpoints and implementation status
 - [ ] `PUT    /comments/[id]`  (Implemented but untested)
 - [ ] `DELETE /comments/[id]`  (Implemented but untested)
 
-## Meta
-
-- [x] `GET    /[parent_base]/[parent_id]/meta`
-- [x] `POST   /[parent_base]/[parent_id]/meta`
-- [x] `GET    /[parent_base]/[parent_id]/meta/[id]`
-- [x] `PUT    /[parent_base]/[parent_id]/meta/[id]`
-- [x] `DELETE /[parent_base]/[parent_id]/meta/[id]`
-
-`[parent_base] = "posts" | "pages"`
-
-### Meta Posts
-
-- [x] `GET    /posts/[post_id]/meta`
-- [x] `POST   /posts/[post_id]/meta`
-- [x] `GET    /posts/[post_id]/meta/[id]`
-- [x] `PUT    /posts/[post_id]/meta/[id]`
-- [x] `DELETE /posts/[post_id]/meta/[id]`
-
-### Meta Pages
-
-- [x] `GET    /pages/[post_id]/meta`
-- [x] `POST   /pages/[post_id]/meta`
-- [x] `GET    /pages/[post_id]/meta/[id]`
-- [x] `PUT    /pages/[post_id]/meta/[id]`
-- [x] `DELETE /pages/[post_id]/meta/[id]`
-
 ## Post Statuses
 
 - [x] `GET    /statuses`
@@ -154,4 +128,7 @@ List of WP-API REST endpoints and implementation status
 - [x] `DELETE /users/[id]`
 - [x] `GET    /users/me`
 
+## Settings
 
+- [x] `GET    /settings`
+- [x] `POST   /settings`

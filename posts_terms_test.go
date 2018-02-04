@@ -7,18 +7,15 @@ import (
 
 func TestPostsTermsList(t *testing.T) {
 	t.Skipf("Not supported anymore")
-	wp := initTestClient()
-	post := getAnyOnePost(t, wp)
+	wp, ctx := initTestClient()
+	post := getAnyOnePost(t, ctx, wp)
 	postID := post.ID
 
-	terms, resp, body, err := wp.Posts().Entity(postID).Terms().List("tag", nil)
+	terms, resp, err := wp.Posts.Entity(postID).Terms().List(ctx, "tag", nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if terms == nil {

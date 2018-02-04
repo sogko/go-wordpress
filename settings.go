@@ -1,5 +1,8 @@
 package wordpress
 
+import "context"
+
+// Settings represents a WordPress settings.
 type Settings struct {
 	Title                string `json:"title"`
 	Description          string `json:"description"`
@@ -18,13 +21,12 @@ type Settings struct {
 	DefaultCommentStatus string `json:"default_comment_status"`
 }
 
-type SettingsCollection struct {
-	client *Client
-	url    string
-}
+// SettingsService provides access to the settings related functions in the WordPress REST API.
+type SettingsService service
 
-func (col *SettingsCollection) List() (*Settings, *Response, []byte, error) {
+// List returns a list of settingss.
+func (c *SettingsService) List(ctx context.Context) (*Settings, *Response, error) {
 	var settings Settings
-	resp, body, err := col.client.List(col.url, nil, &settings)
-	return &settings, newResponse(resp), body, err
+	resp, err := c.client.List(ctx, "settings", nil, &settings)
+	return &settings, resp, err
 }

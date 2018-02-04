@@ -6,18 +6,16 @@ import (
 )
 
 func TestTaxonomiesList(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	taxonomies, resp, body, err := wp.Taxonomies().List(nil)
+	taxonomies, resp, err := wp.Taxonomies.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if taxonomies == nil {
 		t.Errorf("Should not return nil taxonomies")
 	}
@@ -27,36 +25,32 @@ func TestTaxonomiesList(t *testing.T) {
 }
 
 func TestTaxonomiesGet_TaxonomyExists(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	taxonomy, resp, body, err := wp.Taxonomies().Get("post_tag", nil)
+	taxonomy, resp, err := wp.Taxonomies.Get(ctx, "post_tag", nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if taxonomy == nil {
 		t.Errorf("Should not return nil taxonomies")
 	}
 }
 
 func TestTaxonomiesGet_TaxonomyDoesNotExists(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	taxonomy, resp, body, err := wp.Taxonomies().Get("RANDOM", nil)
+	taxonomy, resp, err := wp.Taxonomies.Get(ctx, "RANDOM", nil)
 	if err == nil {
 		t.Errorf("Should return error")
 	}
-	if resp.StatusCode != http.StatusNotFound {
+	if resp != nil && resp.StatusCode != http.StatusNotFound {
 		t.Errorf("Expected 404 Not Found, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if taxonomy == nil {
 		t.Errorf("Should not return nil taxonomies")
 	}

@@ -1,9 +1,11 @@
 package wordpress
 
 import (
+	"context"
 	"fmt"
 )
 
+// PostsTerm represents a WordPress post post term.
 type PostsTerm struct {
 	ID          int    `json:"id,omitempty"`
 	Count       int    `json:"integer,omitempty"`
@@ -15,60 +17,74 @@ type PostsTerm struct {
 	Parent      int    `json:"parent,omitempty"`
 }
 
-type PostsTermsCollection struct {
+// PostsTermsService provides access to the post term related functions in the WordPress REST API.
+type PostsTermsService struct {
 	client     *Client
 	url        string
 	parent     interface{}
 	parentType string
 }
 
-func (col *PostsTermsCollection) List(taxonomy string, params interface{}) ([]PostsTerm, *Response, []byte, error) {
-	var terms []PostsTerm
-	url := fmt.Sprintf("%v/%v", col.url, taxonomy)
-	resp, body, err := col.client.List(url, params, &terms)
-	return terms, newResponse(resp), body, err
+// List returns a list of post terms.
+func (c *PostsTermsService) List(ctx context.Context, taxonomy string, params interface{}) ([]*PostsTerm, *Response, error) {
+	var terms []*PostsTerm
+	url := fmt.Sprintf("%v/%v", c.url, taxonomy)
+	resp, err := c.client.List(ctx, url, params, &terms)
+	return terms, resp, err
 }
-func (col *PostsTermsCollection) Tag() *PostsTermsTaxonomyCollection {
-	return &PostsTermsTaxonomyCollection{
-		client:       col.client,
-		url:          fmt.Sprintf("%v/tag", col.url),
+
+// Tag returns the tags of a post.
+func (c *PostsTermsService) Tag() *PostsTermsTaxonomyService {
+	return &PostsTermsTaxonomyService{
+		client:       c.client,
+		url:          fmt.Sprintf("%v/tag", c.url),
 		taxonomyBase: "tag",
 	}
 }
-func (col *PostsTermsCollection) Category() *PostsTermsTaxonomyCollection {
-	return &PostsTermsTaxonomyCollection{
-		client:       col.client,
-		url:          fmt.Sprintf("%v/category", col.url),
+
+// Category returns the categories of a post.
+func (c *PostsTermsService) Category() *PostsTermsTaxonomyService {
+	return &PostsTermsTaxonomyService{
+		client:       c.client,
+		url:          fmt.Sprintf("%v/category", c.url),
 		taxonomyBase: "category",
 	}
 }
 
-type PostsTermsTaxonomyCollection struct {
+// PostsTermsTaxonomyService contains data about the post terms taxonomy service
+type PostsTermsTaxonomyService struct {
 	client       *Client
 	url          string
 	taxonomyBase string
 }
 
-func (col *PostsTermsTaxonomyCollection) List(params interface{}) ([]PostsTerm, *Response, []byte, error) {
-	var terms []PostsTerm
-	resp, body, err := col.client.List(col.url, params, &terms)
-	return terms, newResponse(resp), body, err
+// List returns a list of post terms.
+func (c *PostsTermsTaxonomyService) List(ctx context.Context, params interface{}) ([]*PostsTerm, *Response, error) {
+	var terms []*PostsTerm
+	resp, err := c.client.List(ctx, c.url, params, &terms)
+	return terms, resp, err
 }
-func (col *PostsTermsTaxonomyCollection) Create(id int) (*PostsTerm, *Response, []byte, error) {
+
+// Create creates a new post term.
+func (c *PostsTermsTaxonomyService) Create(ctx context.Context, id int) (*PostsTerm, *Response, error) {
 	var created PostsTerm
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.Create(entityURL, nil, &created)
-	return &created, newResponse(resp), body, err
+	entityURL := fmt.Sprintf("%v/%v", c.url, id)
+	resp, err := c.client.Create(ctx, entityURL, nil, &created)
+	return &created, resp, err
 }
-func (col *PostsTermsTaxonomyCollection) Get(id int, params interface{}) (*PostsTerm, *Response, []byte, error) {
+
+// Get returns a single post term for the given id.
+func (c *PostsTermsTaxonomyService) Get(ctx context.Context, id int, params interface{}) (*PostsTerm, *Response, error) {
 	var entity PostsTerm
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.Get(entityURL, params, &entity)
-	return &entity, newResponse(resp), body, err
+	entityURL := fmt.Sprintf("%v/%v", c.url, id)
+	resp, err := c.client.Get(ctx, entityURL, params, &entity)
+	return &entity, resp, err
 }
-func (col *PostsTermsTaxonomyCollection) Delete(id int, params interface{}) (*PostsTerm, *Response, []byte, error) {
+
+// Delete removes the post term with the given id.
+func (c *PostsTermsTaxonomyService) Delete(ctx context.Context, id int, params interface{}) (*PostsTerm, *Response, error) {
 	var deleted PostsTerm
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.Delete(entityURL, params, &deleted)
-	return &deleted, newResponse(resp), body, err
+	entityURL := fmt.Sprintf("%v/%v", c.url, id)
+	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
+	return &deleted, resp, err
 }

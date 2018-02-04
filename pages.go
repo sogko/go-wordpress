@@ -1,130 +1,163 @@
 package wordpress
 
 import (
+	"context"
 	"fmt"
+	"time"
 )
 
+// Page represents a WordPress page.
 type Page struct {
-	collection *PagesCollection
+	collection *PagesService
 
-	ID            int     `json:"id,omitempty"`
-	Date          Time    `json:"date,omitempty"`
-	DateGMT       Time    `json:"date_gmt,omitempty"`
-	GUID          GUID    `json:"guid,omitempty"`
-	Link          string  `json:"link,omitempty"`
-	Modified      Time    `json:"modified,omitempty"`
-	ModifiedGMT   Time    `json:"modifiedGMT,omitempty"`
-	Password      string  `json:"password,omitempty"`
-	Slug          string  `json:"slug,omitempty"`
-	Status        string  `json:"status,omitempty"`
-	Type          string  `json:"type,omitempty"`
-	Parent        int     `json:"parent,omitempty"`
-	Title         Title   `json:"title,omitempty"`
-	Content       Content `json:"content,omitempty"`
-	Author        int     `json:"author,omitempty"`
-	Excerpt       Excerpt `json:"excerpt,omitempty"`
-	FeaturedImage int     `json:"featured_image,omitempty"`
-	CommentStatus string  `json:"comment_status,omitempty"`
-	PingStatus    string  `json:"ping_status,omitempty"`
-	MenuOrder     int     `json:"menu_order,omitempty"`
-	Template      string  `json:"template,omitempty"`
+	ID            int            `json:"id,omitempty"`
+	Date          Time           `json:"date,omitempty"`
+	DateGMT       Time           `json:"date_gmt,omitempty"`
+	GUID          RenderedString `json:"guid,omitempty"`
+	Link          string         `json:"link,omitempty"`
+	Modified      Time           `json:"modified,omitempty"`
+	ModifiedGMT   Time           `json:"modifiedGMT,omitempty"`
+	Password      string         `json:"password,omitempty"`
+	Slug          string         `json:"slug,omitempty"`
+	Status        string         `json:"status,omitempty"`
+	Type          string         `json:"type,omitempty"`
+	Parent        int            `json:"parent,omitempty"`
+	Title         RenderedString `json:"title,omitempty"`
+	Content       RenderedString `json:"content,omitempty"`
+	Author        int            `json:"author,omitempty"`
+	Excerpt       RenderedString `json:"excerpt,omitempty"`
+	FeaturedImage int            `json:"featured_image,omitempty"`
+	CommentStatus string         `json:"comment_status,omitempty"`
+	PingStatus    string         `json:"ping_status,omitempty"`
+	MenuOrder     int            `json:"menu_order,omitempty"`
+	Template      string         `json:"template,omitempty"`
 }
 
-func (entity *Page) setCollection(col *PagesCollection) {
-	entity.collection = col
+func (entity *Page) setService(c *PagesService) {
+	entity.collection = c
 }
-func (entity *Page) Meta() *MetaCollection {
-	if entity.collection == nil {
-		// missing page.collection parent. Probably Page struct was initialized manually.
-		_warning("Missing parent page collection")
-		return nil
-	}
-	return &MetaCollection{
-		client:     entity.collection.client,
-		parent:     entity,
-		parentType: CollectionPages,
-		url:        fmt.Sprintf("%v/%v/%v", entity.collection.url, entity.ID, CollectionMeta),
-	}
-}
-func (entity *Page) Revisions() *RevisionsCollection {
+
+// Revisions gets the revisions of a single page.
+func (entity *Page) Revisions() *RevisionsService {
 	if entity.collection == nil {
 		// missing page.collection parent. Probably Page struct was initialized manually, not fetched from API
 		_warning("Missing parent page collection")
 		return nil
 	}
-	return &RevisionsCollection{
-		client:     entity.collection.client,
+	return &RevisionsService{
+		service:    service(*entity.collection),
 		parent:     entity,
-		parentType: CollectionPages,
-		url:        fmt.Sprintf("%v/%v/%v", entity.collection.url, entity.ID, CollectionRevisions),
+		parentType: "pages",
+		url:        fmt.Sprintf("%v/%v/%v", "pages", entity.ID, "revisions"),
 	}
 }
 
-func (entity *Page) Populate(params interface{}) (*Page, *Response, []byte, error) {
-	return entity.collection.Get(entity.ID, params)
+// Populate will fill a manually initialized page with the collection information.
+func (entity *Page) Populate(ctx context.Context, params interface{}) (*Page, *Response, error) {
+	return entity.collection.Get(ctx, entity.ID, params)
 }
 
-type PagesCollection struct {
-	client    *Client
-	url       string
-	entityURL string
+// PagesService provides access to the page related functions in the WordPress REST API.
+type PagesService service
+
+// PagesListOptions are options that can be passed to List().
+type PagesListOptions struct {
+	After             *time.Time `url:"after,omitempty"`
+	Author            int        `url:"author,omitempty"`
+	AuthorExclude     []int      `url:"author_exclude,omitempty"`
+	Before            *time.Time `url:"before,omitempty"`
+	Categories        []int      `url:"categories,omitempty"`
+	CategoriesExclude []int      `url:"categories_exclude,omitempty"`
+	Exclude           []int      `url:"exclude,omitempty"`
+	Include           []int      `url:"include,omitempty"`
+	Search            string     `url:"search,omitempty"`
+	Slug              string     `url:"slug,omitempty"`
+	Status            string     `url:"status,omitempty"`
+	Sticky            bool       `url:"sticky,omitempty"`
+	Tags              []int      `url:"tags,omitempty"`
+	TagsExclude       []int      `url:"tags_exclude,omitempty"`
+
+	ListOptions
 }
 
-func (col *PagesCollection) List(params interface{}) ([]Page, *Response, []byte, error) {
-	var pages []Page
-	resp, body, err := col.client.List(col.url, params, &pages)
+// List returns a list of pages.
+func (c *PagesService) List(ctx context.Context, opts *PagesListOptions) ([]*Page, *Response, error) {
+	u, err := addOptions("pages", opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := c.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	pages := []*Page{}
+	resp, err := c.client.Do(ctx, req, &pages)
+	if err != nil {
+		return nil, resp, err
+	}
 
 	// set collection object for each entity which has sub-collection
 	for _, p := range pages {
-		p.setCollection(col)
+		p.setService(c)
 	}
 
-	return pages, newResponse(resp), body, err
+	return pages, resp, nil
 }
-func (col *PagesCollection) Create(new *Page) (*Page, *Response, []byte, error) {
+
+// Create creates a new page.
+func (c *PagesService) Create(ctx context.Context, new *Page) (*Page, *Response, error) {
 	var created Page
-	resp, body, err := col.client.Create(col.url, new, &created)
+	resp, err := c.client.Create(ctx, "pages", new, &created)
 
-	created.setCollection(col)
+	created.setService(c)
 
-	return &created, newResponse(resp), body, err
+	return &created, resp, err
 }
-func (col *PagesCollection) Get(id int, params interface{}) (*Page, *Response, []byte, error) {
+
+// Get returns a single page for the given id.
+func (c *PagesService) Get(ctx context.Context, id int, params interface{}) (*Page, *Response, error) {
 	var entity Page
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.Get(entityURL, params, &entity)
+	entityURL := fmt.Sprintf("%v/%v", "pages", id)
+	resp, err := c.client.Get(ctx, entityURL, params, &entity)
 
 	// set collection object for each entity which has sub-collection
-	entity.setCollection(col)
+	entity.setService(c)
 
-	return &entity, newResponse(resp), body, err
+	return &entity, resp, err
 }
-func (col *PagesCollection) Entity(id int) *Page {
+
+// Entity returns a basic page for the given id.
+func (c *PagesService) Entity(id int) *Page {
 	entity := Page{
-		collection: col,
+		collection: c,
 		ID:         id,
 	}
 	return &entity
 }
 
-func (col *PagesCollection) Update(id int, page *Page) (*Page, *Response, []byte, error) {
+// Update updates a single page with the given id.
+func (c *PagesService) Update(ctx context.Context, id int, page *Page) (*Page, *Response, error) {
 	var updated Page
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.Update(entityURL, page, &updated)
+	entityURL := fmt.Sprintf("%v/%v", "pages", id)
+	resp, err := c.client.Update(ctx, entityURL, page, &updated)
 
 	// set collection object for each entity which has sub-collection
-	updated.setCollection(col)
+	updated.setService(c)
 
-	return &updated, newResponse(resp), body, err
+	return &updated, resp, err
 }
-func (col *PagesCollection) Delete(id int, params interface{}) (*Page, *Response, []byte, error) {
-	var deleted Page
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 
-	resp, body, err := col.client.Delete(entityURL, params, &deleted)
+// Delete removes the page with the given id.
+func (c *PagesService) Delete(ctx context.Context, id int, params interface{}) (*Page, *Response, error) {
+	var deleted Page
+	entityURL := fmt.Sprintf("%v/%v", "pages", id)
+
+	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
 
 	// set collection object for each entity which has sub-collection
-	deleted.setCollection(col)
+	deleted.setService(c)
 
-	return &deleted, newResponse(resp), body, err
+	return &deleted, resp, err
 }

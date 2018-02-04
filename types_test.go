@@ -6,36 +6,32 @@ import (
 )
 
 func TestTypesList(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	types, resp, body, err := wp.Types().List(nil)
+	types, resp, err := wp.Types.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if types == nil {
 		t.Errorf("Should not return nil types")
 	}
 }
 
 func TestTypesGet(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	wpType, resp, body, err := wp.Types().Get("post", nil)
+	wpType, resp, err := wp.Types.Get(ctx, "post", nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if wpType == nil {
 		t.Errorf("Should not return nil type")
 	}

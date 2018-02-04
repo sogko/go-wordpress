@@ -1,6 +1,7 @@
 package wordpress_test
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -9,10 +10,10 @@ import (
 	"github.com/robbiet480/go-wordpress"
 )
 
-func getLatestRevisionForPage(t *testing.T, page *wordpress.Page) *wordpress.Revision {
+func getLatestRevisionForPage(t *testing.T, ctx context.Context, page *wordpress.Page) *wordpress.Revision {
 
-	revisions, resp, _, _ := page.Revisions().List(nil)
-	if resp.StatusCode != http.StatusOK {
+	revisions, resp, _ := page.Revisions().List(ctx, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if len(revisions) < 1 {
@@ -20,8 +21,8 @@ func getLatestRevisionForPage(t *testing.T, page *wordpress.Page) *wordpress.Rev
 	}
 	// get latest revision
 	revisionID := revisions[0].ID
-	revision, resp, _, _ := page.Revisions().Get(revisionID, nil)
-	if resp.StatusCode != http.StatusOK {
+	revision, resp, _ := page.Revisions().Get(ctx, revisionID, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Fatalf("Expected 200 OK, got %v", resp.Status)
 	}
 
@@ -29,9 +30,9 @@ func getLatestRevisionForPage(t *testing.T, page *wordpress.Page) *wordpress.Rev
 }
 
 func TestPagesRevisions_InvalidCall(t *testing.T) {
-	// User is not allowed to call create wordpress.Page object manually to retrieve PageMetaCollection
-	// A proper API call would inject the right PageMetaCollection, Client and other goodies into a page,
-	// allowing user to call page.Revisions()
+	// User is not allowed to call create wordpress.Page object manually to retrieve PageMetaService
+	// A proper API call would inject the right PageMetaService, Client and other goodies into a page,
+	// allowing user to call page.Revisions
 	invalidPage := wordpress.Page{}
 	invalidRevisions := invalidPage.Revisions()
 	if invalidRevisions != nil {
@@ -40,18 +41,16 @@ func TestPagesRevisions_InvalidCall(t *testing.T) {
 }
 
 func TestPagesRevisionsList(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	page := getAnyOnePage(t, wp)
+	page := getAnyOnePage(t, ctx, wp)
 
-	revisions, resp, body, err := page.Revisions().List(nil)
+	revisions, resp, err := page.Revisions().List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
-	if resp.StatusCode != http.StatusOK {
+
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if revisions == nil {
@@ -60,20 +59,18 @@ func TestPagesRevisionsList(t *testing.T) {
 }
 
 func TestPagesRevisionsList_Lazy(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	page := getAnyOnePage(t, wp)
+	page := getAnyOnePage(t, ctx, wp)
 	pageID := page.ID
 
-	// Use Pages().Entity(pageID) to retrieve revisions in one API call
-	lazyRevisions, resp, body, err := wp.Pages().Entity(pageID).Revisions().List(nil)
+	// Use Pages.Entity(pageID) to retrieve revisions in one API call
+	lazyRevisions, resp, err := wp.Pages.Entity(pageID).Revisions().List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
-	if resp.StatusCode != http.StatusOK {
+
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if lazyRevisions == nil {
@@ -82,21 +79,19 @@ func TestPagesRevisionsList_Lazy(t *testing.T) {
 }
 
 func TestPagesRevisionsGet(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	page := getAnyOnePage(t, wp)
-	r := getLatestRevisionForPage(t, page)
+	page := getAnyOnePage(t, ctx, wp)
+	r := getLatestRevisionForPage(t, ctx, page)
 
 	revisionID := r.ID
 
-	revision, resp, body, err := page.Revisions().Get(revisionID, nil)
+	revision, resp, err := page.Revisions().Get(ctx, revisionID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
-	if resp.StatusCode != http.StatusOK {
+
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if revision == nil {
@@ -105,23 +100,21 @@ func TestPagesRevisionsGet(t *testing.T) {
 }
 
 func TestPagesRevisionsGet_Lazy(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	page := getAnyOnePage(t, wp)
-	r := getLatestRevisionForPage(t, page)
+	page := getAnyOnePage(t, ctx, wp)
+	r := getLatestRevisionForPage(t, ctx, page)
 
 	pageID := page.ID
 	revisionID := r.ID
 
-	// Use Pages().Entity(pageID) to retrieve revisions in one API call
-	lazyRevision, resp, body, err := wp.Pages().Entity(pageID).Revisions().Get(revisionID, nil)
+	// Use Pages.Entity(pageID) to retrieve revisions in one API call
+	lazyRevision, resp, err := wp.Pages.Entity(pageID).Revisions().Get(ctx, revisionID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
-	if resp.StatusCode != http.StatusOK {
+
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if lazyRevision == nil {
@@ -130,9 +123,9 @@ func TestPagesRevisionsGet_Lazy(t *testing.T) {
 }
 
 func TestPagesRevisionsDelete_Lazy(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	page := getAnyOnePage(t, wp)
+	page := getAnyOnePage(t, ctx, wp)
 
 	// Edit page to create a new revision
 	// Note: wordpress would only create a new revision if there is an actual change in
@@ -143,28 +136,26 @@ func TestPagesRevisionsDelete_Lazy(t *testing.T) {
 	if originalTitle == page.Title.Raw {
 		t.Fatalf("Flawed test, ensure that page content is modified before an update")
 	}
-	updatedPage, resp, _, _ := wp.Pages().Update(page.ID, page)
-	if resp.StatusCode != http.StatusOK {
+	updatedPage, resp, _ := wp.Pages.Update(ctx, page.ID, page)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Fatalf("Expected 200 OK, got %v", resp.Status)
 	}
 
-	r := getLatestRevisionForPage(t, updatedPage)
+	r := getLatestRevisionForPage(t, ctx, updatedPage)
 	pageID := updatedPage.ID
 	revisionID := r.ID
 
-	// Use Pages().Entity(pageID) to delete revisions in one API call
+	// Use Pages.Entity(pageID) to delete revisions in one API call
 	// Note that deleting a revision does NOT reverse the changes made in the revision
-	response, resp, body, err := wp.Pages().Entity(pageID).Revisions().Delete(revisionID, nil)
+	response, resp, err := wp.Pages.Entity(pageID).Revisions().Delete(ctx, revisionID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
-	if resp.StatusCode != http.StatusOK {
+
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if response == false {
-		t.Errorf("Should not return false (bool) response")
+	if response == nil {
+		t.Errorf("Should not return nil response")
 	}
 }

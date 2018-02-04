@@ -1,5 +1,7 @@
 # go-wp-api
-Golang client library for WP-API (Wordpress REST API)
+[![GoDoc](https://godoc.org/github.com/robbiet480/go-wordpress?status.svg)](https://godoc.org/github.com/robbiet480/go-wordpress)
+
+A Go client library for the [Wordpress REST API](https://developer.wordpress.org/rest-api/)
 
 
 ## Installation
@@ -24,23 +26,23 @@ func main() {
 
   // create wp-api client
   client := wordpress.NewClient(&wordpress.Options{
-    BaseAPIURL: API_BASE_URL, // example: `http://192.168.99.100:32777/wp-json`
+    BaseAPIURL: API_BASE_URL, // example: `http://192.168.99.100:32777/wp-json/`
     Username:   USER,
     Password:   PASSWORD,
-  })
+  }, nil)
+
+  ctx := context.Background()
 
   // for eg, to get current user (GET /users/me)
-  currentUser, resp, body, _ := client.Users().Me()
-  if resp.StatusCode != http.StatusOK {
+  currentUser, resp, _ := client.Users.Me(ctx)
+  if resp != nil && resp.StatusCode != http.StatusOK {
     // handle error
   }
 
-  // `body` will contain raw JSON body in []bytes
-
   // Or you can use your own structs (for custom endpoints, for example)
-  // Below is the equivalent of `client.Posts().Get(100, nil)`
+  // Below is the equivalent of `client.Posts.Get(100, nil)`
   var obj MyCustomPostStruct
-  resp, body, err := client.Get("/posts/100", nil, &obj)
+  resp, err := client.Get(ctx, "/posts/100", nil, &obj)
   // ...
 
   log.Println("Current user", currentUser)
@@ -51,6 +53,41 @@ For more examples, see package tests.
 
 For list of supported/implemented endpoints, see [Endpoints.md](./endpoints.md)
 
+### Pagination ###
+
+All requests for resource collections (posts, pages, media, revisions, etc.)
+support pagination. Pagination options are described in the
+`wordpress.ListOptions` struct and passed to the list methods directly or as an
+embedded type of a more specific list options struct (for example
+`wordpress.PostsListOptions`). Pages information is available via the
+`wordpress.Response` struct.
+
+```go
+client := wordpress.NewClient(&wordpress.Options{
+  BaseAPIURL: API_BASE_URL, // example: `http://192.168.99.100:32777/wp-json/`
+  Username:   USER,
+  Password:   PASSWORD,
+}, nil)
+
+ctx := context.Background()
+
+opt := &wordpress.PostsByOrgOptions{
+  ListOptions: wordpress.ListOptions{PerPage: 10},
+}
+// get all pages of results
+var allPosts []*wordpress.Post
+for {
+  posts, resp, err := client.Posts.List(ctx, opt)
+  if err != nil {
+    return err
+  }
+  allPosts = append(allPosts, posts...)
+  if resp.NextPage == 0 {
+    break
+  }
+  opt.Page = resp.NextPage
+}
+```
 
 ## Test
 __Note:__
@@ -59,9 +96,7 @@ Before running the tests, ensure that you have set up your test environment
 
 ### Prerequisites
 - Wordpress 4.x
-- WP-API plugin
-- WP-API's BasicAuth plugin (for authentication)
-- [WP REST API Meta Endpoints plugin](https://github.com/WP-API/wp-api-meta-endpoints) (for Meta endpoints)
+- [WP-API's BasicAuth plugin (for authentication)](https://github.com/WP-API/Basic-Auth)
 
 ### Setting up test environment
 - Install prequisites (see above)
@@ -76,7 +111,7 @@ Before running the tests, ensure that you have set up your test environment
 ```bash
 
 # Set test enviroment
-export WP_API_URL=http://192.168.99.100:32777/wp-json
+export WP_API_URL=http://192.168.99.100:32777/wp-json/
 export WP_USER=<user>
 export WP_PASSWD=<password>
 

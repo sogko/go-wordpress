@@ -1,9 +1,11 @@
 package wordpress
 
 import (
+	"context"
 	"fmt"
 )
 
+// TypeLabels represents a label that applies to a WordPress Type.
 type TypeLabels struct {
 	Name            string `json:"name,omitempty"`
 	SingularName    string `json:"singular_name,omitempty"`
@@ -20,6 +22,8 @@ type TypeLabels struct {
 	MenuName        string `json:"menu_name,omitempty"`
 	NameAdminBar    string `json:"name_admin_bar,omitempty"`
 }
+
+// Type represents a WordPress item type.
 type Type struct {
 	Description  string     `json:"description,omitempty"`
 	Hierarchical bool       `json:"hierarchical,omitempty"`
@@ -28,26 +32,27 @@ type Type struct {
 	Labels       TypeLabels `json:"labels,omitempty"`
 }
 
+// Types represents the assigned types for each item type.
 type Types struct {
 	Post       Type `json:"post,omitempty"`
 	Page       Type `json:"page,omitempty"`
 	Attachment Type `json:"attachment,omitempty"`
 }
 
-type TypesCollection struct {
-	client *Client
-	url    string
-}
+// TypesService provides access to the Type related functions in the WordPress REST API.
+type TypesService service
 
-func (col *TypesCollection) List(params interface{}) (*Types, *Response, []byte, error) {
+// List returns a list of types.
+func (c *TypesService) List(ctx context.Context, params interface{}) (*Types, *Response, error) {
 	var types Types
-	resp, body, err := col.client.List(col.url, params, &types)
-	return &types, newResponse(resp), body, err
+	resp, err := c.client.List(ctx, "types", params, &types)
+	return &types, resp, err
 }
 
-func (col *TypesCollection) Get(slug string, params interface{}) (*Type, *Response, []byte, error) {
+// Get returns a single type for the given id.
+func (c *TypesService) Get(ctx context.Context, slug string, params interface{}) (*Type, *Response, error) {
 	var entity Type
-	entityURL := fmt.Sprintf("%v/%v", col.url, slug)
-	resp, body, err := col.client.Get(entityURL, params, &entity)
-	return &entity, newResponse(resp), body, err
+	entityURL := fmt.Sprintf("%v/%v", "types", slug)
+	resp, err := c.client.Get(ctx, entityURL, params, &entity)
+	return &entity, resp, err
 }
