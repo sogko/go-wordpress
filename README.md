@@ -18,7 +18,7 @@ package main
 
 import (
   "context"
-  "log"
+  "fmt"
   "net/http"
 
   "github.com/robbiet480/go-wordpress"
