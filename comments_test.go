@@ -112,7 +112,6 @@ func TestCommentsGet_CommentDoesNotExists(t *testing.T) {
 }
 
 func TestCommentsCreate(t *testing.T) {
-	// t.Skipf("[TestCommentsCreate] Skipped: there is an issue with creating comments, server returning empty string")
 	wp, ctx := initTestClient()
 
 	p := getAnyOnePost(t, ctx, wp)

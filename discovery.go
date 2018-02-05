@@ -42,19 +42,25 @@ func DiscoverAPI(baseURL string, getRootInfo bool) (*DiscoveredAPI, error) {
 		discovered.DiscoveredURL = discoveredURL
 		discovered.ViaHTML = true
 	}
-	clientOpts := &Options{
-		BaseAPIURL: discovered.DiscoveredURL,
-	}
 	if getRootInfo {
-		client := NewClient(clientOpts, nil)
+		client, clientErr := NewClient(discovered.DiscoveredURL, nil)
+		if clientErr != nil {
+			return nil, clientErr
+		}
 		info, _, basicInfoErr := client.BasicInfo(context.Background())
 		if basicInfoErr != nil {
 			return nil, basicInfoErr
 		}
-		clientOpts.Location = info.Location
+		client.Location = info.Location
 		discovered.BasicInfo = info
+		discovered.Client = client
+		return discovered, nil
 	}
-	discovered.Client = NewClient(clientOpts, nil)
+	client, clientErr := NewClient(discovered.DiscoveredURL, nil)
+	if clientErr != nil {
+		return nil, clientErr
+	}
+	discovered.Client = client
 	return discovered, nil
 }
 

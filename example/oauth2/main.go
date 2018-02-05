@@ -15,9 +15,7 @@ func main() {
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
-	client := wordpress.NewClient(&wordpress.Options{
-		BaseAPIURL: "http://192.168.99.100:32777/wp-json/",
-	}, tc)
+	client, _ := wordpress.NewClient("http://192.168.99.100:32777/wp-json/", tc)
 
 	// get the currently authenticated users details
 	authenticatedUser, _, err := client.Users.Me(ctx, nil)

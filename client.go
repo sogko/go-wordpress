@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,9 +21,24 @@ import (
 )
 
 const (
+	userAgent          = "go-wordpress"
 	headerTotalRecords = "X-WP-Total"
 	headerTotalPages   = "X-WP-TotalPages"
 )
+
+// ErrURLContainsWPV2 is returned from NewClient if URL contains /wp/v2.
+var ErrURLContainsWPV2 = errors.New("url must not contain /wp/v2")
+
+// DefaultHTTPTransport is an http.RoundTripper that has DisableKeepAlives set true.
+var DefaultHTTPTransport = &http.Transport{
+	DisableKeepAlives: true,
+}
+
+// DefaultHTTPClient is an http.Client with the DefaultHTTPTransport and (Cookie) Jar set nil.
+var DefaultHTTPClient = &http.Client{
+	Jar:       nil,
+	Transport: DefaultHTTPTransport,
+}
 
 // Error is a generic WordPress error container.
 type Error struct {
@@ -38,22 +54,13 @@ func (e *Error) Error() string {
 		e.Response.StatusCode, e.Message)
 }
 
-// Options is a struct containing options that can be passed in during client initialization.
-type Options struct {
-	BaseAPIURL string
-	Location   *time.Location
-
-	// User agent used when communicating with the WordPress API.
-	UserAgent string
-}
-
 // Client is a struct containing values and methods used for interacting with the WordPress API.
 type Client struct {
-	client  *http.Client
-	options *Options
-	BaseURL *url.URL
+	// User agent used when communicating with the WordPress API.
+	UserAgent string
 
-	common service // Reuse a single struct instead of allocating one for each service on the heap.
+	// WordPress timezone location
+	Location *time.Location
 
 	Categories *CategoriesService
 	Comments   *CommentsService
@@ -67,6 +74,11 @@ type Client struct {
 	Terms      *TermsService
 	Types      *TypesService
 	Users      *UsersService
+
+	client  *http.Client
+	baseURL *url.URL
+
+	common service // Reuse a single struct instead of allocating one for each service on the heap.
 }
 
 type service struct {
@@ -141,29 +153,22 @@ func (r *Response) populatePageValues() {
 	}
 }
 
-// NewClient returns an initalized Client for the given options and httpClient.
-func NewClient(options *Options, httpClient *http.Client) *Client {
-	if strings.HasSuffix(options.BaseAPIURL, "/wp/v2") {
-		splitURL := strings.Split(options.BaseAPIURL, "/wp/v2")
-		options.BaseAPIURL = splitURL[0]
+// NewClient returns an initalized Client for the given baseURL and httpClient.
+func NewClient(baseURL string, httpClient *http.Client) (*Client, error) {
+	if strings.Contains(baseURL, "/wp/v2") {
+		return nil, ErrURLContainsWPV2
 	}
 
-	if options.Location != nil {
-		Location = options.Location
+	url, urlErr := url.Parse(baseURL)
+	if urlErr != nil {
+		return nil, urlErr
 	}
-
-	url, _ := url.Parse(options.BaseAPIURL)
 
 	if httpClient == nil {
-		httpClient = &http.Client{
-			Jar: nil,
-			Transport: &http.Transport{
-				DisableKeepAlives: true,
-			},
-		}
+		httpClient = DefaultHTTPClient
 	}
 
-	c := &Client{client: httpClient, options: options, BaseURL: url}
+	c := &Client{client: httpClient, UserAgent: userAgent, baseURL: url}
 	c.common.client = c
 	c.Categories = (*CategoriesService)(&c.common)
 	c.Comments = (*CommentsService)(&c.common)
@@ -177,7 +182,7 @@ func NewClient(options *Options, httpClient *http.Client) *Client {
 	c.Terms = (*TermsService)(&c.common)
 	c.Types = (*TypesService)(&c.common)
 	c.Users = (*UsersService)(&c.common)
-	return c
+	return c, nil
 }
 
 // addOptions adds the parameters in opt as URL query parameters to s. opt
@@ -207,18 +212,18 @@ func addOptions(s string, opt interface{}) (string, error) {
 }
 
 // NewRequest creates an API request. A relative URL can be provided in urlStr,
-// in which case it is resolved relative to the BaseURL of the Client.
+// in which case it is resolved relative to the baseURL of the Client.
 // Relative URLs should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
 func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
-	if !strings.HasSuffix(c.BaseURL.Path, "/") {
-		return nil, fmt.Errorf("BaseURL must have a trailing slash, but %q does not", c.BaseURL)
+	if !strings.HasSuffix(c.baseURL.Path, "/") {
+		return nil, fmt.Errorf("baseURL must have a trailing slash, but %q does not", c.baseURL)
 	}
 	if urlStr != "" {
 		urlStr = fmt.Sprintf("/wp-json/wp/v2/%s", urlStr)
 	}
-	u, err := c.BaseURL.Parse(urlStr)
+	u, err := c.baseURL.Parse(urlStr)
 	if err != nil {
 		return nil, err
 	}
@@ -241,8 +246,8 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
-	if c.options.UserAgent != "" {
-		req.Header.Set("User-Agent", c.options.UserAgent)
+	if c.UserAgent != "" {
+		req.Header.Set("User-Agent", c.UserAgent)
 	}
 	return req, nil
 }
@@ -288,7 +293,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 
 	response := newResponse(resp)
 
-	err = CheckResponse(resp)
+	err = checkResponse(resp)
 	if err != nil {
 		// even though there was an error, we still return the response
 		// in case the caller wants to inspect it further
@@ -329,7 +334,7 @@ type RootInfo struct {
 // BasicInfo gets basic and publicly available information about the WordPress REST API.
 func (c *Client) BasicInfo(ctx context.Context) (*RootInfo, *Response, error) {
 	var entity RootInfo
-	resp, err := c.Get(ctx, c.BaseURL.String(), nil, &entity)
+	resp, err := c.Get(ctx, c.baseURL.String(), nil, &entity)
 	if err != nil {
 		return &entity, resp, err
 	}
@@ -448,13 +453,13 @@ func (c *Client) PostData(ctx context.Context, urlStr string, content []byte, co
 		return nil, closeErr
 	}
 
-	if !strings.HasSuffix(c.BaseURL.Path, "/") {
-		return nil, fmt.Errorf("BaseURL must have a trailing slash, but %q does not", c.BaseURL)
+	if !strings.HasSuffix(c.baseURL.Path, "/") {
+		return nil, fmt.Errorf("baseURL must have a trailing slash, but %q does not", c.baseURL)
 	}
 	if urlStr != "" {
 		urlStr = fmt.Sprintf("/wp-json/wp/v2/%s", urlStr)
 	}
-	u, err := c.BaseURL.Parse(urlStr)
+	u, err := c.baseURL.Parse(urlStr)
 	if err != nil {
 		return nil, err
 	}
@@ -464,8 +469,8 @@ func (c *Client) PostData(ctx context.Context, urlStr string, content []byte, co
 		return nil, err
 	}
 
-	if c.options.UserAgent != "" {
-		req.Header.Set("User-Agent", c.options.UserAgent)
+	if c.UserAgent != "" {
+		req.Header.Set("User-Agent", c.UserAgent)
 	}
 
 	req.Header.Set("Content-Type", w.FormDataContentType())
@@ -489,13 +494,13 @@ func sanitizeURL(uri *url.URL) *url.URL {
 	return uri
 }
 
-// CheckResponse checks the API response for errors, and returns them if
+// checkResponse checks the API response for errors, and returns them if
 // present. A response is considered an error if it has a status code outside
 // the 200 range or equal to 202 Accepted.
 // API error responses are expected to have either no response
 // body, or a JSON response body that maps to ErrorResponse. Any other
 // response body will be silently ignored.
-func CheckResponse(r *http.Response) error {
+func checkResponse(r *http.Response) error {
 	if c := r.StatusCode; 200 <= c && c <= 299 {
 		return nil
 	}

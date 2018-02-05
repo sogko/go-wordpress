@@ -32,9 +32,7 @@ func main() {
   }
 
   // create wp-api client
-  client := wordpress.NewClient(&wordpress.Options{
-    BaseAPIURL: API_BASE_URL, // example: `http://192.168.99.100:32777/wp-json/`
-  }, tp.Client())
+  client, _ := wordpress.NewClient(API_BASE_URL, tp.Client())
 
   ctx := context.Background()
 
@@ -119,9 +117,7 @@ func main() {
   }
 
   // create wp-api client
-  client := wordpress.NewClient(&wordpress.Options{
-    BaseAPIURL: API_BASE_URL, // example: `http://192.168.99.100:32777/wp-json/`
-  }, tp.Client())
+  client, _ := wordpress.NewClient(API_BASE_URL, tp.Client())
 
   ctx := context.Background()
 
