@@ -2,7 +2,6 @@ package wordpress_test
 
 import (
 	"context"
-	"crypto/tls"
 	"errors"
 	"os"
 	"testing"
@@ -15,13 +14,10 @@ var PASSWORD string = os.Getenv("WP_PASSWD")
 var API_BASE_URL string = os.Getenv("WP_API_URL")
 
 func TestClientNew(t *testing.T) {
-	// TLS verify needs to be disabled for Let'ss Encrypt for whatever reason
-	wordpress.DefaultHTTPTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	tp := wordpress.BasicAuthTransport{
-		Username:  USER,
-		Password:  PASSWORD,
-		Transport: wordpress.DefaultHTTPTransport,
+		Username: USER,
+		Password: PASSWORD,
 	}
 	client, clientErr := wordpress.NewClient(API_BASE_URL, tp.Client())
 	if client == nil {
@@ -44,12 +40,9 @@ func initTestClient() (*wordpress.Client, context.Context) {
 		panic("Please set your environment before running the tests")
 	}
 
-	wordpress.DefaultHTTPTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-
 	tp := wordpress.BasicAuthTransport{
-		Username:  USER,
-		Password:  PASSWORD,
-		Transport: wordpress.DefaultHTTPTransport,
+		Username: USER,
+		Password: PASSWORD,
 	}
 
 	client, clientErr := wordpress.NewClient(API_BASE_URL, tp.Client())
