@@ -74,15 +74,15 @@ type MediaService service
 // MediasListOptions are options that can be passed to List().
 type MediasListOptions struct {
 	After         *time.Time `url:"after,omitempty"`
-	Author        []int      `url:"author,omitempty"`
-	AuthorExclude []int      `url:"author_exclude,omitempty"`
+	Author        []int      `url:"author,omitempty,brackets"`
+	AuthorExclude []int      `url:"author_exclude,omitempty,brackets"`
 	Before        *time.Time `url:"before,omitempty"`
-	Exclude       []int      `url:"exclude,omitempty"`
-	Include       []int      `url:"include,omitempty"`
+	Exclude       []int      `url:"exclude,omitempty,brackets"`
+	Include       []int      `url:"include,omitempty,brackets"`
 	MediaType     string     `url:"media_type,omitempty"`
 	MimeType      string     `url:"mime_type,omitempty"`
-	Parent        []int      `url:"parent,omitempty"`
-	ParentExclude []int      `url:"parent_exclude,omitempty"`
+	Parent        []int      `url:"parent,omitempty,brackets"`
+	ParentExclude []int      `url:"parent_exclude,omitempty,brackets"`
 	Search        string     `url:"search,omitempty"`
 	Slug          string     `url:"slug,omitempty"`
 	Status        string     `url:"status,omitempty"`

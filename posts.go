@@ -118,20 +118,20 @@ type PostsService service
 
 // PostsListOptions are options that can be passed to List().
 type PostsListOptions struct {
-	After             *time.Time `url:"after,omitempty"`              // Limit response to posts published after a given ISO8601 compliant date.
-	Author            []int      `url:"author,omitempty"`             // Limit result set to posts assigned to specific authors.
-	AuthorExclude     []int      `url:"author_exclude,omitempty"`     // Ensure result set excludes posts assigned to specific authors.
-	Before            *time.Time `url:"before,omitempty"`             // Limit response to posts published before a given ISO8601 compliant date.
-	Categories        []int      `url:"categories,omitempty"`         // Limit result set to posts with given category IDs.
-	CategoriesExclude []int      `url:"categories_exclude,omitempty"` // Ensure result set excludes posts with given category IDs.
-	Exclude           []int      `url:"exclude,omitempty"`            // Ensure result set excludes specific IDs.
-	Include           []int      `url:"include,omitempty"`            // Limit result set to specific IDs.
-	Search            string     `url:"search,omitempty"`             // Limit results to those matching a string.
-	Slug              string     `url:"slug,omitempty"`               // An alphanumeric identifier for the post type.
-	Status            string     `url:"status,omitempty"`             // A named status for the object.
-	Sticky            bool       `url:"sticky,omitempty"`             // Whether or not the object should be treated as sticky.
-	Tags              []int      `url:"tags,omitempty"`               // Limit result set to posts with given tag IDs.
-	TagsExclude       []int      `url:"tags_exclude,omitempty"`       // Ensure result set excludes posts with given tag IDs.
+	After             *time.Time `url:"after,omitempty"`                       // Limit response to posts published after a given ISO8601 compliant date.
+	Author            []int      `url:"author,omitempty,brackets"`             // Limit result set to posts assigned to specific authors.
+	AuthorExclude     []int      `url:"author_exclude,omitempty,brackets"`     // Ensure result set excludes posts assigned to specific authors.
+	Before            *time.Time `url:"before,omitempty"`                      // Limit response to posts published before a given ISO8601 compliant date.
+	Categories        []int      `url:"categories,omitempty,brackets"`         // Limit result set to posts with given category IDs.
+	CategoriesExclude []int      `url:"categories_exclude,omitempty,brackets"` // Ensure result set excludes posts with given category IDs.
+	Exclude           []int      `url:"exclude,omitempty,brackets"`            // Ensure result set excludes specific IDs.
+	Include           []int      `url:"include,omitempty,brackets"`            // Limit result set to specific IDs.
+	Search            string     `url:"search,omitempty"`                      // Limit results to those matching a string.
+	Slug              string     `url:"slug,omitempty"`                        // An alphanumeric identifier for the post type.
+	Status            string     `url:"status,omitempty"`                      // A named status for the object.
+	Sticky            bool       `url:"sticky,omitempty"`                      // Whether or not the object should be treated as sticky.
+	Tags              []int      `url:"tags,omitempty,brackets"`               // Limit result set to posts with given tag IDs.
+	TagsExclude       []int      `url:"tags_exclude,omitempty,brackets"`       // Ensure result set excludes posts with given tag IDs.
 
 	ListOptions
 }

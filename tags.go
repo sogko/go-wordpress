@@ -21,9 +21,9 @@ type TagsService service
 
 // TagsListOptions are options that can be passed to List().
 type TagsListOptions struct {
-	Exclude   []int  `url:"exclude,omitempty"`
+	Exclude   []int  `url:"exclude,omitempty,brackets"`
 	HideEmpty bool   `url:"hide_empty,omitempty"`
-	Include   []int  `url:"include,omitempty"`
+	Include   []int  `url:"include,omitempty,brackets"`
 	Parent    int    `url:"parent,omitempty"`
 	Post      int    `url:"post,omitempty"`
 	Search    string `url:"search,omitempty"`

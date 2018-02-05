@@ -35,12 +35,12 @@ type CommentsService service
 type CommentsListOptions struct {
 	After         *time.Time `url:"after,omitempty"`
 	Author        int        `url:"author,omitempty"`
-	AuthorExclude []int      `url:"author_exclude,omitempty"`
+	AuthorExclude []int      `url:"author_exclude,omitempty,brackets"`
 	Before        *time.Time `url:"before,omitempty"`
-	Exclude       []int      `url:"exclude,omitempty"`
-	Include       []int      `url:"include,omitempty"`
-	Parent        []int      `url:"parent,omitempty"`
-	ParentExclude []int      `url:"parent_exclude,omitempty"`
+	Exclude       []int      `url:"exclude,omitempty,brackets"`
+	Include       []int      `url:"include,omitempty,brackets"`
+	Parent        []int      `url:"parent,omitempty,brackets"`
+	ParentExclude []int      `url:"parent_exclude,omitempty,brackets"`
 	Password      string     `url:"password,omitempty"`
 	Post          int        `url:"post,omitempty"`
 	Search        string     `url:"search,omitempty"`

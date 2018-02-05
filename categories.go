@@ -22,8 +22,8 @@ type CategoriesService service
 
 // CategoriesListOptions are options that can be passed to List().
 type CategoriesListOptions struct {
-	Exclude []int  `url:"exclude,omitempty"`
-	Include []int  `url:"include,omitempty"`
+	Exclude []int  `url:"exclude,omitempty,brackets"`
+	Include []int  `url:"include,omitempty,brackets"`
 	Parent  int    `url:"parent,omitempty"`
 	Post    int    `url:"post,omitempty"`
 	Search  string `url:"search,omitempty"`

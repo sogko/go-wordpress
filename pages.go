@@ -65,18 +65,18 @@ type PagesService service
 type PagesListOptions struct {
 	After             *time.Time `url:"after,omitempty"`
 	Author            int        `url:"author,omitempty"`
-	AuthorExclude     []int      `url:"author_exclude,omitempty"`
+	AuthorExclude     []int      `url:"author_exclude,omitempty,brackets"`
 	Before            *time.Time `url:"before,omitempty"`
-	Categories        []int      `url:"categories,omitempty"`
-	CategoriesExclude []int      `url:"categories_exclude,omitempty"`
-	Exclude           []int      `url:"exclude,omitempty"`
-	Include           []int      `url:"include,omitempty"`
+	Categories        []int      `url:"categories,omitempty,brackets"`
+	CategoriesExclude []int      `url:"categories_exclude,omitempty,brackets"`
+	Exclude           []int      `url:"exclude,omitempty,brackets"`
+	Include           []int      `url:"include,omitempty,brackets"`
 	Search            string     `url:"search,omitempty"`
 	Slug              string     `url:"slug,omitempty"`
 	Status            string     `url:"status,omitempty"`
 	Sticky            bool       `url:"sticky,omitempty"`
-	Tags              []int      `url:"tags,omitempty"`
-	TagsExclude       []int      `url:"tags_exclude,omitempty"`
+	Tags              []int      `url:"tags,omitempty,brackets"`
+	TagsExclude       []int      `url:"tags_exclude,omitempty,brackets"`
 
 	ListOptions
 }
