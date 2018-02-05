@@ -1,4 +1,4 @@
-# go-wp-api
+# go-wordpress
 [![GoDoc](https://godoc.org/github.com/robbiet480/go-wordpress?status.svg)](https://godoc.org/github.com/robbiet480/go-wordpress)
 
 A Go client library for the [Wordpress REST API](https://developer.wordpress.org/rest-api/)
@@ -43,7 +43,7 @@ func main() {
   }
 
   // Or you can use your own structs (for custom endpoints, for example)
-  // Below is the equivalent of `client.Posts.Get(100, nil)`
+  // Below is the equivalent of `client.Posts.Get(ctx, 100, nil)`
   var obj MyCustomPostStruct
   resp, err := client.Get(ctx, "/posts/100", nil, &obj)
   // ...
