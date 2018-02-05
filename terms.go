@@ -61,9 +61,9 @@ func (c *TermsTaxonomyService) List(ctx context.Context, params interface{}) ([]
 }
 
 // Create creates a new term.
-func (c *TermsTaxonomyService) Create(ctx context.Context, new *Term) (*Term, *Response, error) {
+func (c *TermsTaxonomyService) Create(ctx context.Context, newTerm *Term) (*Term, *Response, error) {
 	var created Term
-	resp, err := c.client.Create(ctx, c.url, new, &created)
+	resp, err := c.client.Create(ctx, c.url, newTerm, &created)
 	return &created, resp, err
 }
 

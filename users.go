@@ -54,9 +54,9 @@ func (c *UsersService) List(ctx context.Context, params interface{}) ([]*User, *
 }
 
 // Create creates a new user.
-func (c *UsersService) Create(ctx context.Context, new *User) (*User, *Response, error) {
+func (c *UsersService) Create(ctx context.Context, newUser *User) (*User, *Response, error) {
 	var created User
-	resp, err := c.client.Create(ctx, "users", new, &created)
+	resp, err := c.client.Create(ctx, "users", newUser, &created)
 	return &created, resp, err
 }
 

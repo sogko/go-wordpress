@@ -71,9 +71,9 @@ func (c *CommentsService) List(ctx context.Context, opts *CommentsListOptions) (
 }
 
 // Create creates a new comment.
-func (c *CommentsService) Create(ctx context.Context, new *Comment) (*Comment, *Response, error) {
+func (c *CommentsService) Create(ctx context.Context, newComment *Comment) (*Comment, *Response, error) {
 	var created Comment
-	resp, err := c.client.Create(ctx, "comments", new, &created)
+	resp, err := c.client.Create(ctx, "comments", newComment, &created)
 	return &created, resp, err
 }
 

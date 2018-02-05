@@ -53,9 +53,9 @@ func (c *CategoriesService) List(ctx context.Context, opts *CategoriesListOption
 }
 
 // Create creates a new category.
-func (c *CategoriesService) Create(ctx context.Context, new *Category) (*Category, *Response, error) {
+func (c *CategoriesService) Create(ctx context.Context, newCategory *Category) (*Category, *Response, error) {
 	var created Category
-	resp, err := c.client.Create(ctx, "categories", new, &created)
+	resp, err := c.client.Create(ctx, "categories", newCategory, &created)
 	return &created, resp, err
 }
 

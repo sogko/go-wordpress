@@ -53,9 +53,9 @@ func (c *TagsService) List(ctx context.Context, opts *TagsListOptions) ([]*Tag, 
 }
 
 // Create creates a new tag.
-func (c *TagsService) Create(ctx context.Context, new *Tag) (*Tag, *Response, error) {
+func (c *TagsService) Create(ctx context.Context, newTag *Tag) (*Tag, *Response, error) {
 	var created Tag
-	resp, err := c.client.Create(ctx, "tags", new, &created)
+	resp, err := c.client.Create(ctx, "tags", newTag, &created)
 	return &created, resp, err
 }
 

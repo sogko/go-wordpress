@@ -107,9 +107,9 @@ func (c *PagesService) List(ctx context.Context, opts *PagesListOptions) ([]*Pag
 }
 
 // Create creates a new page.
-func (c *PagesService) Create(ctx context.Context, new *Page) (*Page, *Response, error) {
+func (c *PagesService) Create(ctx context.Context, newPage *Page) (*Page, *Response, error) {
 	var created Page
-	resp, err := c.client.Create(ctx, "pages", new, &created)
+	resp, err := c.client.Create(ctx, "pages", newPage, &created)
 
 	created.setService(c)
 
