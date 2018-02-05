@@ -74,7 +74,7 @@ func (c *UsersService) Create(ctx context.Context, newUser *User) (*User, *Respo
 	return &created, resp, err
 }
 
-// Get returns a single term for the given id.
+// Get returns a single user for the given id.
 func (c *UsersService) Get(ctx context.Context, id int, params interface{}) (*User, *Response, error) {
 	var entity User
 	entityURL := fmt.Sprintf("users/%v", id)
@@ -82,7 +82,7 @@ func (c *UsersService) Get(ctx context.Context, id int, params interface{}) (*Us
 	return &entity, resp, err
 }
 
-// Update updates a single term with the given id.
+// Update updates a single user with the given id.
 func (c *UsersService) Update(ctx context.Context, id int, user *User) (*User, *Response, error) {
 	var updated User
 	entityURL := fmt.Sprintf("users/%v", id)
@@ -90,7 +90,7 @@ func (c *UsersService) Update(ctx context.Context, id int, user *User) (*User, *
 	return &updated, resp, err
 }
 
-// Delete removes the term with the given id.
+// Delete removes the user with the given id.
 func (c *UsersService) Delete(ctx context.Context, id int, params interface{}) (*User, *Response, error) {
 	var deleted User
 	entityURL := fmt.Sprintf("users/%v", id)
