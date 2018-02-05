@@ -15,11 +15,17 @@ var PASSWORD string = os.Getenv("WP_PASSWD")
 var API_BASE_URL string = os.Getenv("WP_API_URL")
 
 func TestClientNew(t *testing.T) {
+	tp := wordpress.BasicAuthTransport{
+		Username: USER,
+		Password: PASSWORD,
+		Transport: &http.Transport{
+			TLSClientConfig:   &tls.Config{InsecureSkipVerify: true}, // needs to be disabled for Lets Encrypt for whatever reason
+			DisableKeepAlives: true,
+		},
+	}
 	client := wordpress.NewClient(&wordpress.Options{
 		BaseAPIURL: API_BASE_URL,
-		Username:   USER,
-		Password:   PASSWORD,
-	}, nil)
+	}, tp.Client())
 	if client == nil {
 		t.Fatalf("Client should not be nil")
 	}
@@ -36,22 +42,16 @@ func initTestClient() (*wordpress.Client, context.Context) {
 		panic("Please set your environment before running the tests")
 	}
 
-	httpClient := &http.Client{
-		Jar: nil,
+	tp := wordpress.BasicAuthTransport{
+		Username: USER,
+		Password: PASSWORD,
 		Transport: &http.Transport{
 			TLSClientConfig:   &tls.Config{InsecureSkipVerify: true}, // needs to be disabled for Lets Encrypt for whatever reason
 			DisableKeepAlives: true,
 		},
 	}
 
-	httpClient.CheckRedirect = func(r *http.Request, via []*http.Request) error {
-		r.SetBasicAuth(USER, PASSWORD)
-		return nil
-	}
-
 	return wordpress.NewClient(&wordpress.Options{
 		BaseAPIURL: API_BASE_URL,
-		Username:   USER,
-		Password:   PASSWORD,
-	}, httpClient), context.Background()
+	}, tp.Client()), context.Background()
 }

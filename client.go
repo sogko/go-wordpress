@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -30,7 +29,7 @@ type Error struct {
 	Response *http.Response // HTTP response that caused this error
 	Code     string         `json:"code"`
 	Message  string         `json:"message"`
-	Data     int            `json:"data"` // Unsure if this is consistent
+	Data     interface{}    `json:"data"`
 }
 
 func (e *Error) Error() string {
@@ -43,13 +42,6 @@ func (e *Error) Error() string {
 type Options struct {
 	BaseAPIURL string
 	Location   *time.Location
-
-	// Basic Auth
-	Username string
-	Password string
-
-	JWTToken string
-	// TODO: support OAuth authentication
 
 	// User agent used when communicating with the WordPress API.
 	UserAgent string
@@ -169,14 +161,6 @@ func NewClient(options *Options, httpClient *http.Client) *Client {
 				DisableKeepAlives: true,
 			},
 		}
-
-		httpClient.CheckRedirect = func(r *http.Request, via []*http.Request) error {
-			// perform BasicAuth on each redirect request.
-			// (requests are cookie-less; so we need to keep re-auth-ing again)
-			r.SetBasicAuth(options.Username, options.Password)
-			log.Println("REDIRECT", r, options.Username, options.Password)
-			return nil
-		}
 	}
 
 	c := &Client{client: httpClient, options: options, BaseURL: url}
@@ -252,12 +236,6 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 	req, err := http.NewRequest(method, u.String(), buf)
 	if err != nil {
 		return nil, err
-	}
-
-	if c.options.Username != "" && c.options.Password != "" {
-		req.SetBasicAuth(c.options.Username, c.options.Password)
-	} else if c.options.JWTToken != "" {
-		req.Header.Add("Authorization", c.options.JWTToken)
 	}
 
 	if body != nil {
@@ -486,21 +464,12 @@ func (c *Client) PostData(ctx context.Context, urlStr string, content []byte, co
 		return nil, err
 	}
 
-	if c.options.Username != "" && c.options.Password != "" {
-		req.SetBasicAuth(c.options.Username, c.options.Password)
-	} else if c.options.JWTToken != "" {
-		req.Header.Add("Authorization", c.options.JWTToken)
-	}
-
 	if c.options.UserAgent != "" {
 		req.Header.Set("User-Agent", c.options.UserAgent)
 	}
 
 	req.Header.Set("Content-Type", w.FormDataContentType())
 	req.Header.Set("Content-Disposition", fmt.Sprintf("filename=%v", filename))
-
-	// Set Transport
-	// s.Client.Transport = s.Transport
 
 	// Send request
 	return c.Do(ctx, req, &result)
