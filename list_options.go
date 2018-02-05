@@ -95,8 +95,3 @@ type UserListOptions struct {
 
 	ListOptions
 }
-
-// WordPressRESTAPI
-type WordPressRESTAPI struct {
-	ListOptions
-}
