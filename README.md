@@ -121,7 +121,7 @@ func main() {
 
   ctx := context.Background()
 
-  opt := &wordpress.PostsByOrgOptions{
+  opt := &wordpress.PostsListOptions{
     ListOptions: wordpress.ListOptions{PerPage: 10},
   }
   // get all pages of results
