@@ -3,6 +3,7 @@ package wordpress
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -41,7 +42,7 @@ func (entity *Page) setService(c *PagesService) {
 func (entity *Page) Revisions() *RevisionsService {
 	if entity.collection == nil {
 		// missing page.collection parent. Probably Page struct was initialized manually, not fetched from API
-		_warning("Missing parent page collection")
+		log.Print("[go-wordpress] Missing parent page collection")
 		return nil
 	}
 	return &RevisionsService{
