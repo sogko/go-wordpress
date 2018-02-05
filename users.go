@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// AvatarURLS returns sizes of the users avatar.
+// AvatarURLS returns different sizes of the users avatar.
 type AvatarURLS struct {
 	Size24 string `json:"24,omitempty"`
 	Size48 string `json:"48,omitempty"`
@@ -47,10 +47,24 @@ func (c *UsersService) Me(ctx context.Context, params interface{}) (*User, *Resp
 }
 
 // List returns a list of users.
-func (c *UsersService) List(ctx context.Context, params interface{}) ([]*User, *Response, error) {
-	var users []*User
-	resp, err := c.client.List(ctx, "users", params, &users)
-	return users, resp, err
+func (c *UsersService) List(ctx context.Context, opts *UserListOptions) ([]*User, *Response, error) {
+	u, err := addOptions("users", opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := c.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	users := []*User{}
+	resp, err := c.client.Do(ctx, req, &users)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return users, resp, nil
 }
 
 // Create creates a new user.
@@ -69,10 +83,10 @@ func (c *UsersService) Get(ctx context.Context, id int, params interface{}) (*Us
 }
 
 // Update updates a single term with the given id.
-func (c *UsersService) Update(ctx context.Context, id int, post *User) (*User, *Response, error) {
+func (c *UsersService) Update(ctx context.Context, id int, user *User) (*User, *Response, error) {
 	var updated User
 	entityURL := fmt.Sprintf("users/%v", id)
-	resp, err := c.client.Update(ctx, entityURL, post, &updated)
+	resp, err := c.client.Update(ctx, entityURL, user, &updated)
 	return &updated, resp, err
 }
 
