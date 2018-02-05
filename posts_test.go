@@ -87,7 +87,7 @@ func TestPostsList_WithParamsString(t *testing.T) {
 	wp, ctx := initTestClient()
 
 	// assumes that API user authenticated with `edit_posts`
-	posts, resp, err := wp.Posts.List(ctx, &wordpress.PostListOptions{Status: "draft"})
+	posts, resp, err := wp.Posts.List(ctx, &wordpress.PostListOptions{Status: []string{"draft"}})
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
@@ -98,7 +98,7 @@ func TestPostsList_WithParamsString(t *testing.T) {
 	if len(posts) != 0 {
 		t.Errorf("Should return zero draft posts, returned %v", len(posts))
 	}
-	posts, resp, err = wp.Posts.List(ctx, &wordpress.PostListOptions{Status: "publish"})
+	posts, resp, err = wp.Posts.List(ctx, &wordpress.PostListOptions{Status: []string{"publish"}})
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
