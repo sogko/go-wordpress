@@ -23,7 +23,7 @@ type TermsService service
 // List returns a list of terms.
 func (c *TermsService) List(ctx context.Context, taxonomy string, params interface{}) ([]*Term, *Response, error) {
 	var terms []*Term
-	url := fmt.Sprintf("%v/%v", "terms", taxonomy)
+	url := fmt.Sprintf("terms/%v", taxonomy)
 	resp, err := c.client.List(ctx, url, params, &terms)
 	return terms, resp, err
 }

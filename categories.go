@@ -62,7 +62,7 @@ func (c *CategoriesService) Create(ctx context.Context, newCategory *Category) (
 // Get returns a single category for the given id.
 func (c *CategoriesService) Get(ctx context.Context, id int, params interface{}) (*Category, *Response, error) {
 	var entity Category
-	entityURL := fmt.Sprintf("%v/%v", "categories", id)
+	entityURL := fmt.Sprintf("categories/%v", id)
 	resp, err := c.client.Get(ctx, entityURL, params, &entity)
 	return &entity, resp, err
 }
@@ -70,7 +70,7 @@ func (c *CategoriesService) Get(ctx context.Context, id int, params interface{})
 // Update updates a single category with the given id.
 func (c *CategoriesService) Update(ctx context.Context, id int, post *Category) (*Category, *Response, error) {
 	var updated Category
-	entityURL := fmt.Sprintf("%v/%v", "categories", id)
+	entityURL := fmt.Sprintf("categories/%v", id)
 	resp, err := c.client.Update(ctx, entityURL, post, &updated)
 	return &updated, resp, err
 }
@@ -78,7 +78,7 @@ func (c *CategoriesService) Update(ctx context.Context, id int, post *Category) 
 // Delete removes the category with the given id.
 func (c *CategoriesService) Delete(ctx context.Context, id int, params interface{}) (*Category, *Response, error) {
 	var deleted Category
-	entityURL := fmt.Sprintf("%v/%v", "categories", id)
+	entityURL := fmt.Sprintf("categories/%v", id)
 	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
 	return &deleted, resp, err
 }

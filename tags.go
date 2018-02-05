@@ -62,7 +62,7 @@ func (c *TagsService) Create(ctx context.Context, newTag *Tag) (*Tag, *Response,
 // Get returns a single tag for the given id.
 func (c *TagsService) Get(ctx context.Context, id int, params interface{}) (*Tag, *Response, error) {
 	var entity Tag
-	entityURL := fmt.Sprintf("%v/%v", "tags", id)
+	entityURL := fmt.Sprintf("tags/%v", id)
 	resp, err := c.client.Get(ctx, entityURL, params, &entity)
 	return &entity, resp, err
 }
@@ -70,7 +70,7 @@ func (c *TagsService) Get(ctx context.Context, id int, params interface{}) (*Tag
 // Update updates a single tag with the given id.
 func (c *TagsService) Update(ctx context.Context, id int, post *Tag) (*Tag, *Response, error) {
 	var updated Tag
-	entityURL := fmt.Sprintf("%v/%v", "tags", id)
+	entityURL := fmt.Sprintf("tags/%v", id)
 	resp, err := c.client.Update(ctx, entityURL, post, &updated)
 	return &updated, resp, err
 }
@@ -78,7 +78,7 @@ func (c *TagsService) Update(ctx context.Context, id int, post *Tag) (*Tag, *Res
 // Delete removes the tag with the given id.
 func (c *TagsService) Delete(ctx context.Context, id int, params interface{}) (*Tag, *Response, error) {
 	var deleted Tag
-	entityURL := fmt.Sprintf("%v/%v", "tags", id)
+	entityURL := fmt.Sprintf("tags/%v", id)
 	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
 	return &deleted, resp, err
 }

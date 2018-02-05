@@ -37,7 +37,7 @@ func (c *StatusesService) List(ctx context.Context, params interface{}) (*Status
 // Get returns a single status for the given id.
 func (c *StatusesService) Get(ctx context.Context, slug string, params interface{}) (*Status, *Response, error) {
 	var entity Status
-	entityURL := fmt.Sprintf("%v/%v", "statuses", slug)
+	entityURL := fmt.Sprintf("statuses/%v", slug)
 	resp, err := c.client.Get(ctx, entityURL, params, &entity)
 	return &entity, resp, err
 }

@@ -29,7 +29,7 @@ func (c *TaxonomiesService) List(ctx context.Context, params interface{}) (map[s
 // Get returns a single taxonomy for the given id.
 func (c *TaxonomiesService) Get(ctx context.Context, slug string, params interface{}) (*Taxonomy, *Response, error) {
 	var taxonomy Taxonomy
-	entityURL := fmt.Sprintf("%v/%v", "taxonomies", slug)
+	entityURL := fmt.Sprintf("taxonomies/%v", slug)
 	resp, err := c.client.Get(ctx, entityURL, params, &taxonomy)
 	return &taxonomy, resp, err
 }

@@ -174,7 +174,7 @@ func (c *PostsService) Create(ctx context.Context, newPost *Post) (*Post, *Respo
 // Get returns a single post for the given id.
 func (c *PostsService) Get(ctx context.Context, id int, params interface{}) (*Post, *Response, error) {
 	var entity Post
-	entityURL := fmt.Sprintf("%v/%v", "posts", id)
+	entityURL := fmt.Sprintf("posts/%v", id)
 	resp, err := c.client.Get(ctx, entityURL, params, &entity)
 
 	// set collection object for each entity which has sub-collection
@@ -195,7 +195,7 @@ func (c *PostsService) Entity(id int) *Post {
 // Update updates a single post with the given id.
 func (c *PostsService) Update(ctx context.Context, id int, post *Post) (*Post, *Response, error) {
 	var updated Post
-	entityURL := fmt.Sprintf("%v/%v", "posts", id)
+	entityURL := fmt.Sprintf("posts/%v", id)
 	resp, err := c.client.Update(ctx, entityURL, post, &updated)
 
 	// set collection object for each entity which has sub-collection
@@ -207,7 +207,7 @@ func (c *PostsService) Update(ctx context.Context, id int, post *Post) (*Post, *
 // Delete removes the post with the given id.
 func (c *PostsService) Delete(ctx context.Context, id int, params interface{}) (*Post, *Response, error) {
 	var deleted Post
-	entityURL := fmt.Sprintf("%v/%v", "posts", id)
+	entityURL := fmt.Sprintf("posts/%v", id)
 
 	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
 

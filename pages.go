@@ -119,7 +119,7 @@ func (c *PagesService) Create(ctx context.Context, newPage *Page) (*Page, *Respo
 // Get returns a single page for the given id.
 func (c *PagesService) Get(ctx context.Context, id int, params interface{}) (*Page, *Response, error) {
 	var entity Page
-	entityURL := fmt.Sprintf("%v/%v", "pages", id)
+	entityURL := fmt.Sprintf("pages/%v", id)
 	resp, err := c.client.Get(ctx, entityURL, params, &entity)
 
 	// set collection object for each entity which has sub-collection
@@ -140,7 +140,7 @@ func (c *PagesService) Entity(id int) *Page {
 // Update updates a single page with the given id.
 func (c *PagesService) Update(ctx context.Context, id int, page *Page) (*Page, *Response, error) {
 	var updated Page
-	entityURL := fmt.Sprintf("%v/%v", "pages", id)
+	entityURL := fmt.Sprintf("pages/%v", id)
 	resp, err := c.client.Update(ctx, entityURL, page, &updated)
 
 	// set collection object for each entity which has sub-collection
@@ -152,7 +152,7 @@ func (c *PagesService) Update(ctx context.Context, id int, page *Page) (*Page, *
 // Delete removes the page with the given id.
 func (c *PagesService) Delete(ctx context.Context, id int, params interface{}) (*Page, *Response, error) {
 	var deleted Page
-	entityURL := fmt.Sprintf("%v/%v", "pages", id)
+	entityURL := fmt.Sprintf("pages/%v", id)
 
 	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
 

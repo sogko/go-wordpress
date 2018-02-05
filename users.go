@@ -63,7 +63,7 @@ func (c *UsersService) Create(ctx context.Context, newUser *User) (*User, *Respo
 // Get returns a single term for the given id.
 func (c *UsersService) Get(ctx context.Context, id int, params interface{}) (*User, *Response, error) {
 	var entity User
-	entityURL := fmt.Sprintf("%v/%v", "users", id)
+	entityURL := fmt.Sprintf("users/%v", id)
 	resp, err := c.client.Get(ctx, entityURL, params, &entity)
 	return &entity, resp, err
 }
@@ -71,7 +71,7 @@ func (c *UsersService) Get(ctx context.Context, id int, params interface{}) (*Us
 // Update updates a single term with the given id.
 func (c *UsersService) Update(ctx context.Context, id int, post *User) (*User, *Response, error) {
 	var updated User
-	entityURL := fmt.Sprintf("%v/%v", "users", id)
+	entityURL := fmt.Sprintf("users/%v", id)
 	resp, err := c.client.Update(ctx, entityURL, post, &updated)
 	return &updated, resp, err
 }
@@ -79,7 +79,7 @@ func (c *UsersService) Update(ctx context.Context, id int, post *User) (*User, *
 // Delete removes the term with the given id.
 func (c *UsersService) Delete(ctx context.Context, id int, params interface{}) (*User, *Response, error) {
 	var deleted User
-	entityURL := fmt.Sprintf("%v/%v", "users", id)
+	entityURL := fmt.Sprintf("users/%v", id)
 	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
 	return &deleted, resp, err
 }

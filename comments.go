@@ -80,7 +80,7 @@ func (c *CommentsService) Create(ctx context.Context, newComment *Comment) (*Com
 // Get returns a single comment for the given id.
 func (c *CommentsService) Get(ctx context.Context, id int, params interface{}) (*Comment, *Response, error) {
 	var entity Comment
-	entityURL := fmt.Sprintf("%v/%v", "comments", id)
+	entityURL := fmt.Sprintf("comments/%v", id)
 	resp, err := c.client.Get(ctx, entityURL, params, &entity)
 	return &entity, resp, err
 }
@@ -88,7 +88,7 @@ func (c *CommentsService) Get(ctx context.Context, id int, params interface{}) (
 // Update updates a single comment with the given id.
 func (c *CommentsService) Update(ctx context.Context, id int, post *Comment) (*Comment, *Response, error) {
 	var updated Comment
-	entityURL := fmt.Sprintf("%v/%v", "comments", id)
+	entityURL := fmt.Sprintf("comments/%v", id)
 	resp, err := c.client.Update(ctx, entityURL, post, &updated)
 	return &updated, resp, err
 }
@@ -96,7 +96,7 @@ func (c *CommentsService) Update(ctx context.Context, id int, post *Comment) (*C
 // Delete removes the comment with the given id.
 func (c *CommentsService) Delete(ctx context.Context, id int, params interface{}) (*Comment, *Response, error) {
 	var deleted Comment
-	entityURL := fmt.Sprintf("%v/%v", "comments", id)
+	entityURL := fmt.Sprintf("comments/%v", id)
 	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
 	return &deleted, resp, err
 }

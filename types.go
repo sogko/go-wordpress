@@ -52,7 +52,7 @@ func (c *TypesService) List(ctx context.Context, params interface{}) (*Types, *R
 // Get returns a single type for the given id.
 func (c *TypesService) Get(ctx context.Context, slug string, params interface{}) (*Type, *Response, error) {
 	var entity Type
-	entityURL := fmt.Sprintf("%v/%v", "types", slug)
+	entityURL := fmt.Sprintf("types/%v", slug)
 	resp, err := c.client.Get(ctx, entityURL, params, &entity)
 	return &entity, resp, err
 }

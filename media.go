@@ -120,7 +120,7 @@ func (c *MediaService) Create(ctx context.Context, options *MediaUploadOptions) 
 // Get returns a single media item for the given id.
 func (c *MediaService) Get(ctx context.Context, id int, params interface{}) (*Media, *Response, error) {
 	var entity Media
-	entityURL := fmt.Sprintf("%v/%v", "media", id)
+	entityURL := fmt.Sprintf("media/%v", id)
 	resp, err := c.client.Get(ctx, entityURL, params, &entity)
 	return &entity, resp, err
 }
@@ -128,7 +128,7 @@ func (c *MediaService) Get(ctx context.Context, id int, params interface{}) (*Me
 // Delete removes the media item with the given id.
 func (c *MediaService) Delete(ctx context.Context, id int, params interface{}) (*Media, *Response, error) {
 	var deleted Media
-	entityURL := fmt.Sprintf("%v/%v", "media", id)
+	entityURL := fmt.Sprintf("media/%v", id)
 	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
 	return &deleted, resp, err
 }
