@@ -91,20 +91,15 @@ type service struct {
 // ListOptions specifies the optional parameters to various List methods that
 // support pagination.
 type ListOptions struct {
-	// For paginated result sets, page of results to retrieve.
-	Page int `url:"page,omitempty"`
-
-	// For paginated result sets, the number of results to include per page.
-	PerPage int `url:"per_page,omitempty"`
-
-	// Offset the result set by a specific number of items.
-	Offset int `url:"offset,omitempty"`
-	// Order sort attribute ascending or descending.
-	Order string `url:"order,omitempty"`
-	// Sort collection by object attribute.
-	OrderBy string `url:"orderby,omitempty"`
-	// Scope under which the request is made; determines fields present in response.
-	Context string `url:"context,omitempty"`
+	Context string `url:"context,omitempty"`          // Scope under which the request is made; determines fields present in response.
+	Exclude []int  `url:"exclude,omitempty,brackets"` // Ensure result set excludes specific IDs.
+	Include []int  `url:"include,omitempty,brackets"` // Limit result set to specific IDs.
+	Offset  int    `url:"offset,omitempty"`           // Offset the result set by a specific number of items.
+	Order   string `url:"order,omitempty"`            // Order sort attribute ascending or descending.
+	OrderBy string `url:"orderby,omitempty"`          // Sort collection by object attribute.
+	Page    int    `url:"page,omitempty"`             // Current page of the collection.
+	PerPage int    `url:"per_page,omitempty"`         // Maximum number of items to be returned in result set.
+	Search  string `url:"search,omitempty"`           // Limit results to those matching a string.
 }
 
 // Response is a WordPress REST API response. This wraps the standard http.Response
