@@ -94,9 +94,13 @@ type ListOptions struct {
 	// For paginated result sets, the number of results to include per page.
 	PerPage int `url:"per_page,omitempty"`
 
-	Offset  int    `url:"offset,omitempty"`
-	Order   string `url:"order,omitempty"`
+	// Offset the result set by a specific number of items.
+	Offset int `url:"offset,omitempty"`
+	// Order sort attribute ascending or descending.
+	Order string `url:"order,omitempty"`
+	// Sort collection by object attribute.
 	OrderBy string `url:"orderby,omitempty"`
+	// Scope under which the request is made; determines fields present in response.
 	Context string `url:"context,omitempty"`
 }
 
