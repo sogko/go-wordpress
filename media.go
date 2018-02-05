@@ -3,7 +3,6 @@ package wordpress
 import (
 	"context"
 	"fmt"
-	"time"
 )
 
 // MediaDetailsSizesItem provides details for a single media item's size.
@@ -71,27 +70,8 @@ type Media struct {
 // MediaService provides access to the media related functions in the WordPress REST API.
 type MediaService service
 
-// MediasListOptions are options that can be passed to List().
-type MediasListOptions struct {
-	After         *time.Time `url:"after,omitempty"`
-	Author        []int      `url:"author,omitempty,brackets"`
-	AuthorExclude []int      `url:"author_exclude,omitempty,brackets"`
-	Before        *time.Time `url:"before,omitempty"`
-	Exclude       []int      `url:"exclude,omitempty,brackets"`
-	Include       []int      `url:"include,omitempty,brackets"`
-	MediaType     string     `url:"media_type,omitempty"`
-	MimeType      string     `url:"mime_type,omitempty"`
-	Parent        []int      `url:"parent,omitempty,brackets"`
-	ParentExclude []int      `url:"parent_exclude,omitempty,brackets"`
-	Search        string     `url:"search,omitempty"`
-	Slug          string     `url:"slug,omitempty"`
-	Status        string     `url:"status,omitempty"`
-
-	ListOptions
-}
-
 // List returns a list of medias.
-func (c *MediaService) List(ctx context.Context, opts *MediasListOptions) ([]*Media, *Response, error) {
+func (c *MediaService) List(ctx context.Context, opts *MediaListOptions) ([]*Media, *Response, error) {
 	u, err := addOptions("media", opts)
 	if err != nil {
 		return nil, nil, err

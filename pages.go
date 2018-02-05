@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 )
 
 // Page represents a WordPress page.
@@ -61,28 +60,8 @@ func (entity *Page) Populate(ctx context.Context, params interface{}) (*Page, *R
 // PagesService provides access to the page related functions in the WordPress REST API.
 type PagesService service
 
-// PagesListOptions are options that can be passed to List().
-type PagesListOptions struct {
-	After             *time.Time `url:"after,omitempty"`
-	Author            int        `url:"author,omitempty"`
-	AuthorExclude     []int      `url:"author_exclude,omitempty,brackets"`
-	Before            *time.Time `url:"before,omitempty"`
-	Categories        []int      `url:"categories,omitempty,brackets"`
-	CategoriesExclude []int      `url:"categories_exclude,omitempty,brackets"`
-	Exclude           []int      `url:"exclude,omitempty,brackets"`
-	Include           []int      `url:"include,omitempty,brackets"`
-	Search            string     `url:"search,omitempty"`
-	Slug              string     `url:"slug,omitempty"`
-	Status            string     `url:"status,omitempty"`
-	Sticky            bool       `url:"sticky,omitempty"`
-	Tags              []int      `url:"tags,omitempty,brackets"`
-	TagsExclude       []int      `url:"tags_exclude,omitempty,brackets"`
-
-	ListOptions
-}
-
 // List returns a list of pages.
-func (c *PagesService) List(ctx context.Context, opts *PagesListOptions) ([]*Page, *Response, error) {
+func (c *PagesService) List(ctx context.Context, opts *PageListOptions) ([]*Page, *Response, error) {
 	u, err := addOptions("pages", opts)
 	if err != nil {
 		return nil, nil, err

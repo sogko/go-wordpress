@@ -98,7 +98,7 @@ All requests for resource collections (posts, pages, media, revisions, etc.)
 support pagination. Pagination options are described in the
 `wordpress.ListOptions` struct and passed to the list methods directly or as an
 embedded type of a more specific list options struct (for example
-`wordpress.PostsListOptions`). Pages information is available via the
+`wordpress.PostListOptions`). Pages information is available via the
 `wordpress.Response` struct.
 
 ```go
@@ -121,7 +121,7 @@ func main() {
 
   ctx := context.Background()
 
-  opt := &wordpress.PostsListOptions{
+  opt := &wordpress.PostListOptions{
     ListOptions: wordpress.ListOptions{PerPage: 10},
   }
   // get all pages of results

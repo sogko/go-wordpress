@@ -20,20 +20,8 @@ type Category struct {
 // CategoriesService provides access to the category related functions in the WordPress REST API.
 type CategoriesService service
 
-// CategoriesListOptions are options that can be passed to List().
-type CategoriesListOptions struct {
-	Exclude []int  `url:"exclude,omitempty,brackets"`
-	Include []int  `url:"include,omitempty,brackets"`
-	Parent  int    `url:"parent,omitempty"`
-	Post    int    `url:"post,omitempty"`
-	Search  string `url:"search,omitempty"`
-	Slug    string `url:"slug,omitempty"`
-
-	ListOptions
-}
-
 // List returns a list of categories.
-func (c *CategoriesService) List(ctx context.Context, opts *CategoriesListOptions) ([]*Category, *Response, error) {
+func (c *CategoriesService) List(ctx context.Context, opts *CategoryListOptions) ([]*Category, *Response, error) {
 	u, err := addOptions("categories", opts)
 	if err != nil {
 		return nil, nil, err

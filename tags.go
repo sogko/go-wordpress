@@ -19,21 +19,8 @@ type Tag struct {
 // TagsService provides access to the Tag related functions in the WordPress REST API.
 type TagsService service
 
-// TagsListOptions are options that can be passed to List().
-type TagsListOptions struct {
-	Exclude   []int  `url:"exclude,omitempty,brackets"`
-	HideEmpty bool   `url:"hide_empty,omitempty"`
-	Include   []int  `url:"include,omitempty,brackets"`
-	Parent    int    `url:"parent,omitempty"`
-	Post      int    `url:"post,omitempty"`
-	Search    string `url:"search,omitempty"`
-	Slug      string `url:"slug,omitempty"`
-
-	ListOptions
-}
-
 // List returns a list of tags.
-func (c *TagsService) List(ctx context.Context, opts *TagsListOptions) ([]*Tag, *Response, error) {
+func (c *TagsService) List(ctx context.Context, opts *TagListOptions) ([]*Tag, *Response, error) {
 	u, err := addOptions("tags", opts)
 	if err != nil {
 		return nil, nil, err

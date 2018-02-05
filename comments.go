@@ -3,7 +3,6 @@ package wordpress
 import (
 	"context"
 	"fmt"
-	"time"
 )
 
 // Comment represents a WordPress post comment.
@@ -31,27 +30,8 @@ type Comment struct {
 // CommentsService provides access to the comment related functions in the WordPress REST API.
 type CommentsService service
 
-// CommentsListOptions are options that can be passed to List().
-type CommentsListOptions struct {
-	After         *time.Time `url:"after,omitempty"`
-	Author        int        `url:"author,omitempty"`
-	AuthorExclude []int      `url:"author_exclude,omitempty,brackets"`
-	Before        *time.Time `url:"before,omitempty"`
-	Exclude       []int      `url:"exclude,omitempty,brackets"`
-	Include       []int      `url:"include,omitempty,brackets"`
-	Parent        []int      `url:"parent,omitempty,brackets"`
-	ParentExclude []int      `url:"parent_exclude,omitempty,brackets"`
-	Password      string     `url:"password,omitempty"`
-	Post          int        `url:"post,omitempty"`
-	Search        string     `url:"search,omitempty"`
-	Status        string     `url:"status,omitempty"`
-	Type          string     `url:"type,omitempty"`
-
-	ListOptions
-}
-
 // List returns a list of comments.
-func (c *CommentsService) List(ctx context.Context, opts *CommentsListOptions) ([]*Comment, *Response, error) {
+func (c *CommentsService) List(ctx context.Context, opts *CommentListOptions) ([]*Comment, *Response, error) {
 	u, err := addOptions("comments", opts)
 	if err != nil {
 		return nil, nil, err

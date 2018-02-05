@@ -86,7 +86,7 @@ func TestPagesList_WithParamsString(t *testing.T) {
 	wp, ctx := initTestClient()
 
 	// assumes that API user authenticated with `edit_pages`
-	pages, resp, err := wp.Pages.List(ctx, &wordpress.PagesListOptions{Status: "draft"})
+	pages, resp, err := wp.Pages.List(ctx, &wordpress.PageListOptions{Status: "draft"})
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
