@@ -45,7 +45,10 @@ type Error struct {
 	Response *http.Response // HTTP response that caused this error
 	Code     string         `json:"code"`
 	Message  string         `json:"message"`
-	Data     interface{}    `json:"data"`
+	Data     struct {
+		Status int               `json:"status"`
+		Params map[string]string `json:"params"`
+	} `json:"data"`
 }
 
 func (e *Error) Error() string {
