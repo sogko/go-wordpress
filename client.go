@@ -134,21 +134,27 @@ func newResponse(r *http.Response) *Response {
 // populatePageValues parses the HTTP Link response headers and populates the
 // various pagination link values in the Response.
 func (r *Response) populatePageValues() {
-	totalRecords, _ := strconv.Atoi(r.Header.Get(headerTotalRecords))
+	totalRecordsHeader := r.Header.Get(headerTotalRecords)
+	totalRecords, _ := strconv.Atoi(totalRecordsHeader)
 
 	r.TotalRecords = totalRecords
 
-	totalPages, _ := strconv.Atoi(r.Header.Get(headerTotalPages))
+	totalPagesHeader := r.Header.Get(headerTotalPages)
+	totalPages, _ := strconv.Atoi(totalPagesHeader)
 
 	r.TotalPages = totalPages
 
 	lastPage, _ := strconv.Atoi(r.Request.URL.Query().Get("page"))
 
+	if totalRecordsHeader != "" && totalPagesHeader != "" && lastPage == 0 {
+		lastPage = 1
+	}
+
 	r.PreviousPage = lastPage
 
 	r.NextPage = lastPage + 1
 
-	if r.NextPage >= r.TotalPages {
+	if r.NextPage > r.TotalPages {
 		r.NextPage = 0
 	}
 }
