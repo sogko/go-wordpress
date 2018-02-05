@@ -82,7 +82,7 @@ func (entity *Post) setService(c *PostsService) {
 func (entity *Post) Revisions() *RevisionsService {
 	if entity.collection == nil {
 		// missing post.collection parent. Probably Post struct was initialized manually, not fetched from API
-		log.Print("[go-wordpress] Missing parent post collection")
+		log.Println("[go-wordpress] Missing parent post collection")
 		return nil
 	}
 	return &RevisionsService{
@@ -97,7 +97,7 @@ func (entity *Post) Revisions() *RevisionsService {
 func (entity *Post) Terms() *PostsTermsService {
 	if entity.collection == nil {
 		// missing post.collection parent. Probably Post struct was initialized manually, not fetched from API
-		log.Print("[go-wordpress] Missing parent post collection")
+		log.Println("[go-wordpress] Missing parent post collection")
 		return nil
 	}
 	return &PostsTermsService{
