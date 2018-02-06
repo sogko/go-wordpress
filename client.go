@@ -326,15 +326,15 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 
 // RootInfo is a struct containing basic and publicly available information about the WordPress REST API.
 type RootInfo struct {
-	Authentication     map[string]interface{} `json:"authentication"`
-	Description        string                 `json:"description"`
-	GMTOffset          int                    `json:"gmt_offset"`
-	HomeURL            string                 `json:"home"`
-	Name               string                 `json:"name"`
-	Namespaces         []string               `json:"namespaces"`
-	PermalinkStructure string                 `json:"permalink_structure"`
-	TimezoneString     string                 `json:"timezone_string"`
-	URL                string                 `json:"url"`
+	Authentication     interface{} `json:"authentication"`
+	Description        string      `json:"description"`
+	GMTOffset          int         `json:"gmt_offset"`
+	HomeURL            string      `json:"home"`
+	Name               string      `json:"name"`
+	Namespaces         []string    `json:"namespaces"`
+	PermalinkStructure string      `json:"permalink_structure"`
+	TimezoneString     string      `json:"timezone_string"`
+	URL                string      `json:"url"`
 
 	Location *time.Location `json:"-"`
 }
