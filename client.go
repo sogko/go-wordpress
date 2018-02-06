@@ -342,7 +342,8 @@ type RootInfo struct {
 // BasicInfo gets basic and publicly available information about the WordPress REST API.
 func (c *Client) BasicInfo(ctx context.Context) (*RootInfo, *Response, error) {
 	var entity RootInfo
-	resp, err := c.Get(ctx, c.baseURL.String(), nil, &entity)
+
+	resp, err := c.Get(ctx, "", nil, &entity)
 	if err != nil {
 		return &entity, resp, err
 	}
