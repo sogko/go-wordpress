@@ -1,0 +1,13 @@
+{
+  "Disable": [
+    "aligncheck",
+    "gocyclo",
+    "maligned"
+  ],
+  "Deadline": "5m",
+  "Sort": [
+    "path",
+    "linter"
+  ],
+  "Vendor": true
+}

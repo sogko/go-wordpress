@@ -1,15 +1,18 @@
 package wordpress
 
 import (
+	"context"
 	"fmt"
-	"net/http"
 )
 
+// AvatarURLS returns different sizes of the users avatar.
 type AvatarURLS struct {
 	Size24 string `json:"24,omitempty"`
 	Size48 string `json:"48,omitempty"`
 	Size96 string `json:"96,omitempty"`
 }
+
+// User represents a WordPress user.
 type User struct {
 	ID                int                    `json:"id,omitempty"`
 	AvatarURL         string                 `json:"avatar_url,omitempty"`
@@ -23,50 +26,74 @@ type User struct {
 	Link              string                 `json:"link,omitempty"`
 	Name              string                 `json:"name,omitempty"`
 	Nickname          string                 `json:"nickname,omitempty"`
-	RegisteredDate    string                 `json:"registered_date,omitempty"`
+	RegisteredDate    Time                   `json:"registered_date,omitempty"`
 	Roles             []string               `json:"roles,omitempty"`
 	Slug              string                 `json:"slug,omitempty"`
 	URL               string                 `json:"url,omitempty"`
 	Username          string                 `json:"username,omitempty"`
 	Password          string                 `json:"password,omitempty"`
+	Locale            string                 `json:"locale,omitempty"`
 }
 
-type UsersCollection struct {
-	client *Client
-	url    string
-}
+// UsersService provides access to the Users related functions in the WordPress REST API.
+type UsersService service
 
-func (col *UsersCollection) Me(params interface{}) (*User, *http.Response, []byte, error) {
-	url := fmt.Sprintf("%v/me", col.url)
+// Me returns information about the currently authenticated user.
+func (c *UsersService) Me(ctx context.Context, params interface{}) (*User, *Response, error) {
+	url := fmt.Sprintf("%v/me", "users")
 	var user User
-	resp, body, err := col.client.Get(url, params, &user)
-	return &user, resp, body, err
+	resp, err := c.client.Get(ctx, url, params, &user)
+	return &user, resp, err
 }
-func (col *UsersCollection) List(params interface{}) ([]User, *http.Response, []byte, error) {
-	var users []User
-	resp, body, err := col.client.List(col.url, params, &users)
-	return users, resp, body, err
+
+// List returns a list of users.
+func (c *UsersService) List(ctx context.Context, opts *UserListOptions) ([]*User, *Response, error) {
+	u, err := addOptions("users", opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := c.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	users := []*User{}
+	resp, err := c.client.Do(ctx, req, &users)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return users, resp, nil
 }
-func (col *UsersCollection) Create(new *User) (*User, *http.Response, []byte, error) {
+
+// Create creates a new user.
+func (c *UsersService) Create(ctx context.Context, newUser *User) (*User, *Response, error) {
 	var created User
-	resp, body, err := col.client.Create(col.url, new, &created)
-	return &created, resp, body, err
+	resp, err := c.client.Create(ctx, "users", newUser, &created)
+	return &created, resp, err
 }
-func (col *UsersCollection) Get(id int, params interface{}) (*User, *http.Response, []byte, error) {
+
+// Get returns a single user for the given id.
+func (c *UsersService) Get(ctx context.Context, id int, params interface{}) (*User, *Response, error) {
 	var entity User
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.Get(entityURL, params, &entity)
-	return &entity, resp, body, err
+	entityURL := fmt.Sprintf("users/%v", id)
+	resp, err := c.client.Get(ctx, entityURL, params, &entity)
+	return &entity, resp, err
 }
-func (col *UsersCollection) Update(id int, post *User) (*User, *http.Response, []byte, error) {
+
+// Update updates a single user with the given id.
+func (c *UsersService) Update(ctx context.Context, id int, user *User) (*User, *Response, error) {
 	var updated User
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.Update(entityURL, post, &updated)
-	return &updated, resp, body, err
+	entityURL := fmt.Sprintf("users/%v", id)
+	resp, err := c.client.Update(ctx, entityURL, user, &updated)
+	return &updated, resp, err
 }
-func (col *UsersCollection) Delete(id int, params interface{}) (*User, *http.Response, []byte, error) {
+
+// Delete removes the user with the given id.
+func (c *UsersService) Delete(ctx context.Context, id int, params interface{}) (*User, *Response, error) {
 	var deleted User
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.Delete(entityURL, params, &deleted)
-	return &deleted, resp, body, err
+	entityURL := fmt.Sprintf("users/%v", id)
+	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
+	return &deleted, resp, err
 }

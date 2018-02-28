@@ -1,10 +1,11 @@
 package wordpress
 
 import (
+	"context"
 	"fmt"
-	"net/http"
 )
 
+// Status represents a WordPress post status.
 type Status struct {
 	Name       string `json:"name,omitempty"`
 	Private    bool   `json:"private,omitempty"`
@@ -14,6 +15,7 @@ type Status struct {
 	Slug       string `json:"slug,omitempty"`
 }
 
+// Statuses describes multiple Statuses.
 type Statuses struct {
 	Publish Status `json:"publish,omitempty"`
 	Future  Status `json:"future,omitempty"`
@@ -21,20 +23,21 @@ type Statuses struct {
 	Pending Status `json:"pending,omitempty"`
 	Private Status `json:"private,omitempty"`
 }
-type StatusesCollection struct {
-	client *Client
-	url    string
-}
 
-func (col *StatusesCollection) List(params interface{}) (*Statuses, *http.Response, []byte, error) {
+// StatusesService provides access to the Status related functions in the WordPress REST API.
+type StatusesService service
+
+// List returns a list of statuses.
+func (c *StatusesService) List(ctx context.Context, params interface{}) (*Statuses, *Response, error) {
 	var statuses Statuses
-	resp, body, err := col.client.List(col.url, params, &statuses)
-	return &statuses, resp, body, err
+	resp, err := c.client.List(ctx, "statuses", params, &statuses)
+	return &statuses, resp, err
 }
 
-func (col *StatusesCollection) Get(slug string, params interface{}) (*Status, *http.Response, []byte, error) {
+// Get returns a single status for the given id.
+func (c *StatusesService) Get(ctx context.Context, slug string, params interface{}) (*Status, *Response, error) {
 	var entity Status
-	entityURL := fmt.Sprintf("%v/%v", col.url, slug)
-	resp, body, err := col.client.Get(entityURL, params, &entity)
-	return &entity, resp, body, err
+	entityURL := fmt.Sprintf("statuses/%v", slug)
+	resp, err := c.client.Get(ctx, entityURL, params, &entity)
+	return &entity, resp, err
 }

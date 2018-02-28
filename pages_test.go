@@ -1,22 +1,24 @@
 package wordpress_test
 
 import (
+	"context"
 	"fmt"
-	"github.com/sogko/go-wordpress"
 	"log"
 	"net/http"
 	"testing"
+
+	"github.com/robbiet480/go-wordpress"
 )
 
 func factoryPage() wordpress.Page {
 	return wordpress.Page{
-		Title: wordpress.Title{
+		Title: wordpress.RenderedString{
 			Raw: "TestPagesCreate",
 		},
-		Content: wordpress.Content{
+		Content: wordpress.RenderedString{
 			Raw: "<h1>HEADER</h1><p>Paragraph</p>",
 		},
-		Excerpt: wordpress.Excerpt{
+		Excerpt: wordpress.RenderedString{
 			Raw: "<h1>HEADER</h1><p>Paragraph</p>",
 		},
 		Type:   wordpress.PostTypePage,
@@ -28,15 +30,12 @@ func factoryPage() wordpress.Page {
 
 func cleanUpPage(t *testing.T, pageID int) {
 
-	wp := initTestClient()
-	deletedPage, resp, body, err := wp.Pages().Delete(pageID, "force=true")
+	wp, ctx := initTestClient()
+	deletedPage, resp, err := wp.Pages.Delete(ctx, pageID, "force=true")
 	if err != nil {
 		t.Errorf("Failed to clean up new page: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if deletedPage.ID != pageID {
@@ -44,41 +43,38 @@ func cleanUpPage(t *testing.T, pageID int) {
 	}
 }
 
-func getAnyOnePage(t *testing.T, wp *wordpress.Client) *wordpress.Page {
+func getAnyOnePage(t *testing.T, ctx context.Context, wp *wordpress.Client) *wordpress.Page {
 
-	pages, resp, body, err := wp.Pages().List(nil)
-	if resp.StatusCode != http.StatusOK {
+	pages, resp, err := wp.Pages.List(ctx, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if len(pages) < 1 {
 		log.Print(err)
-		log.Print(body)
 		log.Print(resp)
 		t.Fatalf("Should not return empty pages")
 	}
 
 	pageID := pages[0].ID
 
-	page, resp, _, _ := wp.Pages().Get(pageID, "context=edit")
-	if resp.StatusCode != http.StatusOK {
+	page, resp, _ := wp.Pages.Get(ctx, pageID, "context=edit")
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	return page
 }
 
 func TestPagesList_NoParams(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	pages, resp, body, err := wp.Pages().List(nil)
+	pages, resp, err := wp.Pages.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if pages == nil {
 		t.Errorf("Should not return nil pages")
 	}
@@ -87,81 +83,71 @@ func TestPagesList_NoParams(t *testing.T) {
 	}
 }
 func TestPagesList_WithParamsString(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	// assumes that API user authenticated with `edit_pages`
-	pages, resp, body, err := wp.Pages().List("filter[post_status]=draft")
+	pages, resp, err := wp.Pages.List(ctx, &wordpress.PageListOptions{Status: []string{"draft"}})
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if len(pages) != 0 {
 		t.Errorf("Should return zero draft pages, returned %v", len(pages))
 	}
-	pages, resp, body, err = wp.Pages().List("filter[post_status]=publish")
+	pages, resp, err = wp.Pages.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if len(pages) == 0 {
 		t.Errorf("Should return at least one published pages")
 	}
 }
 
 func TestPagesGet_PageExists(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	page := getAnyOnePage(t, wp)
+	page := getAnyOnePage(t, ctx, wp)
 	pageID := page.ID
 
-	page, resp, body, err := wp.Pages().Get(pageID, nil)
+	page, resp, err := wp.Pages.Get(ctx, pageID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
-	}
-	if body == nil {
-		t.Errorf("body should not be nil")
 	}
 	if page.ID != pageID {
 		t.Errorf("Returned page should have the same ID as specified in Get(), %v != %v", page.ID, pageID)
 	}
 }
 func TestPagesGet_PageDoesNotExists(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	pageID := -1
 
-	_, resp, body, err := wp.Pages().Get(pageID, nil)
+	_, resp, err := wp.Pages.Get(ctx, pageID, nil)
 	if err == nil {
 		t.Errorf("Should return error")
 	}
-	if resp.StatusCode != http.StatusNotFound {
+	if resp != nil && resp.StatusCode != http.StatusNotFound {
 		t.Errorf("Expected 400 NotFound, got %v", resp.Status)
-	}
-	if body == nil {
-		t.Errorf("body should not be nil")
 	}
 }
 func TestPagesGet_Lazy(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	page := getAnyOnePage(t, wp)
+	page := getAnyOnePage(t, ctx, wp)
 	pageID := page.ID
 
-	//The proper way to get lazy-fetch pages. Pages().Entity() won't make any HTTP request
-	lazyPage := wp.Pages().Entity(pageID)
+	//The proper way to get lazy-fetch pages. Pages.Entityctx, () won't make any HTTP request
+	lazyPage := wp.Pages.Entity(pageID)
 	if lazyPage == nil {
 		t.Errorf("lazyPage should not be nil")
 	}
@@ -173,15 +159,12 @@ func TestPagesGet_Lazy(t *testing.T) {
 	}
 
 	// populate Page Entity
-	page, resp, body, err := lazyPage.Populate(nil)
+	page, resp, err := lazyPage.Populate(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
-	}
-	if body == nil {
-		t.Errorf("body should not be nil")
 	}
 	if page.ID != pageID {
 		t.Errorf("Returned page should have the same ID as specified in Get(), %v != %v", page.ID, pageID)
@@ -192,18 +175,15 @@ func TestPagesGet_Lazy(t *testing.T) {
 }
 
 func TestPagesCreate(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	p := factoryPage()
-	newPage, resp, body, err := wp.Pages().Create(&p)
+	newPage, resp, err := wp.Pages.Create(ctx, &p)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusCreated {
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Errorf("Expected 201 Created, got %v", resp.Status)
-	}
-	if body == nil {
-		t.Errorf("body should not be nil")
 	}
 	if newPage == nil {
 		t.Errorf("newPage should not be nil")
@@ -226,18 +206,18 @@ func TestPagesCreate(t *testing.T) {
 }
 
 func TestPagesUpdate(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	// create a new page first
 	p := factoryPage()
-	newPage, resp, _, _ := wp.Pages().Create(&p)
-	if resp.StatusCode != http.StatusCreated {
+	newPage, resp, _ := wp.Pages.Create(ctx, &p)
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Fatalf("Expected 201 Created, got %v", resp.Status)
 	}
 
 	// get the page in `edit` context
-	page, resp, _, _ := wp.Pages().Get(newPage.ID, "context=edit")
-	if resp.StatusCode != http.StatusOK {
+	page, resp, _ := wp.Pages.Get(ctx, newPage.ID, "context=edit")
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Fatalf("Expected 200 OK, got %v", resp.Status)
 	}
 
@@ -249,15 +229,12 @@ func TestPagesUpdate(t *testing.T) {
 	page.Title.Raw = newTitle
 
 	// update page
-	updatePage, resp, body, err := wp.Pages().Update(page.ID, page)
+	updatePage, resp, err := wp.Pages.Update(ctx, page.ID, page)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
-	}
-	if body == nil {
-		t.Errorf("body should not be nil")
 	}
 	if updatePage == nil {
 		t.Errorf("updatePage should not be nil")
@@ -271,28 +248,25 @@ func TestPagesUpdate(t *testing.T) {
 }
 
 func TestPagesDelete_NoParams_MoveToTrash(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	// create a new page first
 	p := factoryPage()
-	newPage, resp, _, _ := wp.Pages().Create(&p)
-	if resp.StatusCode != http.StatusCreated {
+	newPage, resp, _ := wp.Pages.Create(ctx, &p)
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Errorf("Expected 201 Created, got %v", resp.Status)
 	}
 
 	// delete page (move to trash)
-	deletedPage, resp, body, err := wp.Pages().Delete(newPage.ID, nil)
+	deletedPage, resp, err := wp.Pages.Delete(ctx, newPage.ID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
 	if deletedPage == nil {
-		t.Errorf("updatePage should not be nil")
+		t.Errorf("deletedPage should not be nil")
 	}
 	if deletedPage.ID != newPage.ID {
 		t.Errorf("Deleted page ID should be the same as created page: %v != %v", deletedPage.ID, newPage.ID)
@@ -302,25 +276,22 @@ func TestPagesDelete_NoParams_MoveToTrash(t *testing.T) {
 	cleanUpPage(t, newPage.ID)
 }
 func TestPagesDelete_WithParams_DeletePermanently(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	// create a new page first
 	p := factoryPage()
-	newPage, resp, _, _ := wp.Pages().Create(&p)
-	if resp.StatusCode != http.StatusCreated {
+	newPage, resp, _ := wp.Pages.Create(ctx, &p)
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Errorf("Expected 201 Created, got %v", resp.Status)
 	}
 
 	// delete page (delete permanently)
-	deletedPage, resp, body, err := wp.Pages().Delete(newPage.ID, "force=true")
+	deletedPage, resp, err := wp.Pages.Delete(ctx, newPage.ID, "force=true")
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
-	}
-	if body == nil {
-		t.Errorf("body should not be nil")
 	}
 	if deletedPage == nil {
 		t.Errorf("updatePage should not be nil")

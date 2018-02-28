@@ -1,10 +1,12 @@
 package wordpress
 
 import (
+	"context"
 	"fmt"
-	"net/http"
+	"log"
 )
 
+// Constants for different post values.
 const (
 	PostStatusDraft   = "draft"
 	PostStatusPending = "pending"
@@ -35,155 +37,162 @@ const (
 	PostFormatChat     = "chat"
 )
 
-type GUID struct {
-	Raw      string `json:"raw,omitempty"`
-	Rendered string `json:"rendered,omitempty"`
-}
-type Title struct {
-	Raw      string `json:"raw,omitempty"`
-	Rendered string `json:"rendered,omitempty"`
-}
-type Content struct {
-	Raw      string `json:"raw,omitempty"`
-	Rendered string `json:"rendered,omitempty"`
-}
-type Excerpt struct {
+// RenderedString contains a raw and rendered version of a string such as title, content, excerpt, etc.
+type RenderedString struct {
 	Raw      string `json:"raw,omitempty"`
 	Rendered string `json:"rendered,omitempty"`
 }
 
+// Post represents a WordPress post.
 type Post struct {
-	collection *PostsCollection `json:"-,omitempty"`
+	collection *PostsService
 
-	ID            int     `json:"id,omitempty"`
-	Date          string  `json:"date,omitempty"`
-	DateGMT       string  `json:"date_gmt,omitempty"`
-	GUID          GUID    `json:"guid,omitempty"`
-	Link          string  `json:"link,omitempty"`
-	Modified      string  `json:"modified,omitempty"`
-	ModifiedGMT   string  `json:"modifiedGMT,omitempty"`
-	Password      string  `json:"password,omitempty"`
-	Slug          string  `json:"slug,omitempty"`
-	Status        string  `json:"status,omitempty"`
-	Type          string  `json:"type,omitempty"`
-	Title         Title   `json:"title,omitempty"`
-	Content       Content `json:"content,omitempty"`
-	Author        int     `json:"author,omitempty"`
-	Excerpt       Excerpt `json:"excerpt,omitempty"`
-	FeaturedImage int     `json:"featured_image,omitempty"`
-	CommentStatus string  `json:"comment_status,omitempty"`
-	PingStatus    string  `json:"ping_status,omitempty"`
-	Format        string  `json:"format,omitempty"`
-	Sticky        bool    `json:"sticky,omitempty"`
+	Author        int            `json:"author,omitempty"`
+	Categories    []int          `json:"categories,omitempty"`
+	CommentStatus string         `json:"comment_status,omitempty"`
+	Content       RenderedString `json:"content,omitempty"`
+	Date          Time           `json:"date,omitempty"`
+	DateGMT       Time           `json:"date_gmt,omitempty"`
+	Excerpt       RenderedString `json:"excerpt,omitempty"`
+	FeaturedMedia int            `json:"featured_media,omitempty"`
+	Format        string         `json:"format,omitempty"`
+	GUID          RenderedString `json:"guid,omitempty"`
+	ID            int            `json:"id,omitempty"`
+	Link          string         `json:"link,omitempty"`
+	Modified      Time           `json:"modified,omitempty"`
+	ModifiedGMT   Time           `json:"modified_gmt,omitempty"`
+	Password      string         `json:"password,omitempty"`
+	PingStatus    string         `json:"ping_status,omitempty"`
+	Slug          string         `json:"slug,omitempty"`
+	Status        string         `json:"status,omitempty"`
+	Sticky        bool           `json:"sticky,omitempty"`
+	Subtitle      string         `json:"wps_subtitle,omitempty"`
+	Tags          []int          `json:"tags,omitempty"`
+	Template      string         `json:"template,omitempty"`
+	Title         RenderedString `json:"title,omitempty"`
+	Type          string         `json:"type,omitempty"`
 }
 
-func (entity *Post) setCollection(col *PostsCollection) {
-	entity.collection = col
+func (entity *Post) setService(c *PostsService) {
+	entity.collection = c
 }
-func (entity *Post) Meta() *MetaCollection {
-	if entity.collection == nil {
-		// missing post.collection parent. Probably Post struct was initialized manually.
-		_warning("Missing parent post collection")
-		return nil
-	}
-	return &MetaCollection{
-		client:     entity.collection.client,
-		parent:     entity,
-		parentType: CollectionPosts,
-		url:        fmt.Sprintf("%v/%v/%v", entity.collection.url, entity.ID, CollectionMeta),
-	}
-}
-func (entity *Post) Revisions() *RevisionsCollection {
+
+// Revisions gets the revisions of a single post.
+func (entity *Post) Revisions() *RevisionsService {
 	if entity.collection == nil {
 		// missing post.collection parent. Probably Post struct was initialized manually, not fetched from API
-		_warning("Missing parent post collection")
+		log.Println("[go-wordpress] Missing parent post collection")
 		return nil
 	}
-	return &RevisionsCollection{
-		client:     entity.collection.client,
+	return &RevisionsService{
+		service:    service(*entity.collection),
 		parent:     entity,
-		parentType: CollectionPosts,
-		url:        fmt.Sprintf("%v/%v/%v", entity.collection.url, entity.ID, CollectionRevisions),
+		parentType: "posts",
+		url:        fmt.Sprintf("%v/%v/%v", "posts", entity.ID, "revisions"),
 	}
 }
-func (entity *Post) Terms() *PostsTermsCollection {
+
+// Terms gets the terms of a single post.
+func (entity *Post) Terms() *PostsTermsService {
 	if entity.collection == nil {
 		// missing post.collection parent. Probably Post struct was initialized manually, not fetched from API
-		_warning("Missing parent post collection")
+		log.Println("[go-wordpress] Missing parent post collection")
 		return nil
 	}
-	return &PostsTermsCollection{
+	return &PostsTermsService{
 		client:     entity.collection.client,
 		parent:     entity,
-		parentType: CollectionPosts,
-		url:        fmt.Sprintf("%v/%v/%v", entity.collection.url, entity.ID, CollectionTerms),
+		parentType: "posts",
+		url:        fmt.Sprintf("%v/%v/%v", "posts", entity.ID, "terms"),
 	}
 }
-func (entity *Post) Populate(params interface{}) (*Post, *http.Response, []byte, error) {
-	return entity.collection.Get(entity.ID, params)
+
+// Populate will fill a manually initialized post with the collection information.
+func (entity *Post) Populate(ctx context.Context, params interface{}) (*Post, *Response, error) {
+	return entity.collection.Get(ctx, entity.ID, params)
 }
 
-type PostsCollection struct {
-	client    *Client
-	url       string
-	entityURL string
-}
+// PostsService provides access to the post related functions in the WordPress REST API.
+type PostsService service
 
-func (col *PostsCollection) List(params interface{}) ([]Post, *http.Response, []byte, error) {
-	var posts []Post
-	resp, body, err := col.client.List(col.url, params, &posts)
+// List returns a list of posts.
+func (c *PostsService) List(ctx context.Context, opts *PostListOptions) ([]*Post, *Response, error) {
+	u, err := addOptions("posts", opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := c.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	posts := []*Post{}
+	resp, err := c.client.Do(ctx, req, &posts)
+	if err != nil {
+		return nil, resp, err
+	}
 
 	// set collection object for each entity which has sub-collection
 	for _, p := range posts {
-		p.setCollection(col)
+		p.setService(c)
 	}
 
-	return posts, resp, body, err
+	return posts, resp, nil
 }
-func (col *PostsCollection) Create(new *Post) (*Post, *http.Response, []byte, error) {
+
+// Create creates a new post.
+func (c *PostsService) Create(ctx context.Context, newPost *Post) (*Post, *Response, error) {
 	var created Post
-	resp, body, err := col.client.Create(col.url, new, &created)
+	resp, err := c.client.Create(ctx, "posts", newPost, &created)
 
-	created.setCollection(col)
+	created.setService(c)
 
-	return &created, resp, body, err
+	return &created, resp, err
 }
-func (col *PostsCollection) Get(id int, params interface{}) (*Post, *http.Response, []byte, error) {
+
+// Get returns a single post for the given id.
+func (c *PostsService) Get(ctx context.Context, id int, params interface{}) (*Post, *Response, error) {
 	var entity Post
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.Get(entityURL, params, &entity)
+	entityURL := fmt.Sprintf("posts/%v", id)
+	resp, err := c.client.Get(ctx, entityURL, params, &entity)
 
 	// set collection object for each entity which has sub-collection
-	entity.setCollection(col)
+	entity.setService(c)
 
-	return &entity, resp, body, err
+	return &entity, resp, err
 }
-func (col *PostsCollection) Entity(id int) *Post {
+
+// Entity returns a basic post for the given id.
+func (c *PostsService) Entity(id int) *Post {
 	entity := Post{
-		collection: col,
+		collection: c,
 		ID:         id,
 	}
 	return &entity
 }
 
-func (col *PostsCollection) Update(id int, post *Post) (*Post, *http.Response, []byte, error) {
+// Update updates a single post with the given id.
+func (c *PostsService) Update(ctx context.Context, id int, post *Post) (*Post, *Response, error) {
 	var updated Post
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
-	resp, body, err := col.client.Update(entityURL, post, &updated)
+	entityURL := fmt.Sprintf("posts/%v", id)
+	resp, err := c.client.Update(ctx, entityURL, post, &updated)
 
 	// set collection object for each entity which has sub-collection
-	updated.setCollection(col)
+	updated.setService(c)
 
-	return &updated, resp, body, err
+	return &updated, resp, err
 }
-func (col *PostsCollection) Delete(id int, params interface{}) (*Post, *http.Response, []byte, error) {
-	var deleted Post
-	entityURL := fmt.Sprintf("%v/%v", col.url, id)
 
-	resp, body, err := col.client.Delete(entityURL, params, &deleted)
+// Delete removes the post with the given id.
+func (c *PostsService) Delete(ctx context.Context, id int, params interface{}) (*Post, *Response, error) {
+	var deleted Post
+	entityURL := fmt.Sprintf("posts/%v", id)
+
+	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
 
 	// set collection object for each entity which has sub-collection
-	deleted.setCollection(col)
+	deleted.setService(c)
 
-	return &deleted, resp, body, err
+	return &deleted, resp, err
 }

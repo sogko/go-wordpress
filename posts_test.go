@@ -1,22 +1,24 @@
 package wordpress_test
 
 import (
+	"context"
 	"fmt"
-	"github.com/sogko/go-wordpress"
 	"log"
 	"net/http"
 	"testing"
+
+	"github.com/robbiet480/go-wordpress"
 )
 
 func factoryPost() wordpress.Post {
 	return wordpress.Post{
-		Title: wordpress.Title{
+		Title: wordpress.RenderedString{
 			Raw: "TestPostsCreate",
 		},
-		Content: wordpress.Content{
+		Content: wordpress.RenderedString{
 			Raw: "<h1>HEADER</h1><p>Paragraph</p>",
 		},
-		Excerpt: wordpress.Excerpt{
+		Excerpt: wordpress.RenderedString{
 			Raw: "<h1>HEADER</h1><p>Paragraph</p>",
 		},
 		Format: wordpress.PostFormatImage,
@@ -29,15 +31,12 @@ func factoryPost() wordpress.Post {
 
 func cleanUpPost(t *testing.T, postID int) {
 
-	wp := initTestClient()
-	deletedPost, resp, body, err := wp.Posts().Delete(postID, "force=true")
+	wp, ctx := initTestClient()
+	deletedPost, resp, err := wp.Posts.Delete(ctx, postID, "force=true")
 	if err != nil {
 		t.Errorf("Failed to clean up new post: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if deletedPost.ID != postID {
@@ -45,41 +44,38 @@ func cleanUpPost(t *testing.T, postID int) {
 	}
 }
 
-func getAnyOnePost(t *testing.T, wp *wordpress.Client) *wordpress.Post {
+func getAnyOnePost(t *testing.T, ctx context.Context, wp *wordpress.Client) *wordpress.Post {
 
-	posts, resp, body, err := wp.Posts().List(nil)
-	if resp.StatusCode != http.StatusOK {
+	posts, resp, err := wp.Posts.List(ctx, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if len(posts) < 1 {
 		log.Print(err)
-		log.Print(body)
 		log.Print(resp)
 		t.Fatalf("Should not return empty posts")
 	}
 
 	postID := posts[0].ID
 
-	post, resp, _, _ := wp.Posts().Get(postID, "context=edit")
-	if resp.StatusCode != http.StatusOK {
+	post, resp, _ := wp.Posts.Get(ctx, postID, "context=edit")
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	return post
 }
 
 func TestPostsList_NoParams(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	posts, resp, body, err := wp.Posts().List(nil)
+	posts, resp, err := wp.Posts.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if posts == nil {
 		t.Errorf("Should not return nil posts")
 	}
@@ -88,81 +84,71 @@ func TestPostsList_NoParams(t *testing.T) {
 	}
 }
 func TestPostsList_WithParamsString(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	// assumes that API user authenticated with `edit_posts`
-	posts, resp, body, err := wp.Posts().List("filter[post_status]=draft")
+	posts, resp, err := wp.Posts.List(ctx, &wordpress.PostListOptions{Status: []string{"draft"}})
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if len(posts) != 0 {
 		t.Errorf("Should return zero draft posts, returned %v", len(posts))
 	}
-	posts, resp, body, err = wp.Posts().List("filter[post_status]=publish")
+	posts, resp, err = wp.Posts.List(ctx, &wordpress.PostListOptions{Status: []string{"publish"}})
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if len(posts) == 0 {
 		t.Errorf("Should return at least one published posts")
 	}
 }
 
 func TestPostsGet_PostExists(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	post := getAnyOnePost(t, wp)
+	post := getAnyOnePost(t, ctx, wp)
 	postID := post.ID
 
-	post, resp, body, err := wp.Posts().Get(postID, nil)
+	post, resp, err := wp.Posts.Get(ctx, postID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
-	}
-	if body == nil {
-		t.Errorf("body should not be nil")
 	}
 	if post.ID != postID {
 		t.Errorf("Returned post should have the same ID as specified in Get(), %v != %v", post.ID, postID)
 	}
 }
 func TestPostsGet_PostDoesNotExists(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	postID := -1
 
-	_, resp, body, err := wp.Posts().Get(postID, nil)
+	_, resp, err := wp.Posts.Get(ctx, postID, nil)
 	if err == nil {
 		t.Errorf("Should return error")
 	}
-	if resp.StatusCode != http.StatusNotFound {
+	if resp != nil && resp.StatusCode != http.StatusNotFound {
 		t.Errorf("Expected 400 NotFound, got %v", resp.Status)
-	}
-	if body == nil {
-		t.Errorf("body should not be nil")
 	}
 }
 func TestPostsGet_Lazy(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	post := getAnyOnePost(t, wp)
+	post := getAnyOnePost(t, ctx, wp)
 	postID := post.ID
 
-	//The proper way to get lazy-fetch posts. Posts().Entity() won't make any HTTP request
-	lazyPost := wp.Posts().Entity(postID)
+	//The proper way to get lazy-fetch posts. Posts.Entity() won't make any HTTP request
+	lazyPost := wp.Posts.Entity(postID)
 	if lazyPost == nil {
 		t.Errorf("lazyPost should not be nil")
 	}
@@ -174,15 +160,12 @@ func TestPostsGet_Lazy(t *testing.T) {
 	}
 
 	// populate Post Entity
-	post, resp, body, err := lazyPost.Populate(nil)
+	post, resp, err := lazyPost.Populate(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
-	}
-	if body == nil {
-		t.Errorf("body should not be nil")
 	}
 	if post.ID != postID {
 		t.Errorf("Returned post should have the same ID as specified in Get(), %v != %v", post.ID, postID)
@@ -193,18 +176,15 @@ func TestPostsGet_Lazy(t *testing.T) {
 }
 
 func TestPostsCreate(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	p := factoryPost()
-	newPost, resp, body, err := wp.Posts().Create(&p)
+	newPost, resp, err := wp.Posts.Create(ctx, &p)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusCreated {
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Errorf("Expected 201 Created, got %v", resp.Status)
-	}
-	if body == nil {
-		t.Errorf("body should not be nil")
 	}
 	if newPost == nil {
 		t.Errorf("newPost should not be nil")
@@ -230,18 +210,18 @@ func TestPostsCreate(t *testing.T) {
 }
 
 func TestPostsUpdate(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	// create a new post first
 	p := factoryPost()
-	newPost, resp, _, _ := wp.Posts().Create(&p)
-	if resp.StatusCode != http.StatusCreated {
+	newPost, resp, _ := wp.Posts.Create(ctx, &p)
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Fatalf("Expected 201 Created, got %v", resp.Status)
 	}
 
 	// get the post in `edit` context
-	post, resp, _, _ := wp.Posts().Get(newPost.ID, "context=edit")
-	if resp.StatusCode != http.StatusOK {
+	post, resp, _ := wp.Posts.Get(ctx, newPost.ID, "context=edit")
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Fatalf("Expected 200 OK, got %v", resp.Status)
 	}
 
@@ -253,15 +233,12 @@ func TestPostsUpdate(t *testing.T) {
 	post.Title.Raw = newTitle
 
 	// update post
-	updatePost, resp, body, err := wp.Posts().Update(post.ID, post)
+	updatePost, resp, err := wp.Posts.Update(ctx, post.ID, post)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
-	}
-	if body == nil {
-		t.Errorf("body should not be nil")
 	}
 	if updatePost == nil {
 		t.Errorf("updatePost should not be nil")
@@ -275,25 +252,22 @@ func TestPostsUpdate(t *testing.T) {
 }
 
 func TestPostsDelete_NoParams_MoveToTrash(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	// create a new post first
 	p := factoryPost()
-	newPost, resp, _, _ := wp.Posts().Create(&p)
-	if resp.StatusCode != http.StatusCreated {
+	newPost, resp, _ := wp.Posts.Create(ctx, &p)
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Errorf("Expected 201 Created, got %v", resp.Status)
 	}
 
 	// delete post (move to trash)
-	deletedPost, resp, body, err := wp.Posts().Delete(newPost.ID, nil)
+	deletedPost, resp, err := wp.Posts.Delete(ctx, newPost.ID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
-	}
-	if body == nil {
-		t.Errorf("body should not be nil")
 	}
 	if deletedPost == nil {
 		t.Errorf("updatePost should not be nil")
@@ -306,25 +280,22 @@ func TestPostsDelete_NoParams_MoveToTrash(t *testing.T) {
 	cleanUpPost(t, newPost.ID)
 }
 func TestPostsDelete_WithParams_DeletePermanently(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	// create a new post first
 	p := factoryPost()
-	newPost, resp, _, _ := wp.Posts().Create(&p)
-	if resp.StatusCode != http.StatusCreated {
+	newPost, resp, _ := wp.Posts.Create(ctx, &p)
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Errorf("Expected 201 Created, got %v", resp.Status)
 	}
 
 	// delete post (delete permanently)
-	deletedPost, resp, body, err := wp.Posts().Delete(newPost.ID, "force=true")
+	deletedPost, resp, err := wp.Posts.Delete(ctx, newPost.ID, "force=true")
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
-	}
-	if body == nil {
-		t.Errorf("body should not be nil")
 	}
 	if deletedPost == nil {
 		t.Errorf("updatePost should not be nil")

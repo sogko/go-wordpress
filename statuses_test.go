@@ -6,36 +6,32 @@ import (
 )
 
 func TestStatusesList(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	statuses, resp, body, err := wp.Statuses().List(nil)
+	statuses, resp, err := wp.Statuses.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if statuses == nil {
 		t.Errorf("Should not return nil statuses")
 	}
 }
 
 func TestStatusesGet(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	status, resp, body, err := wp.Statuses().Get("publish", nil)
+	status, resp, err := wp.Statuses.Get(ctx, "publish", nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
+
 	if status == nil {
 		t.Errorf("Should not return nil status")
 	}

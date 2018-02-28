@@ -1,0 +1,858 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "WordPress REST API",
+  "definitions": {
+    "UsersListOptions": {
+      "properties": {
+        "context": {
+          "default": "view",
+          "enum": [
+            "view",
+            "embed",
+            "edit"
+          ],
+          "description": "Scope under which the request is made; determines fields present in response.",
+          "type": "string"
+        },
+        "page": {
+          "default": 1,
+          "description": "Current page of the collection.",
+          "type": "integer"
+        },
+        "per_page": {
+          "default": 10,
+          "description": "Maximum number of items to be returned in result set.",
+          "type": "integer"
+        },
+        "search": {
+          "description": "Limit results to those matching a string.",
+          "type": "string"
+        },
+        "exclude": {
+          "default": [],
+          "description": "Ensure result set excludes specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "include": {
+          "default": [],
+          "description": "Limit result set to specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "offset": {
+          "description": "Offset the result set by a specific number of items.",
+          "type": "integer"
+        },
+        "order": {
+          "default": "asc",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "description": "Order sort attribute ascending or descending.",
+          "type": "string"
+        },
+        "orderby": {
+          "default": "name",
+          "enum": [
+            "id",
+            "include",
+            "name",
+            "registered_date",
+            "slug",
+            "include_slugs",
+            "email",
+            "url"
+          ],
+          "description": "Sort collection by object attribute.",
+          "type": "string"
+        },
+        "slug": {
+          "description": "Limit result set to users with one or more specific slugs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "roles": {
+          "description": "Limit result set to users matching at least one specific role provided. Accepts csv list or single role.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PagesListOptions": {
+      "properties": {
+        "context": {
+          "default": "view",
+          "enum": [
+            "view",
+            "embed",
+            "edit"
+          ],
+          "description": "Scope under which the request is made; determines fields present in response.",
+          "type": "string"
+        },
+        "page": {
+          "default": 1,
+          "description": "Current page of the collection.",
+          "type": "integer"
+        },
+        "per_page": {
+          "default": 10,
+          "description": "Maximum number of items to be returned in result set.",
+          "type": "integer"
+        },
+        "search": {
+          "description": "Limit results to those matching a string.",
+          "type": "string"
+        },
+        "after": {
+          "description": "Limit response to posts published after a given ISO8601 compliant date.",
+          "type": "string"
+        },
+        "author": {
+          "default": [],
+          "description": "Limit result set to posts assigned to specific authors.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "author_exclude": {
+          "default": [],
+          "description": "Ensure result set excludes posts assigned to specific authors.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "before": {
+          "description": "Limit response to posts published before a given ISO8601 compliant date.",
+          "type": "string"
+        },
+        "exclude": {
+          "default": [],
+          "description": "Ensure result set excludes specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "include": {
+          "default": [],
+          "description": "Limit result set to specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "menu_order": {
+          "description": "Limit result set to posts with a specific menu_order value.",
+          "type": "integer"
+        },
+        "offset": {
+          "description": "Offset the result set by a specific number of items.",
+          "type": "integer"
+        },
+        "order": {
+          "default": "desc",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "description": "Order sort attribute ascending or descending.",
+          "type": "string"
+        },
+        "orderby": {
+          "default": "date",
+          "enum": [
+            "author",
+            "date",
+            "id",
+            "include",
+            "modified",
+            "parent",
+            "relevance",
+            "slug",
+            "include_slugs",
+            "title",
+            "menu_order"
+          ],
+          "description": "Sort collection by object attribute.",
+          "type": "string"
+        },
+        "parent": {
+          "default": [],
+          "description": "Limit result set to items with particular parent IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "parent_exclude": {
+          "default": [],
+          "description": "Limit result set to all items except those of a particular parent ID.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "slug": {
+          "description": "Limit result set to posts with one or more specific slugs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "default": "publish",
+          "description": "Limit result set to posts assigned one or more statuses.",
+          "type": "array",
+          "items": {
+            "enum": [
+              "publish",
+              "future",
+              "draft",
+              "pending",
+              "private",
+              "trash",
+              "auto-draft",
+              "inherit",
+              "any"
+            ],
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TagsListOptions": {
+      "properties": {
+        "context": {
+          "default": "view",
+          "enum": [
+            "view",
+            "embed",
+            "edit"
+          ],
+          "description": "Scope under which the request is made; determines fields present in response.",
+          "type": "string"
+        },
+        "page": {
+          "default": 1,
+          "description": "Current page of the collection.",
+          "type": "integer"
+        },
+        "per_page": {
+          "default": 10,
+          "description": "Maximum number of items to be returned in result set.",
+          "type": "integer"
+        },
+        "search": {
+          "description": "Limit results to those matching a string.",
+          "type": "string"
+        },
+        "exclude": {
+          "default": [],
+          "description": "Ensure result set excludes specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "include": {
+          "default": [],
+          "description": "Limit result set to specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "offset": {
+          "description": "Offset the result set by a specific number of items.",
+          "type": "integer"
+        },
+        "order": {
+          "default": "asc",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "description": "Order sort attribute ascending or descending.",
+          "type": "string"
+        },
+        "orderby": {
+          "default": "name",
+          "enum": [
+            "id",
+            "include",
+            "name",
+            "slug",
+            "include_slugs",
+            "term_group",
+            "description",
+            "count"
+          ],
+          "description": "Sort collection by term attribute.",
+          "type": "string"
+        },
+        "hide_empty": {
+          "default": false,
+          "description": "Whether to hide terms not assigned to any posts.",
+          "type": "boolean"
+        },
+        "post": {
+          "description": "Limit result set to terms assigned to a specific post.",
+          "type": "integer"
+        },
+        "slug": {
+          "description": "Limit result set to terms with one or more specific slugs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CategoriesListOptions": {
+      "properties": {
+        "context": {
+          "default": "view",
+          "enum": [
+            "view",
+            "embed",
+            "edit"
+          ],
+          "description": "Scope under which the request is made; determines fields present in response.",
+          "type": "string"
+        },
+        "page": {
+          "default": 1,
+          "description": "Current page of the collection.",
+          "type": "integer"
+        },
+        "per_page": {
+          "default": 10,
+          "description": "Maximum number of items to be returned in result set.",
+          "type": "integer"
+        },
+        "search": {
+          "description": "Limit results to those matching a string.",
+          "type": "string"
+        },
+        "exclude": {
+          "default": [],
+          "description": "Ensure result set excludes specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "include": {
+          "default": [],
+          "description": "Limit result set to specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "order": {
+          "default": "asc",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "description": "Order sort attribute ascending or descending.",
+          "type": "string"
+        },
+        "orderby": {
+          "default": "name",
+          "enum": [
+            "id",
+            "include",
+            "name",
+            "slug",
+            "include_slugs",
+            "term_group",
+            "description",
+            "count"
+          ],
+          "description": "Sort collection by term attribute.",
+          "type": "string"
+        },
+        "hide_empty": {
+          "default": false,
+          "description": "Whether to hide terms not assigned to any posts.",
+          "type": "boolean"
+        },
+        "parent": {
+          "description": "Limit result set to terms assigned to a specific parent.",
+          "type": "integer"
+        },
+        "post": {
+          "description": "Limit result set to terms assigned to a specific post.",
+          "type": "integer"
+        },
+        "slug": {
+          "description": "Limit result set to terms with one or more specific slugs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CommentsListOptions": {
+      "properties": {
+        "context": {
+          "default": "view",
+          "enum": [
+            "view",
+            "embed",
+            "edit"
+          ],
+          "description": "Scope under which the request is made; determines fields present in response.",
+          "type": "string"
+        },
+        "page": {
+          "default": 1,
+          "description": "Current page of the collection.",
+          "type": "integer"
+        },
+        "per_page": {
+          "default": 10,
+          "description": "Maximum number of items to be returned in result set.",
+          "type": "integer"
+        },
+        "search": {
+          "description": "Limit results to those matching a string.",
+          "type": "string"
+        },
+        "after": {
+          "description": "Limit response to comments published after a given ISO8601 compliant date.",
+          "type": "string"
+        },
+        "author": {
+          "description": "Limit result set to comments assigned to specific user IDs. Requires authorization.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "author_exclude": {
+          "description": "Ensure result set excludes comments assigned to specific user IDs. Requires authorization.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "author_email": {
+          "description": "Limit result set to that from a specific author email. Requires authorization.",
+          "type": "string"
+        },
+        "before": {
+          "description": "Limit response to comments published before a given ISO8601 compliant date.",
+          "type": "string"
+        },
+        "exclude": {
+          "default": [],
+          "description": "Ensure result set excludes specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "include": {
+          "default": [],
+          "description": "Limit result set to specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "offset": {
+          "description": "Offset the result set by a specific number of items.",
+          "type": "integer"
+        },
+        "order": {
+          "default": "desc",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "description": "Order sort attribute ascending or descending.",
+          "type": "string"
+        },
+        "orderby": {
+          "default": "date_gmt",
+          "enum": [
+            "date",
+            "date_gmt",
+            "id",
+            "include",
+            "post",
+            "parent",
+            "type"
+          ],
+          "description": "Sort collection by object attribute.",
+          "type": "string"
+        },
+        "parent": {
+          "default": [],
+          "description": "Limit result set to comments of specific parent IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "parent_exclude": {
+          "default": [],
+          "description": "Ensure result set excludes specific parent IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "post": {
+          "default": [],
+          "description": "Limit result set to comments assigned to specific post IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "status": {
+          "default": "approve",
+          "description": "Limit result set to comments assigned a specific status. Requires authorization.",
+          "type": "string"
+        },
+        "type": {
+          "default": "comment",
+          "description": "Limit result set to comments assigned a specific type. Requires authorization.",
+          "type": "string"
+        },
+        "password": {
+          "description": "The password for the post if it is password protected.",
+          "type": "string"
+        }
+      }
+    },
+    "MediaListOptions": {
+      "properties": {
+        "context": {
+          "default": "view",
+          "enum": [
+            "view",
+            "embed",
+            "edit"
+          ],
+          "description": "Scope under which the request is made; determines fields present in response.",
+          "type": "string"
+        },
+        "page": {
+          "default": 1,
+          "description": "Current page of the collection.",
+          "type": "integer"
+        },
+        "per_page": {
+          "default": 10,
+          "description": "Maximum number of items to be returned in result set.",
+          "type": "integer"
+        },
+        "search": {
+          "description": "Limit results to those matching a string.",
+          "type": "string"
+        },
+        "after": {
+          "description": "Limit response to posts published after a given ISO8601 compliant date.",
+          "type": "string"
+        },
+        "author": {
+          "default": [],
+          "description": "Limit result set to posts assigned to specific authors.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "author_exclude": {
+          "default": [],
+          "description": "Ensure result set excludes posts assigned to specific authors.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "before": {
+          "description": "Limit response to posts published before a given ISO8601 compliant date.",
+          "type": "string"
+        },
+        "exclude": {
+          "default": [],
+          "description": "Ensure result set excludes specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "include": {
+          "default": [],
+          "description": "Limit result set to specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "offset": {
+          "description": "Offset the result set by a specific number of items.",
+          "type": "integer"
+        },
+        "order": {
+          "default": "desc",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "description": "Order sort attribute ascending or descending.",
+          "type": "string"
+        },
+        "orderby": {
+          "default": "date",
+          "enum": [
+            "author",
+            "date",
+            "id",
+            "include",
+            "modified",
+            "parent",
+            "relevance",
+            "slug",
+            "include_slugs",
+            "title"
+          ],
+          "description": "Sort collection by object attribute.",
+          "type": "string"
+        },
+        "parent": {
+          "default": [],
+          "description": "Limit result set to items with particular parent IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "parent_exclude": {
+          "default": [],
+          "description": "Limit result set to all items except those of a particular parent ID.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "slug": {
+          "description": "Limit result set to posts with one or more specific slugs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "default": "inherit",
+          "description": "Limit result set to posts assigned one or more statuses.",
+          "type": "array",
+          "items": {
+            "enum": [
+              "inherit",
+              "private",
+              "trash"
+            ],
+            "type": "string"
+          }
+        },
+        "media_type": {
+          "enum": [
+            "image",
+            "video",
+            "text",
+            "application",
+            "audio"
+          ],
+          "description": "Limit result set to attachments of a particular media type.",
+          "type": "string"
+        },
+        "mime_type": {
+          "description": "Limit result set to attachments of a particular MIME type.",
+          "type": "string"
+        }
+      }
+    },
+    "PostsListOptions": {
+      "properties": {
+        "context": {
+          "default": "view",
+          "enum": [
+            "view",
+            "embed",
+            "edit"
+          ],
+          "description": "Scope under which the request is made; determines fields present in response.",
+          "type": "string"
+        },
+        "page": {
+          "default": 1,
+          "description": "Current page of the collection.",
+          "type": "integer"
+        },
+        "per_page": {
+          "default": 10,
+          "description": "Maximum number of items to be returned in result set.",
+          "type": "integer"
+        },
+        "search": {
+          "description": "Limit results to those matching a string.",
+          "type": "string"
+        },
+        "after": {
+          "description": "Limit response to posts published after a given ISO8601 compliant date.",
+          "type": "string"
+        },
+        "author": {
+          "default": [],
+          "description": "Limit result set to posts assigned to specific authors.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "author_exclude": {
+          "default": [],
+          "description": "Ensure result set excludes posts assigned to specific authors.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "before": {
+          "description": "Limit response to posts published before a given ISO8601 compliant date.",
+          "type": "string"
+        },
+        "exclude": {
+          "default": [],
+          "description": "Ensure result set excludes specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "include": {
+          "default": [],
+          "description": "Limit result set to specific IDs.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "offset": {
+          "description": "Offset the result set by a specific number of items.",
+          "type": "integer"
+        },
+        "order": {
+          "default": "desc",
+          "enum": [
+            "asc",
+            "desc"
+          ],
+          "description": "Order sort attribute ascending or descending.",
+          "type": "string"
+        },
+        "orderby": {
+          "default": "date",
+          "enum": [
+            "author",
+            "date",
+            "id",
+            "include",
+            "modified",
+            "parent",
+            "relevance",
+            "slug",
+            "include_slugs",
+            "title"
+          ],
+          "description": "Sort collection by object attribute.",
+          "type": "string"
+        },
+        "slug": {
+          "description": "Limit result set to posts with one or more specific slugs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "default": "publish",
+          "description": "Limit result set to posts assigned one or more statuses.",
+          "type": "array",
+          "items": {
+            "enum": [
+              "publish",
+              "future",
+              "draft",
+              "pending",
+              "private",
+              "trash",
+              "auto-draft",
+              "inherit",
+              "any"
+            ],
+            "type": "string"
+          }
+        },
+        "categories": {
+          "default": [],
+          "description": "Limit result set to all items that have the specified term assigned in the categories taxonomy.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "categories_exclude": {
+          "default": [],
+          "description": "Limit result set to all items except those that have the specified term assigned in the categories taxonomy.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "tags": {
+          "default": [],
+          "description": "Limit result set to all items that have the specified term assigned in the tags taxonomy.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "tags_exclude": {
+          "default": [],
+          "description": "Limit result set to all items except those that have the specified term assigned in the tags taxonomy.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "sticky": {
+          "description": "Limit result set to items that are sticky.",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

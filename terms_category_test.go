@@ -1,10 +1,11 @@
 package wordpress_test
 
 import (
-	"github.com/sogko/go-wordpress"
-	"log"
+	"context"
 	"net/http"
 	"testing"
+
+	"github.com/robbiet480/go-wordpress"
 )
 
 func factoryTermsCategory() *wordpress.Term {
@@ -16,15 +17,12 @@ func factoryTermsCategory() *wordpress.Term {
 
 func cleanUpTermsCategory(t *testing.T, id int) {
 
-	wp := initTestClient()
-	deletedTerm, resp, body, err := wp.Terms().Category().Delete(id, nil)
+	wp, ctx := initTestClient()
+	deletedTerm, resp, err := wp.Terms.Category().Delete(ctx, id, nil)
 	if err != nil {
 		t.Errorf("Failed to clean up new term: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if deletedTerm.ID != id {
@@ -32,10 +30,10 @@ func cleanUpTermsCategory(t *testing.T, id int) {
 	}
 }
 
-func getAnyOneTermsCategory(t *testing.T, wp *wordpress.Client) *wordpress.Term {
+func getAnyOneTermsCategory(t *testing.T, ctx context.Context, wp *wordpress.Client) *wordpress.Term {
 
-	terms, resp, _, _ := wp.Terms().Category().List(nil)
-	if resp.StatusCode != http.StatusOK {
+	terms, resp, _ := wp.Terms.Category().List(ctx, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if len(terms) < 1 {
@@ -44,8 +42,8 @@ func getAnyOneTermsCategory(t *testing.T, wp *wordpress.Client) *wordpress.Term 
 
 	id := terms[0].ID
 
-	term, resp, _, _ := wp.Terms().Category().Get(id, nil)
-	if resp.StatusCode != http.StatusOK {
+	term, resp, _ := wp.Terms.Category().Get(ctx, id, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Fatalf("Expected 200 OK, got %v", resp.Status)
 	}
 
@@ -54,16 +52,13 @@ func getAnyOneTermsCategory(t *testing.T, wp *wordpress.Client) *wordpress.Term 
 
 func TestTermsCategoryList(t *testing.T) {
 	t.Skipf("Not supported anymore")
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	terms, resp, body, err := wp.Terms().Category().List(nil)
+	terms, resp, err := wp.Terms.Category().List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if terms == nil {
@@ -74,17 +69,14 @@ func TestTermsCategoryList(t *testing.T) {
 func TestTermsCategoryGet(t *testing.T) {
 	t.Skipf("Not supported anymore")
 
-	wp := initTestClient()
-	tt := getAnyOneTermsCategory(t, wp)
+	wp, ctx := initTestClient()
+	tt := getAnyOneTermsCategory(t, ctx, wp)
 
-	term, resp, body, err := wp.Terms().Category().Get(tt.ID, nil)
+	term, resp, err := wp.Terms.Category().Get(ctx, tt.ID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if term == nil {
@@ -96,19 +88,17 @@ func TestTermsCategoryGet(t *testing.T) {
 func TestTermsCategoryCreate_New(t *testing.T) {
 	t.Skipf("Not supported anymore")
 
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	tt := factoryTermsCategory()
 
-	term, resp, body, err := wp.Terms().Category().Create(tt)
+	term, resp, err := wp.Terms.Category().Create(ctx, tt)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
+
 	}
 	if term == nil {
 		t.Errorf("Should not return nil term")
@@ -121,19 +111,16 @@ func TestTermsCategoryCreate_New(t *testing.T) {
 func TestTermsCategoryCreate_Existing(t *testing.T) {
 	t.Skipf("Not supported anymore")
 
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	tt := factoryTermsCategory()
 
 	// add category the first time
-	term, resp, body, err := wp.Terms().Category().Create(tt)
+	term, resp, err := wp.Terms.Category().Create(ctx, tt)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if term == nil {
@@ -141,34 +128,31 @@ func TestTermsCategoryCreate_Existing(t *testing.T) {
 	}
 
 	// add the same category the second time
-	duplicateTerm, resp, body, err := wp.Terms().Category().Create(tt)
+	duplicateTerm, resp, err := wp.Terms.Category().Create(ctx, tt)
 	if err == nil {
 		t.Errorf("Should return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusInternalServerError {
+	if resp != nil && resp.StatusCode != http.StatusInternalServerError {
 		t.Errorf("Expected 500 Internal Server Erro, got %v", resp.Status)
 	}
 	if duplicateTerm == nil {
 		t.Errorf("Should not return nil duplicateTerm")
 	}
 
-	// unmarshall error response
-	// We expect server to return "term_exists" error code
-	serverErrors, err := wordpress.UnmarshallServerError(body)
-	if err != nil {
-		cleanUpTermsCategory(t, term.ID)
-		log.Println(string(body))
-		t.Fatalf("Unexpected error response from server, unable to unmarshall message %v", err.Error())
-	}
-	if len(serverErrors) != 1 {
-		t.Errorf("Expected one error", len(serverErrors))
-	}
-	if serverErrors[0].Code != "term_exists" {
-		t.Errorf("Unexpected err.code, %v != term_exists", serverErrors[0].Code)
-	}
+	// // unmarshall error response
+	// // We expect server to return "term_exists" error code
+	// serverErrors, err := wordpress.UnmarshalServerError(body)
+	// if err != nil {
+	// 	cleanUpTermsCategory(t, term.ID)
+	// 	log.Println(string(body))
+	// 	t.Fatalf("Unexpected error response from server, unable to unmarshall message %v", err.Error())
+	// }
+	// if len(serverErrors) != 1 {
+	// 	t.Error("Expected one error", len(serverErrors))
+	// }
+	// if serverErrors[0].Code != "term_exists" {
+	// 	t.Errorf("Unexpected err.code, %v != term_exists", serverErrors[0].Code)
+	// }
 
 	// clean up
 	cleanUpTermsCategory(t, term.ID)
@@ -178,13 +162,13 @@ func TestTermsCategoryCreate_Existing(t *testing.T) {
 func TestTermsCategoryDelete(t *testing.T) {
 	t.Skipf("Not supported anymore")
 
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	tt := factoryTermsCategory()
 
 	// create category
-	newTerm, resp, _, _ := wp.Terms().Category().Create(tt)
-	if resp.StatusCode != http.StatusOK {
+	newTerm, resp, _ := wp.Terms.Category().Create(ctx, tt)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if newTerm == nil {
@@ -192,14 +176,11 @@ func TestTermsCategoryDelete(t *testing.T) {
 	}
 
 	// delete category
-	deletedTerm, resp, body, err := wp.Terms().Category().Delete(newTerm.ID, nil)
+	deletedTerm, resp, err := wp.Terms.Category().Delete(ctx, newTerm.ID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if deletedTerm == nil {
@@ -210,13 +191,13 @@ func TestTermsCategoryDelete(t *testing.T) {
 func TestTermsCategoryUpdate(t *testing.T) {
 	t.Skipf("Not supported anymore")
 
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	tt := factoryTermsCategory()
 
 	// create category
-	newTerm, resp, _, _ := wp.Terms().Category().Create(tt)
-	if resp.StatusCode != http.StatusOK {
+	newTerm, resp, _ := wp.Terms.Category().Create(ctx, tt)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if newTerm == nil {
@@ -224,8 +205,8 @@ func TestTermsCategoryUpdate(t *testing.T) {
 	}
 
 	// get category term
-	term, resp, _, _ := wp.Terms().Category().Get(newTerm.ID, nil)
-	if resp.StatusCode != http.StatusOK {
+	term, resp, _ := wp.Terms.Category().Get(ctx, newTerm.ID, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if term == nil {
@@ -240,14 +221,11 @@ func TestTermsCategoryUpdate(t *testing.T) {
 	term.Description = newTermDescription
 
 	// update
-	updatedTerm, resp, body, err := wp.Terms().Category().Update(newTerm.ID, term)
+	updatedTerm, resp, err := wp.Terms.Category().Update(ctx, newTerm.ID, term)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if updatedTerm == nil {

@@ -1,9 +1,11 @@
 package wordpress_test
 
 import (
-	"github.com/sogko/go-wordpress"
+	"context"
 	"net/http"
 	"testing"
+
+	"github.com/robbiet480/go-wordpress"
 )
 
 func factoryUser() *wordpress.User {
@@ -15,28 +17,27 @@ func factoryUser() *wordpress.User {
 		Password: "password",
 	}
 }
+
 func cleanUpUser(t *testing.T, userID int) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	// Note that deleting a user requires `force=true` since `users` resource does not support trashing
-	deletedUser, resp, body, err := wp.Users().Delete(userID, "force=true")
+	deletedUser, resp, err := wp.Users.Delete(ctx, userID, "force=true&reassign=1")
 	if err != nil {
 		t.Errorf("Failed to clean up new user: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if deletedUser.ID != userID {
 		t.Errorf("Deleted user ID should be the same as newly created user: %v != %v", deletedUser.ID, userID)
 	}
 }
-func getAnyOneUser(t *testing.T, wp *wordpress.Client) *wordpress.User {
 
-	users, resp, _, _ := wp.Users().List(nil)
-	if resp.StatusCode != http.StatusOK {
+func getAnyOneUser(t *testing.T, ctx context.Context, wp *wordpress.Client) *wordpress.User {
+
+	users, resp, _ := wp.Users.List(ctx, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if len(users) < 1 {
@@ -45,24 +46,21 @@ func getAnyOneUser(t *testing.T, wp *wordpress.Client) *wordpress.User {
 
 	userID := users[0].ID
 
-	user, resp, _, _ := wp.Users().Get(userID, "context=edit")
-	if resp.StatusCode != http.StatusOK {
+	user, resp, _ := wp.Users.Get(ctx, userID, "context=edit")
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	return user
 }
 
 func TestUsersList(t *testing.T) {
-	client := initTestClient()
+	client, ctx := initTestClient()
 
-	users, resp, body, err := client.Users().List(nil)
+	users, resp, err := client.Users.List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if users == nil {
@@ -71,16 +69,13 @@ func TestUsersList(t *testing.T) {
 }
 
 func TestUsersMe(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	currentUser, resp, body, err := wp.Users().Me("context=edit")
+	currentUser, resp, err := wp.Users.Me(ctx, "context=edit")
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if currentUser == nil {
@@ -92,18 +87,15 @@ func TestUsersMe(t *testing.T) {
 }
 
 func TestUsersGet(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	u := getAnyOneUser(t, wp)
+	u := getAnyOneUser(t, ctx, wp)
 
-	user, resp, body, err := wp.Users().Get(u.ID, nil)
+	user, resp, err := wp.Users.Get(ctx, u.ID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if user == nil {
@@ -112,7 +104,7 @@ func TestUsersGet(t *testing.T) {
 }
 
 func TestUsersCreate(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	u := &wordpress.User{
 		Username: "go-wordpress-test-user1",
@@ -122,14 +114,11 @@ func TestUsersCreate(t *testing.T) {
 		Password: "password",
 	}
 
-	newUser, resp, body, err := wp.Users().Create(u)
+	newUser, resp, err := wp.Users.Create(ctx, u)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusCreated {
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Errorf("Expected 201 Created, got %v", resp.Status)
 	}
 	if newUser == nil {
@@ -141,11 +130,11 @@ func TestUsersCreate(t *testing.T) {
 }
 
 func TestUsersDelete(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	u := factoryUser()
-	newUser, resp, _, _ := wp.Users().Create(u)
-	if resp.StatusCode != http.StatusCreated {
+	newUser, resp, _ := wp.Users.Create(ctx, u)
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Errorf("Expected 201 Created, got %v", resp.Status)
 	}
 	if newUser == nil {
@@ -154,14 +143,11 @@ func TestUsersDelete(t *testing.T) {
 
 	// Note that deleting a user requires `force=true` since `users` resource does not support trashing
 	// If not specified, a 501 NotImplemented will be returned
-	deletedUser, resp, body, err := wp.Users().Delete(newUser.ID, "force=true")
+	deletedUser, resp, err := wp.Users.Delete(ctx, newUser.ID, "force=true&reassign=1")
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if deletedUser.ID != newUser.ID {
@@ -170,12 +156,12 @@ func TestUsersDelete(t *testing.T) {
 }
 
 func TestUsersUpdate(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 	u := factoryUser()
 
 	// create user
-	newUser, resp, _, _ := wp.Users().Create(u)
-	if resp.StatusCode != http.StatusCreated {
+	newUser, resp, _ := wp.Users.Create(ctx, u)
+	if resp != nil && resp.StatusCode != http.StatusCreated {
 		t.Errorf("Expected 201 Created, got %v", resp.Status)
 	}
 	if newUser == nil {
@@ -183,8 +169,8 @@ func TestUsersUpdate(t *testing.T) {
 	}
 
 	// get user in `edit` context
-	user, resp, _, _ := wp.Users().Get(newUser.ID, "context=edit")
-	if resp.StatusCode != http.StatusOK {
+	user, resp, _ := wp.Users.Get(ctx, newUser.ID, "context=edit")
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if user == nil {
@@ -199,14 +185,11 @@ func TestUsersUpdate(t *testing.T) {
 	user.Email = newUserEmail
 
 	// update
-	updatedUser, resp, body, err := wp.Users().Update(user.ID, user)
+	updatedUser, resp, err := wp.Users.Update(ctx, user.ID, user)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if updatedUser.ID != user.ID {

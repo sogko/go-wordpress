@@ -1,9 +1,11 @@
 package wordpress_test
 
 import (
-	"github.com/sogko/go-wordpress"
+	"context"
 	"net/http"
 	"testing"
+
+	"github.com/robbiet480/go-wordpress"
 )
 
 func factoryTermsTag() *wordpress.Term {
@@ -15,15 +17,12 @@ func factoryTermsTag() *wordpress.Term {
 
 func cleanUpTermsTag(t *testing.T, id int) {
 
-	wp := initTestClient()
-	deletedTerm, resp, body, err := wp.Terms().Tag().Delete(id, nil)
+	wp, ctx := initTestClient()
+	deletedTerm, resp, err := wp.Terms.Tag().Delete(ctx, id, nil)
 	if err != nil {
 		t.Errorf("Failed to clean up new term: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if deletedTerm.ID != id {
@@ -31,10 +30,10 @@ func cleanUpTermsTag(t *testing.T, id int) {
 	}
 }
 
-func getAnyOneTermsTag(t *testing.T, wp *wordpress.Client) *wordpress.Term {
+func getAnyOneTermsTag(t *testing.T, ctx context.Context, wp *wordpress.Client) *wordpress.Term {
 
-	terms, resp, _, _ := wp.Terms().Tag().List(nil)
-	if resp.StatusCode != http.StatusOK {
+	terms, resp, _ := wp.Terms.Tag().List(ctx, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if len(terms) < 1 {
@@ -43,8 +42,8 @@ func getAnyOneTermsTag(t *testing.T, wp *wordpress.Client) *wordpress.Term {
 
 	id := terms[0].ID
 
-	term, resp, _, _ := wp.Terms().Tag().Get(id, nil)
-	if resp.StatusCode != http.StatusOK {
+	term, resp, _ := wp.Terms.Tag().Get(ctx, id, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Fatalf("Expected 200 OK, got %v", resp.Status)
 	}
 
@@ -53,16 +52,13 @@ func getAnyOneTermsTag(t *testing.T, wp *wordpress.Client) *wordpress.Term {
 
 func TestTermsTagList(t *testing.T) {
 	t.Skipf("Not supported anymore")
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	terms, resp, body, err := wp.Terms().Tag().List(nil)
+	terms, resp, err := wp.Terms.Tag().List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if terms == nil {
@@ -73,17 +69,14 @@ func TestTermsTagList(t *testing.T) {
 func TestTermsTagGet(t *testing.T) {
 	t.Skipf("Not supported anymore")
 
-	wp := initTestClient()
-	tt := getAnyOneTermsTag(t, wp)
+	wp, ctx := initTestClient()
+	tt := getAnyOneTermsTag(t, ctx, wp)
 
-	term, resp, body, err := wp.Terms().Tag().Get(tt.ID, nil)
+	term, resp, err := wp.Terms.Tag().Get(ctx, tt.ID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 StatusOK, got %v", resp.Status)
 	}
 	if term == nil {
@@ -95,18 +88,15 @@ func TestTermsTagGet(t *testing.T) {
 func TestTermsTagCreate(t *testing.T) {
 	t.Skipf("Not supported anymore")
 
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	tt := factoryTermsTag()
 
-	term, resp, body, err := wp.Terms().Tag().Create(tt)
+	term, resp, err := wp.Terms.Tag().Create(ctx, tt)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if term == nil {
@@ -120,13 +110,13 @@ func TestTermsTagCreate(t *testing.T) {
 func TestTermsTagDelete(t *testing.T) {
 	t.Skipf("Not supported anymore")
 
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	tt := factoryTermsTag()
 
 	// create tag
-	newTerm, resp, _, _ := wp.Terms().Tag().Create(tt)
-	if resp.StatusCode != http.StatusOK {
+	newTerm, resp, _ := wp.Terms.Tag().Create(ctx, tt)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if newTerm == nil {
@@ -134,14 +124,11 @@ func TestTermsTagDelete(t *testing.T) {
 	}
 
 	// delete tag
-	deletedTerm, resp, body, err := wp.Terms().Tag().Delete(newTerm.ID, nil)
+	deletedTerm, resp, err := wp.Terms.Tag().Delete(ctx, newTerm.ID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if deletedTerm == nil {
@@ -152,13 +139,13 @@ func TestTermsTagDelete(t *testing.T) {
 func TestTermsTagUpdate(t *testing.T) {
 	t.Skipf("Not supported anymore")
 
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
 	tt := factoryTermsTag()
 
 	// create tag
-	newTerm, resp, _, _ := wp.Terms().Tag().Create(tt)
-	if resp.StatusCode != http.StatusOK {
+	newTerm, resp, _ := wp.Terms.Tag().Create(ctx, tt)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if newTerm == nil {
@@ -166,8 +153,8 @@ func TestTermsTagUpdate(t *testing.T) {
 	}
 
 	// get tag term
-	term, resp, _, _ := wp.Terms().Tag().Get(newTerm.ID, nil)
-	if resp.StatusCode != http.StatusOK {
+	term, resp, _ := wp.Terms.Tag().Get(ctx, newTerm.ID, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if term == nil {
@@ -182,14 +169,11 @@ func TestTermsTagUpdate(t *testing.T) {
 	term.Description = newTermDescription
 
 	// update
-	updatedTerm, resp, body, err := wp.Terms().Tag().Update(newTerm.ID, term)
+	updatedTerm, resp, err := wp.Terms.Tag().Update(ctx, newTerm.ID, term)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("body should not be nil")
-	}
-	if resp.StatusCode != http.StatusOK {
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if updatedTerm == nil {

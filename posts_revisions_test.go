@@ -1,17 +1,19 @@
 package wordpress_test
 
 import (
+	"context"
 	"fmt"
-	"github.com/sogko/go-wordpress"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/robbiet480/go-wordpress"
 )
 
-func getLatestRevisionForPost(t *testing.T, post *wordpress.Post) *wordpress.Revision {
+func getLatestRevisionForPost(t *testing.T, ctx context.Context, post *wordpress.Post) *wordpress.Revision {
 
-	revisions, resp, _, _ := post.Revisions().List(nil)
-	if resp.StatusCode != http.StatusOK {
+	revisions, resp, _ := post.Revisions().List(ctx, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if len(revisions) < 1 {
@@ -19,8 +21,8 @@ func getLatestRevisionForPost(t *testing.T, post *wordpress.Post) *wordpress.Rev
 	}
 	// get latest revision
 	revisionID := revisions[0].ID
-	revision, resp, _, _ := post.Revisions().Get(revisionID, nil)
-	if resp.StatusCode != http.StatusOK {
+	revision, resp, _ := post.Revisions().Get(ctx, revisionID, nil)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Fatalf("Expected 200 OK, got %v", resp.Status)
 	}
 
@@ -28,29 +30,27 @@ func getLatestRevisionForPost(t *testing.T, post *wordpress.Post) *wordpress.Rev
 }
 
 func TestPostsRevisions_InvalidCall(t *testing.T) {
-	// User is not allowed to call create wordpress.Post object manually to retrieve PostMetaCollection
-	// A proper API call would inject the right PostMetaCollection, Client and other goodies into a post,
+	// User is not allowed to call create wordpress.Post object manually to retrieve PostMetaService
+	// A proper API call would inject the right PostMetaService, Client and other goodies into a post,
 	// allowing user to call post.Revisions()
 	invalidPost := wordpress.Post{}
 	invalidRevisions := invalidPost.Revisions()
 	if invalidRevisions != nil {
-		t.Error("Expected revisions to be nil, %v", invalidRevisions)
+		t.Errorf("Expected revisions to be nil, %v", invalidRevisions)
 	}
 }
 
 func TestPostsRevisionsList(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	post := getAnyOnePost(t, wp)
+	post := getAnyOnePost(t, ctx, wp)
 
-	revisions, resp, body, err := post.Revisions().List(nil)
+	revisions, resp, err := post.Revisions().List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
-	if resp.StatusCode != http.StatusOK {
+
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if revisions == nil {
@@ -59,20 +59,18 @@ func TestPostsRevisionsList(t *testing.T) {
 }
 
 func TestPostsRevisionsList_Lazy(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	post := getAnyOnePost(t, wp)
+	post := getAnyOnePost(t, ctx, wp)
 	postID := post.ID
 
-	// Use Posts().Entity(postID) to retrieve revisions in one API call
-	lazyRevisions, resp, body, err := wp.Posts().Entity(postID).Revisions().List(nil)
+	// Use Posts.Entity(postID) to retrieve revisions in one API call
+	lazyRevisions, resp, err := wp.Posts.Entity(postID).Revisions().List(ctx, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
-	if resp.StatusCode != http.StatusOK {
+
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if lazyRevisions == nil {
@@ -81,21 +79,19 @@ func TestPostsRevisionsList_Lazy(t *testing.T) {
 }
 
 func TestPostsRevisionsGet(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	post := getAnyOnePost(t, wp)
-	r := getLatestRevisionForPost(t, post)
+	post := getAnyOnePost(t, ctx, wp)
+	r := getLatestRevisionForPost(t, ctx, post)
 
 	revisionID := r.ID
 
-	revision, resp, body, err := post.Revisions().Get(revisionID, nil)
+	revision, resp, err := post.Revisions().Get(ctx, revisionID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
-	if resp.StatusCode != http.StatusOK {
+
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if revision == nil {
@@ -104,23 +100,21 @@ func TestPostsRevisionsGet(t *testing.T) {
 }
 
 func TestPostsRevisionsGet_Lazy(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	post := getAnyOnePost(t, wp)
-	r := getLatestRevisionForPost(t, post)
+	post := getAnyOnePost(t, ctx, wp)
+	r := getLatestRevisionForPost(t, ctx, post)
 
 	postID := post.ID
 	revisionID := r.ID
 
-	// Use Posts().Entity(postID) to retrieve revisions in one API call
-	lazyRevision, resp, body, err := wp.Posts().Entity(postID).Revisions().Get(revisionID, nil)
+	// Use Posts.Entity(postID) to retrieve revisions in one API call
+	lazyRevision, resp, err := wp.Posts.Entity(postID).Revisions().Get(ctx, revisionID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
-	if resp.StatusCode != http.StatusOK {
+
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
 	if lazyRevision == nil {
@@ -129,9 +123,9 @@ func TestPostsRevisionsGet_Lazy(t *testing.T) {
 }
 
 func TestPostsRevisionsDelete_Lazy(t *testing.T) {
-	wp := initTestClient()
+	wp, ctx := initTestClient()
 
-	post := getAnyOnePost(t, wp)
+	post := getAnyOnePost(t, ctx, wp)
 
 	// Edit post to create a new revision
 	// Note: wordpress would only create a new revision if there is an actual change in
@@ -142,28 +136,26 @@ func TestPostsRevisionsDelete_Lazy(t *testing.T) {
 	if originalTitle == post.Title.Raw {
 		t.Fatalf("Flawed test, ensure that post content is modified before an update")
 	}
-	updatedPost, resp, _, _ := wp.Posts().Update(post.ID, post)
-	if resp.StatusCode != http.StatusOK {
+	updatedPost, resp, _ := wp.Posts.Update(ctx, post.ID, post)
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Fatalf("Expected 200 OK, got %v", resp.Status)
 	}
 
-	r := getLatestRevisionForPost(t, updatedPost)
+	r := getLatestRevisionForPost(t, ctx, updatedPost)
 	postID := updatedPost.ID
 	revisionID := r.ID
 
-	// Use Posts().Entity(postID) to delete revisions in one API call
+	// Use Posts.Entity(postID) to delete revisions in one API call
 	// Note that deleting a revision does NOT reverse the changes made in the revision
-	response, resp, body, err := wp.Posts().Entity(postID).Revisions().Delete(revisionID, nil)
+	response, resp, err := wp.Posts.Entity(postID).Revisions().Delete(ctx, revisionID, nil)
 	if err != nil {
 		t.Errorf("Should not return error: %v", err.Error())
 	}
-	if body == nil {
-		t.Errorf("Should not return nil body")
-	}
-	if resp.StatusCode != http.StatusOK {
+
+	if resp != nil && resp.StatusCode != http.StatusOK {
 		t.Errorf("Expected 200 OK, got %v", resp.Status)
 	}
-	if response == false {
-		t.Errorf("Should not return false (bool) response")
+	if response == nil {
+		t.Errorf("Should not return nil response")
 	}
 }
