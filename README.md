@@ -80,7 +80,7 @@ export WP_API_URL=http://192.168.99.100:32777/wp-json/wp/v2
 export WP_USER=<user>
 export WP_PASSWD=<password>
 
-cd <path_to_package>/github.com/sogko/go-wordpress
+cd $GOPATH/src/github.com/sogko/go-wordpress
 go test
 
 ```
