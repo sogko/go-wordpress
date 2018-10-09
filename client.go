@@ -3,11 +3,12 @@ package wordpress
 import (
 	"bytes"
 	"fmt"
-	"github.com/parnurzeal/gorequest"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"reflect"
+
+	"github.com/parnurzeal/gorequest"
 )
 
 const (
@@ -111,7 +112,7 @@ func (client *Client) Taxonomies() *TaxonomiesCollection {
 func (client *Client) Terms() *TermsCollection {
 	return &TermsCollection{
 		client: client,
-		url:    fmt.Sprintf("%v/%v", client.baseURL, CollectionTerms),
+		url:    fmt.Sprintf("%v", client.baseURL),
 	}
 }
 func (client *Client) Statuses() *StatusesCollection {
@@ -141,7 +142,9 @@ func (client *Client) Create(url string, content interface{}, result interface{}
 	contentVal := unpackInterfacePointer(content)
 	client.req.TargetType = "json"
 	req := client.req.Post(url).Send(contentVal)
+	fmt.Printf("\n\n\n%+v\n\n\n", req)
 	resp, body, errSlice := req.EndBytes()
+	fmt.Printf("\n\n\n%+v\n\n\n", resp)
 	if errSlice != nil && len(errSlice) > 0 {
 		return nil, body, errSlice[len(errSlice)-1]
 	}
@@ -201,7 +204,7 @@ func (client *Client) PostData(url string, content []byte, contentType string, f
 	}
 
 	req.Header.Set("Content-Type", contentType)
-	req.Header.Set("Content-Disposition", fmt.Sprintf("filename=%v", filename))
+	req.Header.Set("Content-Disposition", fmt.Sprintf("attachment; filename=%v", filename))
 
 	// Add basic auth
 	req.SetBasicAuth(s.BasicAuth.Username, s.BasicAuth.Password)
